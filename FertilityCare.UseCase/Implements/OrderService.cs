@@ -177,14 +177,23 @@ namespace FertilityCare.UseCase.Implements
             return order.MapToOderDTO();
         }
 
-        public Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId)
+        public async Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId)
         {
-            throw new NotImplementedException();
+            var patient = await _patientRepository.FindByIdAsync(patientId)
+                ?? throw new NotFoundException("Patient not found!");
+
+            var order = await _orderRepository.FindAllByPatientIdAsync(patientId);
+            return order.Select(x => x.MapToOderDTO());
         }
 
-        public Task<long?> SetTotalEgg(long totalEgg, string orderId)
+        public async Task<long?> SetTotalEgg(long totalEgg, string orderId)
         {
-            throw new NotImplementedException();
+            var order = await _orderRepository.FindByIdAsync(Guid.Parse(orderId))
+                ?? throw new NotFoundException("Order not found!");
+            order.TotalEgg = totalEgg;
+            order.UpdatedAt = DateTime.Now;
+            var orderUpdate = await _orderRepository.UpdateAsync(order);
+            return totalEgg;
         }
     }
 }
