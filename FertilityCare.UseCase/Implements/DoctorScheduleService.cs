@@ -135,5 +135,11 @@ namespace FertilityCare.UseCase.Implements
                 .ToList();
 
         }
+
+        public async Task<IEnumerable<SlotWithScheduleDTO>> GetSlotWithDoctorsByDateAsync(String workDate, string id)
+        {
+            var result = await _scheduleRepository.GetSchedulesByDateAndDoctorAsync(workDate, id);
+            return result.MapToSlotWithScheduleIdsDTO();
+        }
     }
 }
