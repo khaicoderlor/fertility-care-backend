@@ -62,6 +62,42 @@ namespace FertilityCare.UseCase.Implements
                     schedules.Add(schedule);
                 }
             }
+            await _scheduleRepository.BulkInsertAsync(schedules);
         }
+
+        public async Task<DoctorScheduleDTO> CreateScheduleAsync(CreateDoctorScheduleRequestDTO request)
+        {
+            // Kiểm tra Doctor có tồn tại không
+            var doctor = await _doctorRepository.FindByIdAsync(request.DoctorId);
+            if (doctor == null)
+                throw new NotFoundException("Doctor not found");
+
+            // Convert DateTime sang TimeOnly và DateOnly
+            var startTime = TimeOnly.FromDateTime(request.StartTime);
+            var endTime = TimeOnly.FromDateTime(request.EndTime);
+            var workDate = DateOnly.FromDateTime(request.StartTime);
+
+            // Tìm slot theo khung giờ đã có trong DB
+            var slot = await _slotRepository.FindSlotAsync(startTime, endTime);
+            if (slot == null)
+                throw new NotFoundException("Slot not found for the provided time range");
+
+            // Tạo DoctorSchedule
+            var newSchedule = new DoctorSchedule
+            {
+                DoctorId = request.DoctorId,
+                WorkDate = workDate,
+                SlotId = slot.Id,
+                MaxAppointments = request.MaxAppointments,
+                IsAcceptingPatients = request.IsAcceptingPatients,
+                Note = request.Note,
+                CreatedAt = DateTime.Now,
+            };
+
+            var savedSchedule = await _scheduleRepository.SaveAsync(newSchedule);
+            return savedSchedule.MapToScheduleDTO();
+        }
+
+
     }
 }
