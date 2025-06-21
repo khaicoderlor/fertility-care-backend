@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FertilityCare.Domain\FertilityCare.Domain.csproj" />
+    <ProjectReference Include="..\FertilityCare.Infrastructure\FertilityCare.Infrastructure.csproj" />
+    <ProjectReference Include="..\FertilityCare.Share\FertilityCare.Share.csproj" />
     <ProjectReference Include="..\FertilityCare.UseCase\FertilityCare.UseCase.csproj" />
   </ItemGroup>
 
