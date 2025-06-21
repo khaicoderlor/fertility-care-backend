@@ -1,4 +1,5 @@
-﻿using FertilityCare.Domain.Entities;
+﻿using FertilityCare.Domain.constants;
+using FertilityCare.Domain.Entities;
 using FertilityCare.Infrastructure.Configurations;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.UseCase.DTOs.Auths;
@@ -218,9 +219,71 @@ namespace FertilityCare.Infrastructure.Services
             }
         }
 
-        public Task<AuthResult> RegisterAsync(RegisterRequest request)
+        public async Task<AuthResult> RegisterAsync(RegisterRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var loadedUser = await _userManager.FindByEmailAsync(request.Email);
+                if (loadedUser is not null)
+                {
+                    return AuthResult.Failed("Email already registered");
+                }
+
+                if (!request.Password.Equals(request.ConfirmPassword, StringComparison.OrdinalIgnoreCase))
+                {
+                    return AuthResult.Failed("Confirm password not matches!");
+                }
+
+                var profileId = Guid.NewGuid();
+                var user = new ApplicationUser
+                {
+                    Id = Guid.NewGuid(),
+                    Email = request.Email,
+                    UserName = request.Email,
+                    EmailConfirmed = true,
+                    UserProfileId = profileId,
+                    RefreshToken = "",
+                    UserProfile = new UserProfile
+                    {
+                        Id = profileId,
+                        FirstName = "None",
+                        MiddleName = "",
+                        LastName = "None",
+                        Address = "",
+                        CreatedAt = DateTime.Now,
+                        AvatarUrl = ApplicationConstant.DefaultAvatar
+                    }
+                };
+
+                var result = await _userManager.CreateAsync(user, request.Password);
+                if (!result.Succeeded)
+                {
+                    return AuthResult.Failed("Register account failed!");
+                }
+
+                if (request.Role.Equals("User", StringComparison.OrdinalIgnoreCase))
+                {
+                    var roleAssignResult = await _userManager.AddToRoleAsync(user, "User");
+                    if (!roleAssignResult.Succeeded)
+                    {
+                        return AuthResult.Failed("Not assign role to user");
+                    }
+                }
+                else if (request.Role.Equals("Doctor", StringComparison.OrdinalIgnoreCase))
+                {
+                    var roleAssignResult = await _userManager.AddToRoleAsync(user, "Doctor");
+                    if (!roleAssignResult.Succeeded)
+                    {
+                        return AuthResult.Failed("Not assign role to user");
+                    }
+                }
+
+                return await GenerateTokenAsync(user);
+            }
+            catch (Exception ex)
+            {
+                return AuthResult.Failed("Register account failed!");
+            }
         }
     }
 }
