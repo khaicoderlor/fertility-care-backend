@@ -96,5 +96,15 @@ namespace FertilityCare.WebApi.Controllers
 
             return Ok(new { message = "Logged out successfully" });
         }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("me")]
+        public IActionResult GetCurrentUser()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            return Ok(new { userId, email });
+        }
     }
 }
