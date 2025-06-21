@@ -98,6 +98,10 @@ namespace FertilityCare.UseCase.Implements
             return savedSchedule.MapToScheduleDTO();
         }
 
-
+        public async Task<bool> DeleteScheduleAsync(long scheduleId)
+        {
+            await _scheduleRepository.DeleteByIdAsync(scheduleId);
+            return true;
+        }
     }
 }
