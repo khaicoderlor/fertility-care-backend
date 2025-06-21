@@ -65,7 +65,31 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
-        
+        [HttpGet("by-order")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDTO>>>> FindPrescriptionByOrderId([FromQuery] string orderId)
+        {
+            try
+            {
+                var result = await _prescriptionService.FindPrescriptionByOrderIdAsync(orderId);
+                return Ok(new ApiResponse<IEnumerable<PrescriptionDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
     }
 }
