@@ -45,5 +45,33 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+
+        [HttpGet("by-doctor")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DoctorScheduleDTO>>>> GetAllSchedulesAsync([FromQuery] Guid doctorId)
+        {
+            try
+            {
+                var result = await _doctorScheduleService.GetAllSchedulesAsync(doctorId);
+                return Ok(new ApiResponse<IEnumerable<DoctorScheduleDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Schedules fetched successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+
     }
 }
