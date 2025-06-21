@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FertilityCare.Domain\FertilityCare.Domain.csproj" />
+    <ProjectReference Include="..\FertilityCare.Share\FertilityCare.Share.csproj" />
   </ItemGroup>
 
 </Project>

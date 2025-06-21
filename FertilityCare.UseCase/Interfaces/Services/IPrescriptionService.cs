@@ -12,7 +12,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task<PrescriptionDTO> CreatePrescriptionAsync(CreatePrecriptionRequestDTO request);
         Task<IEnumerable<PrescriptionDTO>> FindPrescriptionByOrderIdAsync(string orderId);
-        Task<PrescriptionDTO> AddPrescriptionItemTOPrescriptionAsync(PrescriptionItemDTO prescriptionItem, string prescriptionId);
+        Task<PrescriptionDTO> AddPrescriptionItemToPrescriptionAsync(PrescriptionItemDTO prescriptionItem, string prescriptionId);
 
         Task<IEnumerable<PrescriptionDetailDTO>> GetPrescriptionByPatientId(string patientId);
     }
