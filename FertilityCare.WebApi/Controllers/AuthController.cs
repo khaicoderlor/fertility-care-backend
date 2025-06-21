@@ -60,5 +60,19 @@ namespace FertilityCare.WebApi.Controllers
 
             return Ok(result.Data);
         }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult<AuthResult>> RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _authService.RefreshTokenAsync(request);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(result.Data);
+        }
     }
 }
