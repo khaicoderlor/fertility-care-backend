@@ -108,6 +108,32 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<DoctorScheduleDTO>>> CreateScheduleAsync([FromBody] CreateDoctorScheduleRequestDTO request)
+        {
+            try
+            {
+                var result = await _doctorScheduleService.CreateScheduleAsync(request);
+                return Ok(new ApiResponse<DoctorScheduleDTO>
+                {
+                    StatusCode = 201,
+                    Message = "Schedule created successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
     }
 }
