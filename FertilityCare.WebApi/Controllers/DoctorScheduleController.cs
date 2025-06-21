@@ -232,6 +232,23 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("slots/{doctorId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SlotWithScheduleDTO>>>> GetSlotsWithSchedulesByDateAndDoctor(
+        [FromQuery] string date,
+        [FromRoute] string doctorId)
+        {
+            var result = await _doctorScheduleService.GetSlotWithDoctorsByDateAsync(date, doctorId);
+
+            return Ok(new ApiResponse<IEnumerable<SlotWithScheduleDTO>>
+            {
+                StatusCode = 200,
+                Message = "Slots with schedules fetched successfully.",
+                Data = result,
+                ResponsedAt = DateTime.Now
+            });
+        }
+
 
     }
 }
