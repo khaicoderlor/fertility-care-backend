@@ -103,5 +103,11 @@ namespace FertilityCare.UseCase.Implements
             await _scheduleRepository.DeleteByIdAsync(scheduleId);
             return true;
         }
+
+        public async Task<IEnumerable<DoctorScheduleDTO>> FindAllSchedulesAsync()
+        {
+            var all = await _scheduleRepository.FindAllAsync();
+            return all.Select(s => s.MapToScheduleDTO());
+        }
     }
 }
