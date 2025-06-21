@@ -160,6 +160,15 @@ namespace FertilityCare.UseCase.Implements
             return placeOrder.MapToOderDTO();
         }
 
+        public async Task<IEnumerable<OrderDTO>> GetOrderByDoctorIdAsync(Guid doctorId)
+        {
+            var doctor = await _doctorRepository.FindByIdAsync(doctorId);
+
+            Console.WriteLine(doctorId.ToString());
+
+            var orders = await _orderRepository.FindAllByDoctorIdAsync(doctorId);
+            return orders.Select(x => x.MapToOderDTO());
+        }
 
         public Task<OrderDTO> GetOrderByIdAsync(Guid orderId)
         {
@@ -167,11 +176,6 @@ namespace FertilityCare.UseCase.Implements
         }
 
         public Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OrderDTO?> PlaceOrderAsync(CreateOrderRequestDTO request)
         {
             throw new NotImplementedException();
         }
