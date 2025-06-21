@@ -122,9 +122,42 @@ namespace FertilityCare.Infrastructure.Services
             }
         }
 
-        public Task<AuthResult> LoginAsync(LoginRequest request)
+        public async Task<AuthResult> LoginAsync(LoginRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var loadedUser = await _userManager.FindByEmailAsync(request.Email);
+                if (loadedUser is null)
+                {
+                    return AuthResult.Failed("Invalid credentials!");
+                }
+
+                if (await _userManager.IsLockedOutAsync(loadedUser))
+                {
+                    return AuthResult.Failed("Account is locked on!");
+                }
+
+                var result = await _signInManager.CheckPasswordSignInAsync(loadedUser, request.Password, true);
+                if (!result.Succeeded)
+                {
+                    if (result.IsLockedOut)
+                    {
+                        return AuthResult.Failed("Account locked due to multiple failed attempts");
+                    }
+
+                    return AuthResult.Failed("Invalid credentials");
+                }
+
+                loadedUser.LastLogin = DateTime.UtcNow;
+                loadedUser.FailedLoginAttempts = 0;
+                await _userManager.UpdateAsync(loadedUser);
+
+                return await GenerateTokenAsync(loadedUser);
+            }
+            catch (Exception ex)
+            {
+                return AuthResult.Failed("Login failed");
+            }
         }
 
         public Task<bool> LogoutAsync(string userId)
