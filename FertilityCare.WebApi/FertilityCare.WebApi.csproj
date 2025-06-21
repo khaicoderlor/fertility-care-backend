@@ -13,4 +13,11 @@
     <ProjectReference Include="..\FertilityCare.UseCase\FertilityCare.UseCase.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
+	</ItemGroup>
+
 </Project>
