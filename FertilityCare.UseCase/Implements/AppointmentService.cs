@@ -1,4 +1,5 @@
-﻿using FertilityCare.Shared.Exceptions;
+﻿using FertilityCare.Domain.Enums;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using System;
@@ -19,23 +20,16 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IAppointmentRepository _appointmentRepository;
 
-        private readonly IAppointmentReminderRepository _appointmentReminderRepository;
-
-        private readonly IEmailService _emailService;
-
         public AppointmentService(IAppointmentRepository appointmentRepository,
             IOrderStepRepository orderStepRepository,
             IOrderRepository orderRepository,
-            IDoctorScheduleRepository doctorScheduleRepository,
-            IAppointmentReminderRepository appointmentReminderRepository,
-            IEmailService emailService)
+            IDoctorScheduleRepository doctorScheduleRepository
+           )
         {
             _appointmentRepository = appointmentRepository;
             _stepRepository = orderStepRepository;
             _orderRepository = orderRepository;
             _scheduleRepository = doctorScheduleRepository;
-            _appointmentReminderRepository = appointmentReminderRepository;
-            _emailService = emailService;
         }
 
         public async Task<IEnumerable<AppointmentDTO>> GetAppointmentsByStepIdAsync(Guid orderId, long stepId)
@@ -50,6 +44,22 @@ namespace FertilityCare.UseCase.Implements
             return appointments.Select(a => a.MapToAppointmentDTO()).ToList();
         }
 
+        public async Task<AppointmentDTO> MarkStatusAppointmentAsync(Guid appointmentId, string status)
+        {
+            var appointment = await _appointmentRepository.FindByIdAsync(appointmentId)
+                ?? throw new NotFoundException("Appointment not found!");
+
+            if (!Enum.TryParse<AppointmentStatus>(status, true, out var appointmentStatus))
+            {
+                throw new ArgumentException("Invalid appointment status provided.");
+            }
+
+            appointment.Status = appointmentStatus;
+            appointment.UpdatedAt = DateTime.Now;
+            await _appointmentRepository.UpdateAsync(appointment);
+
+            return appointment.MapToAppointmentDTO();
+        }
 
 
     }

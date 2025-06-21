@@ -43,7 +43,7 @@ namespace FertilityCare.UseCase.DTOs.Appointments
 
         public string? Note { get; set; }
 
-        public decimal? Amount { get; set; }
+        public decimal? ExtraFee { get; set; }
 
         public string? PaymentStatus { get; set; }
 
