@@ -43,5 +43,24 @@ namespace FertilityCare.UseCase.Implements
             return item.Prescription.MapToPrescriptionDTO();
 
         }
+
+        public async Task<PrescriptionDTO> CreatePrescriptionAsync(CreatePrecriptionRequestDTO request)
+        {
+            var loadedOrder = await _orderRepository.FindByIdAsync(Guid.Parse(request.OrderId));
+            if (loadedOrder == null)
+                throw new NotFoundException("Order not found");
+            var prescriprion = new Prescription()
+            {
+                OrderId = loadedOrder.Id,
+                PrescriptionDate = DateTime.Now,
+                Note = request.Note,
+                PrescriptionItems = null,
+            };
+            var savedPrescription = await _prescriptionRepository.SaveAsync(prescriprion);
+            return savedPrescription.MapToPrescriptionDTO();
+
+        }
+
+        
     }
 }
