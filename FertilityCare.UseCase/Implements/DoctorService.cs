@@ -1,5 +1,5 @@
-﻿using Fertilitycare.Share.Comon;
-using Fertilitycare.Share.Pagination;
+﻿
+using FertilityCare.Share.Pagination;
 using FertilityCare.Domain.Entities;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -37,6 +37,14 @@ namespace FertilityCare.UseCase.Implements
 
             var result = await _doctorRepository.FindByIdAsync(doctorId);
             return result?.MapToDoctorDTO();
+        }
+
+        public async Task<IEnumerable<DoctorDTO>> GetDoctorsPagedAsync(PaginationRequestDTO request)
+        {
+            var result = await _doctorRepository.GetPagedAsync(request.Page, request.PageSize);
+
+            return result.Select(x => x.MapToDoctorDTO()).ToList();
+
         }
     }
 }
