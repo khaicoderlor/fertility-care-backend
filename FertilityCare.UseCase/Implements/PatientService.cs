@@ -25,6 +25,10 @@ namespace FertilityCare.UseCase.Implements
             return patients.Select(p => p.MapToPatientDTO());
         }
 
-
+        public async Task<PatientDTO> FindPatientByPatientIdAsync(string patientId)
+        {
+            var loadedPatient = await _patientRepository.FindByIdAsync(Guid.Parse(patientId));
+            return loadedPatient.MapToPatientDTO();
+        }
     }
 }
