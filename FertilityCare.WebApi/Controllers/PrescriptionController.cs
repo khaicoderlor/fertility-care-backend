@@ -40,7 +40,32 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
-       
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<PrescriptionDTO>>> CreatePrescription([FromBody] CreatePrecriptionRequestDTO request)
+        {
+            try
+            {
+                var result = await _prescriptionService.CreatePrescriptionAsync(request);
+                return Ok(new ApiResponse<PrescriptionDTO>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+        
 
     }
 }
