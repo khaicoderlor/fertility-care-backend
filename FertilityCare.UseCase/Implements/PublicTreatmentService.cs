@@ -25,5 +25,10 @@ namespace FertilityCare.UseCase.Implements
             return result.Select(x => x.MapToTreatmentServiceDTO()).ToList();
         }
 
+        public async Task<TreatmentServiceDTO> UpdateAsync(TreatmentServiceDTO treatmentServiceDTO)
+        {
+            var result = await _treatmentServiceRepository.UpdateAsync(treatmentServiceDTO.MapToTreatmentService());
+            return result.MapToTreatmentServiceDTO();
+        }
     }
 }
