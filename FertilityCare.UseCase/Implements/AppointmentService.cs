@@ -149,6 +149,11 @@ namespace FertilityCare.UseCase.Implements
             return appointment.MapToAppointmentDTO();
         }
 
+        public async Task<AppointmentDTO> UpdateInfoAppointmentByAppointmentIdAsync(Guid appointmentId, UpdateInfoAppointmentRequestDTO request)
+        {
+            throw new NotImplementedException();
+        }
+
         private AppointmentType DetermineAppointmentType(string request)
         {
             switch (request)
