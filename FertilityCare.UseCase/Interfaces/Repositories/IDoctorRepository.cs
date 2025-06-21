@@ -1,5 +1,4 @@
-﻿using Fertilitycare.Share.Pagination;
-using FertilityCare.Domain.Entities;
+﻿using FertilityCare.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

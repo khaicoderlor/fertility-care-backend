@@ -1,5 +1,4 @@
 ﻿using Fertilitycare.Share.Comon;
-using Fertilitycare.Share.Pagination;
 using FertilityCare.Domain.Entities;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Doctors;

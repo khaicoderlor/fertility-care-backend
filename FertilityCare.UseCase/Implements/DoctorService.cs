@@ -1,5 +1,5 @@
 ﻿
-using FertilityCare.Share.Pagination;
+using Fertilitycare.Share.Comon;
 using FertilityCare.Domain.Entities;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.Interfaces.Repositories;

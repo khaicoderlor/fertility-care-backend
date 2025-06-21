@@ -1,5 +1,4 @@
-﻿using Fertilitycare.Share.Pagination;
-using FertilityCare.Domain.Entities;
+﻿using FertilityCare.Domain.Entities;
 using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Appointments;
 using System;

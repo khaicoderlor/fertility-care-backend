@@ -20,10 +20,10 @@ namespace FertilityCare.UseCase.Mappers
                 StepOrder = service.StepOrder,
                 EstimatedDurationDays = service.EstimatedDurationDays,
                 Amount = service.Amount,
-                CreatedAt = service.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
                 UpdatedAt = service.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),
             };
         }
+
         public static TreatmentStep MapToTreatmentStep(this TreatmentStepDTO serviceDTO)
         {
             return new TreatmentStep()
@@ -34,7 +34,6 @@ namespace FertilityCare.UseCase.Mappers
                 StepOrder = serviceDTO.StepOrder,
                 EstimatedDurationDays = serviceDTO.EstimatedDurationDays,
                 Amount = serviceDTO.Amount,
-                CreatedAt = DateTime.Parse(serviceDTO.CreatedAt),
                 UpdatedAt = string.IsNullOrEmpty(serviceDTO.UpdatedAt) ? null : DateTime.Parse(serviceDTO.UpdatedAt),
             };
         }

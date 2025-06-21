@@ -1,5 +1,4 @@
 ﻿using Fertilitycare.Share.Comon;
-using Fertilitycare.Share.Pagination;
 using FertilityCare.Domain.Entities;
 using FertilityCare.UseCase.DTOs.DoctorSchedules;
 using FertilityCare.UseCase.DTOs.Slots;
