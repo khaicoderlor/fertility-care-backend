@@ -122,5 +122,18 @@ namespace FertilityCare.UseCase.Implements
             var result = await _scheduleRepository.FindByIdAsync(scheduleId);
             return result?.MapToScheduleDTO();
         }
+
+        public async Task<IEnumerable<DoctorScheduleDTO>> GetSchedulesPagedAsync(PaginationRequestDTO request)
+        {
+            var query = await _scheduleRepository.FindAllQueryableAsync();
+
+
+            return query
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(x => x.MapToScheduleDTO())
+                .ToList();
+
+        }
     }
 }
