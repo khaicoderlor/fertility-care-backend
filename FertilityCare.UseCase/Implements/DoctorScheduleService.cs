@@ -141,5 +141,32 @@ namespace FertilityCare.UseCase.Implements
             var result = await _scheduleRepository.GetSchedulesByDateAndDoctorAsync(workDate, id);
             return result.MapToSlotWithScheduleIdsDTO();
         }
+
+        public async Task<DoctorScheduleDTO> UpdateScheduleAsync(UpdateDoctorScheduleRequestDTO request)
+        {
+            var schedule = await _scheduleRepository.FindByIdAsync(request.Id);
+            if (schedule == null)
+                throw new NotFoundException("Schedule not found");
+
+            var startTime = TimeOnly.FromDateTime(request.StartTime);
+            var endTime = TimeOnly.FromDateTime(request.EndTime);
+            var workDate = DateOnly.FromDateTime(request.StartTime);
+
+            // Tìm slot có sẵn
+            var slot = await _slotRepository.FindSlotAsync(startTime, endTime);
+            if (slot == null)
+                throw new NotFoundException("Slot not found for the provided time range");
+
+            // Cập nhật thông tin
+            schedule.WorkDate = workDate;
+            schedule.SlotId = slot.Id;
+            schedule.MaxAppointments = request.MaxAppointments;
+            schedule.IsAcceptingPatients = request.IsAcceptingPatients;
+            schedule.Note = request.Note;
+            schedule.UpdatedAt = DateTime.Now;
+
+            var updated = await _scheduleRepository.UpdateAsync(schedule);
+            return updated.MapToScheduleDTO();
+        }
     }
 }
