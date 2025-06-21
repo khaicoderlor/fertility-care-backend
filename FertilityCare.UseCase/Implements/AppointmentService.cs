@@ -104,5 +104,23 @@ namespace FertilityCare.UseCase.Implements
             await _stepRepository.SaveChangeAsync();
             return appointment.MapToAppointmentDTO();
         }
+
+        private AppointmentType DetermineAppointmentType(string request)
+        {
+            switch (request)
+            {
+                case "InitialConsultation":
+                    return AppointmentType.InitialConsultation;
+                case "Check":
+                    return AppointmentType.Check;
+                case "FollowUp":
+                    return AppointmentType.FollowUp;
+                case "Treatment":
+                    return AppointmentType.Treatment;
+                default:
+                    return AppointmentType.Other;
+            }
+
+        }
     }
 }
