@@ -61,6 +61,14 @@ namespace FertilityCare.UseCase.Implements
 
         }
 
-        
+        public async Task<IEnumerable<PrescriptionDTO>> FindPrescriptionByOrderIdAsync(string orderId)
+        {
+            var prescription = await _prescriptionRepository.FindPrescriptionsByOrderIdAsync(Guid.Parse(orderId));
+            if (prescription is null)
+                throw new NotFoundException("Prescription not found for the given order ID");
+            return prescription.Select(p => p.MapToPrescriptionDTO()).ToList();
+        }
+
+       
     }
 }
