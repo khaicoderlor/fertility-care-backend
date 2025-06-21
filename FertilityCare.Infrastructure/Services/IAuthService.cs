@@ -160,9 +160,31 @@ namespace FertilityCare.Infrastructure.Services
             }
         }
 
-        public Task<bool> LogoutAsync(string userId)
+        public async Task<bool> LogoutAsync(string userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (!Guid.TryParse(userId, out var id))
+                {
+                    return false;
+                }
+
+                var loadedUser = await _userManager.FindByIdAsync(id.ToString());
+                if (loadedUser is null)
+                {
+                    return false;
+                }
+
+                loadedUser.RefreshToken = null;
+                loadedUser.RefreshTokenExpiryTime = null;
+
+                await _userManager.UpdateAsync(loadedUser);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public Task<AuthResult> RefreshTokenAsync(RefreshTokenRequest request)
