@@ -53,5 +53,42 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
+        [HttpPut]
+        [Route("{stepId}")]
+        public async Task<ActionResult<ApiResponse<(OrderStepDTO, string)>>> MarkStatusByStepId([FromRoute] long stepId, [FromQuery] string status)
+        {
+            try
+            {
+                var result = await _stepService.MarkStatusByStepIdAsync(stepId, status);
+                return Ok(new ApiResponse<(OrderStepDTO, string)>
+                {
+                    StatusCode = 200,
+                    Message = "Order step fetched successfully!",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }
