@@ -3,6 +3,7 @@ using FertilityCare.Domain.Enums;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.Interfaces.Repositories;
+using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.UseCase.Mappers;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.Implements
 {
-    public class AppointmentService : IAppointmentRepository
+    public class AppointmentService : IAppointmentService
     {
         private readonly IOrderStepRepository _stepRepository;
 
@@ -109,6 +110,42 @@ namespace FertilityCare.UseCase.Implements
             await _appointmentRepository.SaveAsync(appointment);
 
             await _stepRepository.SaveChangeAsync();
+            return appointment.MapToAppointmentDTO();
+        }
+
+        // none process the scenario of content email html css
+        public async Task<AppointmentDTO> PlaceAppointmentWithStartOrderAsync(CreateAppointmentRequestDTO request)
+        {
+            var step = await _stepRepository.FindByIdAsync(request.OrderStepId);
+            var schedule = await _scheduleRepository.FindByIdAsync(request.DoctorScheduleId);
+
+            Appointment appointment = new Appointment
+            {
+                PatientId = Guid.Parse(request.PatientId),
+                DoctorId = Guid.Parse(request.DoctorId),
+                DoctorScheduleId = request.DoctorScheduleId,
+                TreatmentServiceId = Guid.Parse(request.TreatmentServiceId),
+                OrderStepId = request.OrderStepId,
+                AppointmentDate = schedule.WorkDate,
+                StartTime = schedule.Slot.StartTime,
+                EndTime = schedule.Slot.EndTime,
+                Status = AppointmentStatus.Booked,
+                Type = AppointmentType.InitialConsultation,
+                CancellationReason = "",
+                Note = "",
+                ExtraFee = 0,
+                PaymentStatus = PaymentStatus.Pending,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            };
+
+            await _appointmentRepository.SaveAsync(appointment);
+
+            var profilePatient = appointment.Patient.UserProfile;
+            var profileDoctor = appointment.Doctor.UserProfile;
+            var patientFullName = $"{profilePatient.FirstName} {profilePatient.MiddleName} {profilePatient.LastName}";
+            var doctorFullName = $"{profileDoctor.FirstName} {profileDoctor.MiddleName} {profileDoctor.LastName}";
+
             return appointment.MapToAppointmentDTO();
         }
 
