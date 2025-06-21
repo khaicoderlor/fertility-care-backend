@@ -24,3 +24,4 @@ public class Patient
 
     public string? PartnerPhone { get; set; }
 }
+    
