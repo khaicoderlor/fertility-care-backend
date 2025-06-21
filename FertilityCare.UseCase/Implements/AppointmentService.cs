@@ -62,5 +62,47 @@ namespace FertilityCare.UseCase.Implements
 
             return appointment.MapToAppointmentDTO();
         }
+
+        public async Task<AppointmentDTO> PlaceAppointmentByStepIdAsync(Guid orderId, CreateAppointmentDailyRequestDTO request)
+        {
+            var order = await _orderRepository.FindByIdAsync(orderId);
+
+            var step = await _stepRepository.FindByIdAsync(request.OrderStepId);
+
+            var schedule = await _scheduleRepository.FindByIdAsync(request.DoctorScheduleId);
+
+            var appointmentCount = await _appointmentRepository.CountAppointmentByScheduleId(schedule.Id);
+            if (appointmentCount > schedule.MaxAppointments)
+            {
+                throw new AppointmentSlotLimitExceededException("This schedule is fully booked, please choose another one.");
+            }
+
+            Appointment appointment = new Appointment
+            {
+                PatientId = Guid.Parse(request.PatientId),
+                DoctorId = Guid.Parse(request.DoctorId),
+                DoctorScheduleId = request.DoctorScheduleId,
+                TreatmentServiceId = order.TreatmentServiceId,
+                OrderStepId = request.OrderStepId,
+                AppointmentDate = schedule.WorkDate,
+                StartTime = schedule.Slot.StartTime,
+                EndTime = schedule.Slot.EndTime,
+                Status = AppointmentStatus.Booked,
+                Type = DetermineAppointmentType(request.Type),
+                CancellationReason = "",
+                Note = "",
+                ExtraFee = request.Extrafee,
+                PaymentStatus = PaymentStatus.Pending,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            };
+
+            step.TotalAmount += appointment.Amount;
+
+            await _appointmentRepository.SaveAsync(appointment);
+
+            await _stepRepository.SaveChangeAsync();
+            return appointment.MapToAppointmentDTO();
+        }
     }
 }
