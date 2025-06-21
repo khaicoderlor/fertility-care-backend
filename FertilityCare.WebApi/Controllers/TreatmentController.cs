@@ -42,6 +42,30 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
-       
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<TreatmentServiceDTO>>> Update([FromBody] TreatmentServiceDTO treatmentServiceDTO)
+        {
+            try
+            {
+                var result = await _publicTreatmentService.UpdateAsync(treatmentServiceDTO);
+                return Ok(new ApiResponse<TreatmentServiceDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Treatment service updated successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }
