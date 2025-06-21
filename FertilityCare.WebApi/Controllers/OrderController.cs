@@ -185,5 +185,42 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("{orderid}")]
+        public async Task<ActionResult<long?>> SetTotalEgg([FromRoute] string orderid, [FromQuery] long totalEgg)
+        {
+            try
+            {
+                var result = await _orderService.SetTotalEgg(totalEgg, orderid);
+                return Ok(new ApiResponse<long?>
+                {
+                    StatusCode = 200,
+                    Message = "Total egg count updated successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
     }
 }
