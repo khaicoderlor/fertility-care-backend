@@ -140,5 +140,42 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpPatch]
+        [Route("mark-status/{appointmentId}")]
+        public async Task<ActionResult<AppointmentDTO>> MarkStatusAppointmentById([FromRoute] string appointmentId, [FromQuery] string status)
+        {
+            try
+            {
+                var result = await _appointmentService.MarkStatusAppointmentAsync(Guid.Parse(appointmentId), status);
+                return Ok(new ApiResponse<AppointmentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Marked status successfully!",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
     }
 }
