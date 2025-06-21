@@ -46,6 +46,13 @@ namespace FertilityCare.UseCase.Implements
             return appointments.Select(a => a.MapToAppointmentDTO()).ToList();
         }
 
+        public async Task<List<AppointmentDTO>> GetPagedAppointmentsAsync(AppointmentQueryDTO query)
+        {
+            query.PageSize = 8;
+            var result = await _appointmentRepository.GetPageAsync(query);
+            return result.Select(x => x.MapToAppointmentDTO()).ToList();
+        }
+
         public async Task<AppointmentDTO> MarkStatusAppointmentAsync(Guid appointmentId, string status)
         {
             var appointment = await _appointmentRepository.FindByIdAsync(appointmentId)
@@ -97,12 +104,30 @@ namespace FertilityCare.UseCase.Implements
                 UpdatedAt = DateTime.Now,
             };
 
-            step.TotalAmount += appointment.Amount;
+            step.TotalAmount += appointment.ExtraFee;
 
             await _appointmentRepository.SaveAsync(appointment);
 
             await _stepRepository.SaveChangeAsync();
             return appointment.MapToAppointmentDTO();
+        }
+
+        private AppointmentType DetermineAppointmentType(string request)
+        {
+            switch (request)
+            {
+                case "InitialConsultation":
+                    return AppointmentType.InitialConsultation;
+                case "Check":
+                    return AppointmentType.Check;
+                case "FollowUp":
+                    return AppointmentType.FollowUp;
+                case "Treatment":
+                    return AppointmentType.Treatment;
+                default:
+                    return AppointmentType.Other;
+            }
+
         }
     }
 }
