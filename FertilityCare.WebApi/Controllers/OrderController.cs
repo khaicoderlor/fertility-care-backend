@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Orders;
+using FertilityCare.UseCase.Interfaces.Services;
+using FertilityCare.WebAPI;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
 {
@@ -6,7 +10,68 @@ namespace FertilityCare.WebApi.Controllers
     [Route("api/v1/orders")]
     public class OrderController : ControllerBase
     {
+        private readonly IOrderService _orderService;
 
+        public OrderController(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<OrderDTO?>>> CreateOrder([FromBody] CreateOrderRequestDTO request)
+        {
+            try
+            {
+                var result = await _orderService.PlaceOrderAsync(request);
+                return Ok(new ApiResponse<OrderDTO?>
+                {
+                    StatusCode = 200,
+                    Message = "Order created successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized(new ApiResponse<object>
+                {
+                    StatusCode = 401,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (AppointmentSlotLimitExceededException ed)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ed.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
     }
 }
