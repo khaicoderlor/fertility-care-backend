@@ -3,6 +3,7 @@ using FertilityCare.Domain.Entities;
 using FertilityCare.Infrastructure.Configurations;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.UseCase.DTOs.Auths;
+using FertilityCare.UseCase.DTOs.Users;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -284,6 +285,44 @@ namespace FertilityCare.Infrastructure.Services
             {
                 return AuthResult.Failed("Register account failed!");
             }
+        }
+
+        private async Task<AuthResult> GenerateTokenAsync(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (ClaimTypes.Email, user.Email ?? ""),
+                new ("userProfileId", user.UserProfileId.ToString()),
+            };
+
+            claims.AddRange(roles.Select(x => new Claim(ClaimTypes.Role, x)));
+
+            var accessToken = _jwtService.GenerateAccessToken(claims);
+            var refreshToken = _jwtService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtConfig.RefreshTokenExpirationInDays);
+
+            await _userManager.UpdateAsync(user);
+
+            return AuthResult.Success(new AuthResponse
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtConfig.ExpirationInMinutes),
+                User = new UserDto
+                {
+                    Id = user.Id.ToString(),
+                    ProfileId = user.UserProfileId.ToString(),
+                    Email = user.Email,
+                    FirstName = user.UserProfile.FirstName,
+                    MiddleName = user.UserProfile.MiddleName,
+                    LastName = user.UserProfile.LastName,
+                    AvatarUrl = user.UserProfile.AvatarUrl,
+                }
+            });
         }
     }
 }
