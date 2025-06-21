@@ -1,7 +1,9 @@
-﻿using FertilityCare.Domain.Enums;
+﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.Interfaces.Repositories;
+using FertilityCare.UseCase.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.Implements
 {
-    public class AppointmentService
+    public class AppointmentService : IAppointmentRepository
     {
         private readonly IOrderStepRepository _stepRepository;
 
@@ -60,7 +62,5 @@ namespace FertilityCare.UseCase.Implements
 
             return appointment.MapToAppointmentDTO();
         }
-
-
     }
 }
