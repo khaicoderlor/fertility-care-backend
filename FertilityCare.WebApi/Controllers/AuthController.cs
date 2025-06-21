@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Infrastructure.Services;
 using FertilityCare.UseCase.DTOs.Auths;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
@@ -73,6 +74,27 @@ namespace FertilityCare.WebApi.Controllers
                 return BadRequest(new { message = result.ErrorMessage });
 
             return Ok(result.Data);
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var success = await _authService.LogoutAsync(userId);
+
+            if (!success)
+            {
+                return BadRequest("Logout failed");
+            }
+
+            return Ok(new { message = "Logged out successfully" });
         }
     }
 }
