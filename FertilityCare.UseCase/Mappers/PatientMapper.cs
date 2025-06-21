@@ -18,7 +18,6 @@ namespace FertilityCare.UseCase.Mappers
             {
                 Id = patient.Id.ToString(),
                 MedicalHistory = patient.MedicalHistory,
-                Note = patient.Note,
                 PartnerFullName = patient.PartnerFullName,
                 PartnerEmail = patient.PartnerEmail,
                 PartnerPhone = patient.PartnerPhone,

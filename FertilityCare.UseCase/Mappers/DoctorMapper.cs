@@ -25,7 +25,6 @@ namespace FertilityCare.UseCase.Mappers
                 Biography = doctor.Biography,
                 Rating = doctor.Rating,
                 PatientsServed = doctor.PatientsServed,
-                CreatedAt = doctor.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
                 UpdatedAt = doctor.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),
                 DoctorSchedules = doctor.DoctorSchedules.Select(x => x.MapToScheduleDTO()).ToList()
             }; 

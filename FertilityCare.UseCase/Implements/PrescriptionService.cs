@@ -53,7 +53,6 @@ namespace FertilityCare.UseCase.Implements
             {
                 OrderId = loadedOrder.Id,
                 PrescriptionDate = DateTime.Now,
-                Note = request.Note,
                 PrescriptionItems = null,
             };
             var savedPrescription = await _prescriptionRepository.SaveAsync(prescriprion);
@@ -86,7 +85,6 @@ namespace FertilityCare.UseCase.Implements
                 DoctorFullName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
                 TreatmentServiceName = p.Order.TreatmentService?.Name ?? "N/A",
                 PrescriptionDate = p.PrescriptionDate.ToString("yyyy-MM-dd"),
-                Note = p.Note,
                 PrescriptionItems = p.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList() ?? new List<PrescriptionItemDTO>(),
             }).ToList();
         }

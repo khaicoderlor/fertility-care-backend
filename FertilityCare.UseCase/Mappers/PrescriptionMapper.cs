@@ -18,7 +18,6 @@ namespace FertilityCare.UseCase.Mappers
                 Id = prescription.Id.ToString(),
                 OrderId = prescription.OrderId.ToString(),
                 PrescriptionDate = prescription.PrescriptionDate.ToString("yyyy-MM-dd"),
-                Note = prescription.Note,
                 PrescriptionItems = prescription.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList()
             };
         }
@@ -29,7 +28,6 @@ namespace FertilityCare.UseCase.Mappers
                 Id = Guid.Parse(prescriptionDTO.Id),
                 OrderId = Guid.Parse(prescriptionDTO.OrderId),
                 PrescriptionDate = DateTime.Parse(prescriptionDTO.PrescriptionDate ?? DateTime.Now.ToString("yyyy-MM-dd")),
-                Note = prescriptionDTO.Note,
                 PrescriptionItems = prescriptionDTO.PrescriptionItems?.Select(item => item.MapToPrescriptionItem()).ToList() ?? new List<PrescriptionItem>()
             };
         }

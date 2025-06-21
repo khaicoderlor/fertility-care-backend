@@ -21,8 +21,6 @@ namespace FertilityCare.UseCase.Mappers
                 SlotNumber = slot.SlotNumber,
                 StartTime = slot.StartTime.ToString("HH:mm"),
                 EndTime = slot.EndTime.ToString("HH:mm"),
-                CreatedAt = slot.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
-                UpdatedAt = slot.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),
             };
         }
 

@@ -24,12 +24,10 @@ namespace FertilityCare.UseCase.Mappers
                 TreatmentService = order.TreatmentService.MapToTreatmentServiceDTO(),
                 Doctor = order.Doctor.MapToDoctorDTO(),
                 Status = order.Status.ToString(),
-                Note = order.Note,
                 TotalAmount = order.TotalAmount,
                 TotalEgg = order.TotalEgg,
                 StartDate = order.StartDate.ToString("dd/MM/yyyy"),
                 EndDate = order.EndDate?.ToString("dd/MM/yyyy"),
-                CreatedAt = order.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
                 UpdatedAt = order.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),
                 OrderSteps = order.OrderSteps?.Select(x => x.MapToStepDTO()).ToList()
             };
