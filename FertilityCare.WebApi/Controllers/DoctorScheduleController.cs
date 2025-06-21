@@ -249,6 +249,96 @@ namespace FertilityCare.WebAPI.Controllers
             });
         }
 
+        [HttpPost("recurring")]
+        public async Task<ActionResult<ApiResponse<object>>> CreateRecurringScheduleAsync([FromBody] CreateRecurringScheduleRequestDTO request)
+        {
+            try
+            {
+                if (request.DoctorId == Guid.Empty)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "DoctorId is required.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
 
+                if (request.StartDate == null || request.EndDate == null)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "StartDate and EndDate are required.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                if (request.EndDate < request.StartDate)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "EndDate must be after StartDate.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                if (request.WorkingDays == null || !request.WorkingDays.Any())
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "At least one WorkingDay must be selected.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                if (request.SlotIds == null || !request.SlotIds.Any())
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "At least one SlotId must be selected.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                await _doctorScheduleService.CreateRecurringScheduleAsync(request);
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 201,
+                    Message = "Recurring schedule created successfully.",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }
