@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -187,9 +188,34 @@ namespace FertilityCare.Infrastructure.Services
             }
         }
 
-        public Task<AuthResult> RefreshTokenAsync(RefreshTokenRequest request)
+        public async Task<AuthResult> RefreshTokenAsync(RefreshTokenRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var principal = _jwtService.GetPrincipalFromExpiredToken(request.AccessToken);
+                if (principal is null)
+                {
+                    return AuthResult.Failed("Invalid access token");
+                }
+
+                var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out Guid id))
+                {
+                    return AuthResult.Failed("Invalid token claims");
+                }
+
+                var loadedUser = await _userManager.FindByIdAsync(userId);
+                if (loadedUser == null || loadedUser.RefreshToken == request.RefreshToken || loadedUser.RefreshTokenExpiryTime <= DateTime.Now)
+                {
+                    return AuthResult.Failed("Invalid refresh token");
+                }
+
+                return await GenerateTokenAsync(loadedUser);
+            }
+            catch (Exception ex)
+            {
+                return AuthResult.Failed("Token refresh failed!");
+            }
         }
 
         public Task<AuthResult> RegisterAsync(RegisterRequest request)
