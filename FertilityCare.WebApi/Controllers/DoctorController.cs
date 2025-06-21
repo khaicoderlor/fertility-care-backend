@@ -94,6 +94,33 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DoctorDTO>>>> GetDoctorsPaged(
+        [FromQuery] PaginationRequestDTO request)
+        {
+            try
+            {
+                var result = await _doctorService.GetDoctorsPagedAsync(request);
+
+                return Ok(new ApiResponse<IEnumerable<DoctorDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched paged result successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
     }
 }
