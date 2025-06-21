@@ -170,9 +170,11 @@ namespace FertilityCare.UseCase.Implements
             return orders.Select(x => x.MapToOderDTO());
         }
 
-        public Task<OrderDTO> GetOrderByIdAsync(Guid orderId)
+        public async Task<OrderDTO> GetOrderByIdAsync(Guid orderId)
         {
-            throw new NotImplementedException();
+            var order = await _orderRepository.FindByIdAsync(orderId);
+
+            return order.MapToOderDTO();
         }
 
         public Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId)
