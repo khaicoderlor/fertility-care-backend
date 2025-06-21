@@ -116,5 +116,11 @@ namespace FertilityCare.UseCase.Implements
             return all.Where(s => s.DoctorId == doctorId)
                       .Select(s => s.MapToScheduleDTO());
         }
+
+        public async Task<DoctorScheduleDTO?> GetScheduleByIdAsync(long scheduleId)
+        {
+            var result = await _scheduleRepository.FindByIdAsync(scheduleId);
+            return result?.MapToScheduleDTO();
+        }
     }
 }
