@@ -134,6 +134,42 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteScheduleAsync(long id)
+        {
+            try
+            {
+                await _doctorScheduleService.DeleteScheduleAsync(id);
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "Schedule deleted successfully.",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
     }
 }
