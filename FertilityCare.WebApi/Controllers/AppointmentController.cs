@@ -103,6 +103,42 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("{orderId}/{stepId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<AppointmentDTO>>>> GetAppointmentsByOrderIdAndStepId([FromRoute] string orderId, [FromRoute] long stepId)
+        {
+            try
+            {
+                var result = await _appointmentService.GetAppointmentsByStepIdAsync(Guid.Parse(orderId), stepId);
+                return Ok(new ApiResponse<IEnumerable<AppointmentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Appointments fetched successfully!",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
 
     }
 }
