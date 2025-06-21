@@ -1,4 +1,5 @@
-﻿using FertilityCare.Shared.Exceptions;
+﻿using FertilityCare.Domain.Enums;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
@@ -34,9 +35,33 @@ namespace FertilityCare.UseCase.Implements
             return steps.OrderBy(x => x.TreatmentStep.StepOrder).Select(step => step.MapToStepDTO()).ToList();
         }
 
-        public Task<(OrderStepDTO, string)> MarkStatusByStepIdAsync(long stepId, string status)
+        public async Task<(OrderStepDTO, string)> MarkStatusByStepIdAsync(long stepId, string status)
         {
-            throw new NotImplementedException();
+            var step = await _stepRepository.FindByIdAsync(stepId);
+
+            if (!Enum.TryParse(status, true, out StepStatus stepStatus))
+            {
+                throw new ArgumentException($"Invalid status: {status}");
+            }
+
+            step.Status = stepStatus;
+            await _stepRepository.UpdateAsync(step);
+
+            if (stepStatus == StepStatus.Completed)
+            {
+                var orderId = step.OrderId;
+                var steps = await _stepRepository.FindAllByOrderIdAsync(orderId);
+                var currentStepOrder = step.TreatmentStep.StepOrder;
+                steps.Where(x => x.TreatmentStep.StepOrder == (currentStepOrder + 1)).First().Status = StepStatus.InProgress;
+                await _stepRepository.SaveChangeAsync();
+
+                return new(step.MapToStepDTO(), StepStatus.InProgress.ToString());
+            }
+            else
+            {
+                return new(step.MapToStepDTO(), "");
+            }
+
         }
     }
 }
