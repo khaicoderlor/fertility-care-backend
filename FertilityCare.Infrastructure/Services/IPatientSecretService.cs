@@ -47,7 +47,7 @@ namespace FertilityCare.Infrastructure.Services
             {
                 PatientId = result.Id.ToString(),
                 UserProfileId = result.UserProfile.Id.ToString(),
-                OrderIds = orders.First().Id.ToString()
+                OrderIds = new List<string> { (orders.First().Id.ToString()) }
             };
         }
 
@@ -70,7 +70,7 @@ namespace FertilityCare.Infrastructure.Services
             {
                 PatientId = patient.Id.ToString(),
                 UserProfileId = profile.Id.ToString(),
-                OrderIds = orders.First().Id.ToString()
+                OrderIds = new List<string> { (orders.First().Id.ToString()) }
             };
         }
     }
