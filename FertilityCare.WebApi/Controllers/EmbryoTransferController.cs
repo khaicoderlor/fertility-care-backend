@@ -53,6 +53,42 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<bool>>> ReTransferAsync([FromBody] CreateEmbryoReTransferRequestDTO request)
+        {
+            try
+            {
+                var result = await _embryoTransferService.ReTransferAsync(request);
+                return Ok(new ApiResponse<bool>
+                {
+                    StatusCode = 200,
+                    Message = "Re-transfer successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = "Re-transfer Not Found.",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<bool>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = false,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
-    }      
+
+    }
 }
