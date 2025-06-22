@@ -9,5 +9,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 {
     public interface IEmbryoGainedRepository : IBaseRepository<EmbryoGained, long>
     {
+        Task BulkInsertAsync(IEnumerable<EmbryoGained> embryos);
     }
 }
