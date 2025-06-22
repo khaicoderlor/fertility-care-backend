@@ -118,6 +118,11 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IEggGainedService, EggGainedService>();
             builder.Services.AddScoped<IEmbryoGainedRepository, EmbryoGainedRepository>();
             builder.Services.AddScoped<IEmbryoGainedService, EmbryoGainedService>();
+            builder.Services.AddScoped<IEmbryoTransferRepository, EmbryoTransferRepository>();
+            builder.Services.AddScoped<IEmbryoTransferService, EmbryoTransferService>();
+
+
+
             builder.Services
             .AddControllers()
             .AddJsonOptions(options =>
