@@ -9,5 +9,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 {
     public interface IEggGradeRepository : IBaseRepository<EggGained, long>
     {
+
     }
 }

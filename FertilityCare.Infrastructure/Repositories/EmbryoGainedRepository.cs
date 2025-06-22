@@ -18,6 +18,13 @@ namespace FertilityCare.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task BulkInsertAsync(IEnumerable<EmbryoGained> embryos)
+        {
+            await _context.EmbryoGaineds.AddRangeAsync(embryos);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteByIdAsync(long id)
         {
             var loadedEmbryo = await _context.EmbryoGaineds.FindAsync(id);
