@@ -70,6 +70,45 @@ namespace FertilityCare.UseCase.Implements
             return embryoTransfer.MapToEmbryoTranferDTO();
         }
 
-        
+        public async Task<bool> ReTransferAsync(CreateEmbryoReTransferRequestDTO request)
+        {
+            var order = await _orderRepository.FindByIdAsync(Guid.Parse(request.OrderId))
+                ?? throw new NotFoundException($"Order with ID {request.OrderId} not found.");
+            var embryoGained = await _embryoGainedRepository.FindByOrderIdAsync(Guid.Parse(request.OrderId))
+                ?? throw new NotFoundException($"Embryo gained with orderID {request.OrderId} not found.");
+            if (order.IsFrozen &&
+               embryoGained.Any(x => x.IsFrozen
+                                        && x.IsViable
+                                        && !x.IsTransfered
+                                        && x.EmbryoStatus.Equals(EmbryoStatus.Available)))
+            {
+
+                var orderStep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 5).FirstOrDefault()
+                    ?? throw new NotFoundException($"Order step for embryo transfer not found in order {order.Id}.");
+                orderStep.Status = StepStatus.ReTranfer;
+                request.OrderStepId = orderStep.Id;
+
+                var apoimentDTO = await _appointmentService.PlaceAppointmentByStepIdAsync(order.Id, new CreateAppointmentDailyRequestDTO()
+                {
+                    PatientId = request.PatientId,
+                    DoctorId = request.DoctorId,
+                    DoctorScheduleId = request.DoctorScheduleId,
+                    OrderStepId = orderStep.Id,
+                    Type = request.Type,
+                    Extrafee = request.Extrafee,
+                    Note = request.Note
+                });
+
+                orderStep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 6).FirstOrDefault()
+                    ?? throw new NotFoundException($"Order step for embryo transfer not found in order {order.Id}.");
+                orderStep.Status = StepStatus.Planned;
+                await _orderStepRepository.SaveAsync(orderStep);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
