@@ -7,8 +7,7 @@ using FertilityCare.Domain.Entities;
 
 namespace FertilityCare.UseCase.Interfaces.Repositories
 {
-    public interface IEmbryoGainedRepository : IBaseRepository<EmbryoGained, long>
+    public interface IEmbryoTransferRepository : IBaseRepository<EmbryoTransfer, long>
     {
-        public Task<IEnumerable<EmbryoGained>> FindByOrderIdAsync(Guid orderId);
     }
 }

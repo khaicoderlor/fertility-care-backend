@@ -44,6 +44,13 @@ namespace FertilityCare.Infrastructure.Repositories
             return loadedEmbryo;
         }
 
+        public async Task<IEnumerable<EmbryoGained>> FindByOrderIdAsync(Guid orderId)
+        {
+            return await _context.EmbryoGaineds
+                .Where(e => e.OrderId == orderId)
+                .ToListAsync();
+        }
+
         public async Task<bool> IsExistAsync(long id)
         {
             var loadedEmbryo = await _context.EmbryoGaineds.FindAsync(id);
