@@ -67,8 +67,55 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet("usable/{orderId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<EmbryoDropdownEggDTO>>>> GetUsableEggs([FromRoute] string orderId)
+        {
+            if (!Guid.TryParse(orderId, out var parsedOrderId))
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "OrderId không hợp lệ",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
 
-        
+            try
+            {
+                var result = await _eggGainedService.GetUsableEggsByOrderIdAsync(parsedOrderId);
+
+                return Ok(new ApiResponse<IEnumerable<EmbryoDropdownEggDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Lấy trứng usable thành công!",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+
+
 
     }
 }

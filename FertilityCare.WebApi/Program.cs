@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace FertilityCare.WebApi
 {
@@ -113,6 +114,16 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IPatientSecretService, PatientSecretService>();
+            builder.Services.AddScoped<IEggGainedRepository, EggGainedRepository>();
+            builder.Services.AddScoped<IEggGainedService, EggGainedService>();
+            builder.Services.AddScoped<IEmbryoGainedRepository, EmbryoGainedRepository>();
+            builder.Services.AddScoped<IEmbryoGainedService, EmbryoGainedService>();
+            builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             var app = builder.Build();
 
