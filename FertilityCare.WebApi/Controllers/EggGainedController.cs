@@ -19,8 +19,8 @@ namespace FertilityCare.WebApi.Controllers
 
         [HttpPost("{orderId}")]
         public async Task<ActionResult<ApiResponse<CreateEggResponseDTO>>> CreateEggs(
-    [FromRoute] string orderId,
-    [FromBody] CreateEggGainedListRequestDTO request)
+        [FromRoute] string orderId,
+        [FromBody] CreateEggGainedListRequestDTO request)
         {
             if (!Guid.TryParse(orderId, out var parsedOrderId))
             {
@@ -122,7 +122,7 @@ namespace FertilityCare.WebApi.Controllers
             try
             {
                 var result = await _eggGainedService.GetStatisticEggGradeAndViableAsync(Guid.Parse(orderId));
-                return Ok(new ApiResponse<IEnumerable<EggDataStatistic>>
+                return Ok(new ApiResponse<IEnumerable<EggDataStatistic>> 
                 {
                     StatusCode = 200,
                     Message= "",
