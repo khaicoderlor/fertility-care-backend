@@ -8,9 +8,12 @@ namespace FertilityCare.UseCase.DTOs.Embryos
 {
     public class EmbryoData
     {
-        public string EmbryoGrade { get; set; } = string.Empty;
+        public string EmbryoId { get; set; }
 
-        public int EmbryoQuantity { get; set; } = 0;
+        public string EmbryoGrade { get; set; }
+        public string EggGrade { get; set; }
 
+        public string Status { get; set; }
+        public bool IsFrozen { get; set; }
     }
 }

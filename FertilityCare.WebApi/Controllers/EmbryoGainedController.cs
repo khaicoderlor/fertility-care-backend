@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.EmbryoGained;
+using FertilityCare.UseCase.DTOs.Embryos;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,42 @@ public class EmbryoGainedController : ControllerBase
     public EmbryoGainedController(IEmbryoGainedService service)
     {
         _service = service;
+    }
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<ApiResponse<List<EmbryoData>>>> GetEmbryosByOrderIdAsync(
+        [FromRoute] string orderId)
+    {
+        try
+        {
+            var embryos = await _service.GetEmbryosByOrderIdAsync(orderId);
+            return Ok(new ApiResponse<List<EmbryoData>>
+            {
+                StatusCode = 200,
+                Message = "Lấy danh sách phôi thành công!",
+                Data = embryos,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new ApiResponse<List<EmbryoData>>
+            {
+                StatusCode = 404,
+                Message = e.Message,
+                Data = null,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse<List<EmbryoData>>
+            {
+                StatusCode = 400,
+                Message = ex.Message,
+                Data = null,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
     }
 
     [HttpPost("{orderId}")]
