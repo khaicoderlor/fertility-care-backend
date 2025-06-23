@@ -15,6 +15,7 @@ namespace FertilityCare.UseCase.DTOs.Auths
         public AuthResponse? Data { get; set; }
 
         public static AuthResult Success(AuthResponse data) => new() { IsSuccess = true, Data = data };
+
         public static AuthResult Failed(string error) => new() { IsSuccess = false, ErrorMessage = error };
     }
 }
