@@ -118,7 +118,7 @@ namespace FertilityCare.Infrastructure.Services
                         PartnerEmail = "",
                         PartnerPhone = "",
                         PartnerFullName = ""
-                    };
+                    }; 
 
                     return await GenerateTokenAsync(newUser);
                 }
