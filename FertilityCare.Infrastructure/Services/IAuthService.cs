@@ -4,6 +4,7 @@ using FertilityCare.Infrastructure.Configurations;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.UseCase.DTOs.Auths;
 using FertilityCare.UseCase.DTOs.Users;
+using FertilityCare.UseCase.Interfaces.Repositories;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -37,6 +38,10 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        private readonly IPatientRepository _patientRepository;
+
+        private readonly IDoctorRepository _doctorRepository;
+
         private readonly IJwtService _jwtService;
 
         private readonly JwtConfiguration _jwtConfig;
@@ -46,15 +51,16 @@ namespace FertilityCare.Infrastructure.Services
         public AuthService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IJwtService jwtService, IOptions<JwtConfiguration> jwtConfig,
-            IOptions<GoogleAuthConfiguration> googleConfig)
+            IOptions<GoogleAuthConfiguration> googleConfig,
+            IPatientRepository patientRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _jwtConfig = jwtConfig.Value;
             _googleConfig = googleConfig.Value;
+            _patientRepository = patientRepository;
         }
-
 
         public async Task<AuthResult> GoogleLoginAsync(GoogleLoginRequest request)
         {
@@ -96,14 +102,23 @@ namespace FertilityCare.Infrastructure.Services
 
                     var createResult = await _userManager.CreateAsync(newUser);
                     if (!createResult.Succeeded)
-                        return AuthResult.Failed("Tạo tài khoản thất bại");
+                        return AuthResult.Failed("Create account failed");
 
                     var roleResult = await _userManager.AddToRoleAsync(newUser, "User");
                     if (!roleResult.Succeeded)
-                        return AuthResult.Failed("Không thể gán vai trò cho người dùng");
+                        return AuthResult.Failed("Not assign role to user");
 
                     newUser.LastLogin = DateTime.Now;
                     await _userManager.UpdateAsync(newUser);
+
+                    Patient patient = new Patient
+                    {
+                        UserProfileId = profileId,
+                        MedicalHistory = "",
+                        PartnerEmail = "",
+                        PartnerPhone = "",
+                        PartnerFullName = ""
+                    };
 
                     return await GenerateTokenAsync(newUser);
                 }
@@ -268,6 +283,19 @@ namespace FertilityCare.Infrastructure.Services
                     if (!roleAssignResult.Succeeded)
                     {
                         return AuthResult.Failed("Not assign role to user");
+                    } 
+                    else
+                    {
+                        Patient patient = new Patient
+                        {
+                            UserProfileId = profileId,
+                            MedicalHistory = "",
+                            PartnerEmail = "",
+                            PartnerPhone = "",
+                            PartnerFullName = ""
+                        };
+
+                        await _patientRepository.SaveAsync(patient);
                     }
                 }
                 else if (request.Role.Equals("Doctor", StringComparison.OrdinalIgnoreCase))
@@ -276,6 +304,22 @@ namespace FertilityCare.Infrastructure.Services
                     if (!roleAssignResult.Succeeded)
                     {
                         return AuthResult.Failed("Not assign role to user");
+                    } 
+                    else
+                    {
+                        Doctor doctor = new Doctor
+                        {
+                            UserProfileId = profileId,
+                            Biography = "",
+                            Degree = "",
+                            PatientsServed = 0,
+                            YearsOfExperience = 0,
+                            Rating = 0,
+                            Specialization = "",
+                            UpdatedAt = DateTime.Now,
+                        };
+
+                        await _doctorRepository.SaveAsync(doctor);
                     }
                 }
 
@@ -307,6 +351,12 @@ namespace FertilityCare.Infrastructure.Services
 
             await _userManager.UpdateAsync(user);
 
+            Patient patient = null;
+            if (roles.Any(x => x.Equals("User", StringComparison.OrdinalIgnoreCase)))
+            {
+                patient = await _patientRepository.FindByProfileIdAsync(user.UserProfileId);
+            }
+
             return AuthResult.Success(new AuthResponse
             {
                 AccessToken = accessToken,
@@ -317,6 +367,7 @@ namespace FertilityCare.Infrastructure.Services
                     Id = user.Id.ToString(),
                     ProfileId = user.UserProfileId.ToString(),
                     Email = user.Email,
+                    PatientId = patient != null ? patient.Id.ToString() : "",
                     FirstName = user.UserProfile.FirstName,
                     MiddleName = user.UserProfile.MiddleName,
                     LastName = user.UserProfile.LastName,

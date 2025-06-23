@@ -44,7 +44,7 @@ namespace FertilityCare.UseCase.Implements
             embryoList = embryoList.Where(x => x.Id != request.EmbryoGainedId);
             var transferType = TransferType.Fresh;
             if (orderstep.Status.Equals(StepStatus.ReTranfer))
-                transferType = TransferType.Frozen; 
+                transferType = TransferType.Frozen;
 
             if (isFrozen)
             {
@@ -52,7 +52,9 @@ namespace FertilityCare.UseCase.Implements
                 order.IsFrozen = true;
             }
             else
+            {
                 embryoList.ToList().ForEach(x => { x.IsFrozen = false; x.EmbryoStatus = EmbryoStatus.Discarded; });
+            }
 
             var embryoTransfer = new EmbryoTransfer()
             {

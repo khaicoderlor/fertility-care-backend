@@ -11,6 +11,8 @@ namespace FertilityCare.UseCase.DTOs.Users
         public string Id { get; set; } = string.Empty;
 
         public string ProfileId { get; set; } = string.Empty;
+
+        public string PatientId { get; set; } = string.Empty;
         
         public string Email { get; set; } = string.Empty;
 
