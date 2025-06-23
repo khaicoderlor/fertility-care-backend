@@ -1,6 +1,7 @@
 ﻿using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.EmbryoTransfers;
+using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Http;
@@ -54,12 +55,12 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
         [HttpPut]
-        public async Task<ActionResult<ApiResponse<bool>>> ReTransferAsync([FromBody] CreateEmbryoReTransferRequestDTO request)
+        public async Task<ActionResult<ApiResponse<bool>>> ReTransferAsync([FromQuery]string orderId)
         {
             try
             {
-                var result = await _embryoTransferService.ReTransferAsync(request);
-                return Ok(new ApiResponse<bool>
+                var result = await _embryoTransferService.ReTransferAsync(orderId);
+                return Ok(new ApiResponse<OrderStepDTO>
                 {
                     StatusCode = 200,
                     Message = "Re-transfer successfully.",
@@ -79,11 +80,11 @@ namespace FertilityCare.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse<bool>
+                return BadRequest(new ApiResponse<OrderStepDTO>
                 {
                     StatusCode = 400,
                     Message = ex.Message,
-                    Data = false,
+                    Data = null,
                     ResponsedAt = DateTime.Now
                 });
             }
