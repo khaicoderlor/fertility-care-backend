@@ -38,6 +38,8 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        private readonly IOrderRepository _orderRepository;
+
         private readonly IPatientRepository _patientRepository;
 
         private readonly IDoctorRepository _doctorRepository;
@@ -52,7 +54,8 @@ namespace FertilityCare.Infrastructure.Services
             SignInManager<ApplicationUser> signInManager,
             IJwtService jwtService, IOptions<JwtConfiguration> jwtConfig,
             IOptions<GoogleAuthConfiguration> googleConfig,
-            IPatientRepository patientRepository)
+            IPatientRepository patientRepository,
+            IOrderRepository orderRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -60,6 +63,7 @@ namespace FertilityCare.Infrastructure.Services
             _jwtConfig = jwtConfig.Value;
             _googleConfig = googleConfig.Value;
             _patientRepository = patientRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<AuthResult> GoogleLoginAsync(GoogleLoginRequest request)
@@ -119,6 +123,8 @@ namespace FertilityCare.Infrastructure.Services
                         PartnerPhone = "",
                         PartnerFullName = ""
                     }; 
+
+                    await _patientRepository.SaveAsync(patient);
 
                     return await GenerateTokenAsync(newUser);
                 }
@@ -352,9 +358,12 @@ namespace FertilityCare.Infrastructure.Services
             await _userManager.UpdateAsync(user);
 
             Patient patient = null;
+            List<string> orderIds = new List<string>();
             if (roles.Any(x => x.Equals("User", StringComparison.OrdinalIgnoreCase)))
             {
                 patient = await _patientRepository.FindByProfileIdAsync(user.UserProfileId);
+                var orders = await _orderRepository.FindAllByPatientIdAsync(patient.Id);
+                orderIds = orders.Select(x => x.Id.ToString()).ToList();
             }
 
             return AuthResult.Success(new AuthResponse
@@ -372,6 +381,7 @@ namespace FertilityCare.Infrastructure.Services
                     MiddleName = user.UserProfile.MiddleName,
                     LastName = user.UserProfile.LastName,
                     AvatarUrl = user.UserProfile.AvatarUrl,
+                    OrderIds = orderIds
                 }
             });
         }

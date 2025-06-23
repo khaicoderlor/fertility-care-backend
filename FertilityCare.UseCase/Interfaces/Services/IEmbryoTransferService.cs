@@ -12,6 +12,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
     public interface IEmbryoTransferService
     {
         Task<EmbryoTransferDTO> CreateEmbryoTransferAsync(CreateEmbryoTransferRequestDTO request, bool isFrozen);
-        Task<OrderStepDTO ReTransferAsync(string orderId);
+        Task<OrderStepDTO> ReTransferAsync(string orderId);
     }
 }

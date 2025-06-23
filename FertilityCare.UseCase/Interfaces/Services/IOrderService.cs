@@ -16,10 +16,9 @@ namespace FertilityCare.UseCase.Interfaces.Services
 
         Task<long?> SetTotalEgg(long totalEgg, string orderId);
 
-
         Task<IEnumerable<OrderDTO>> GetOrderByDoctorIdAsync(Guid doctorId);
 
-        Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId);
+        Task<IEnumerable<OrderInfo>> GetOrdersByPatientIdAsync(Guid patientId);
 
 
         

@@ -31,4 +31,5 @@ public class UserProfile
 
     public DateTime? UpdatedAt { get; set; }
 
+    
 }

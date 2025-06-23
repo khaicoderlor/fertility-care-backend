@@ -23,5 +23,7 @@ namespace FertilityCare.UseCase.DTOs.Users
         public string LastName { get; set; } = string.Empty;
 
         public string AvatarUrl { get; set; }=  string.Empty;
+
+        public List<string>? OrderIds { get; set; }
     }
 }

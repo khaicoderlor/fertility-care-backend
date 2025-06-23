@@ -149,13 +149,13 @@ namespace FertilityCare.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("patients/{patientId}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<OrderDTO>>>> GetOrderByPatientId([FromRoute] string patientId)
+        [Route("{patientId}/patients")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<OrderInfo>>>> GetOrderByPatientId([FromRoute] string patientId)
         {
             try
             {
-                var result = await _orderService.GetOrderByPatientIdAsync(Guid.Parse(patientId));
-                return Ok(new ApiResponse<IEnumerable<OrderDTO>>
+                var result = await _orderService.GetOrdersByPatientIdAsync(Guid.Parse(patientId));
+                return Ok(new ApiResponse<IEnumerable<OrderInfo>>
                 {
                     StatusCode = 200,
                     Message = "Orders fetched successfully",

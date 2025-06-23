@@ -55,106 +55,68 @@ namespace FertilityCare.UseCase.Implements
             _appointmentRepository = appointmentRepository;
         }
 
+
         // None process the scenario of patient is exist before placing order
         public async Task<OrderDTO> PlaceOrderAsync(CreateOrderRequestDTO request)
         {
-            if (!Guid.TryParse(request.UserProfileId, out var userProfileId))
-                throw new UnauthorizedAccessException("Invalid or missing user profile ID.");
-
-            if (!Guid.TryParse(request.DoctorId, out var doctorId))
-                throw new ArgumentException("Invalid doctor ID.");
-
-            var userProfile = await _profileRepository.FindByIdAsync(userProfileId)
-                                ?? throw new UnauthorizedAccessException("User not exist to perform this action!");
-
-            var treatmentService = await _treatmentSRepository.FindByIdAsync(Guid.Parse(request.TreatmentServiceId))
-                                     ?? throw new NotFoundException("Treatment service not found!");
-
-            var doctor = await _doctorRepository.FindByIdAsync(doctorId)
-                           ?? throw new NotFoundException("Doctor not found!");
-
-            var schedule = await _scheduleRepository.FindByIdAsync(request.DoctorScheduleId)
-                             ?? throw new NotFoundException("Schedule not found!");
-
+            var patient = await _patientRepository.FindByIdAsync(Guid.Parse(request.PatientId));
+            var treatmentService = await _treatmentSRepository.FindByIdAsync(Guid.Parse(request.TreatmentServiceId));
+            var doctor = await _doctorRepository.FindByIdAsync(Guid.Parse(request.DoctorId));
+            var schedule = await _scheduleRepository.FindByIdAsync(request.DoctorScheduleId);
             var appointmentAmount = await _appointmentRepository.CountAppointmentByScheduleId(schedule.Id);
+
             if (appointmentAmount > schedule.MaxAppointments)
             {
                 throw new AppointmentSlotLimitExceededException(
                     $"The maximum number of appointments for this schedule has been reached. Please choose another time slot or contact support for assistance.");
             }
 
-            Patient savePatient = new Patient
-            {
-                MedicalHistory = request.MedicalHistory,
-                UserProfileId = Guid.Parse(request.UserProfileId ?? ""),
-                PartnerFullName = request.PartnerFullName,
-                PartnerEmail = request.PartnerEmail,
-                PartnerPhone = request.PartnerPhone
-            };
+            patient = SaveInputInfoOrder(request, patient);
 
-            await _patientRepository.SaveAsync(savePatient);
-
-            userProfile.FirstName = request.FirstName;
-            userProfile.MiddleName = request.MiddleName;
-            userProfile.LastName = request.LastName;
-            userProfile.DateOfBirth = request.DateOfBirth;
-            userProfile.Gender = request.Gender.Equals(Gender.Female.ToString())
-                ? Gender.Female
-                : Gender.Male;
-            userProfile.Address = request.Address;
-            userProfile.UpdatedAt = DateTime.Now;
-
-            await _profileRepository.SaveChangeAsync();
+            await _patientRepository.SaveChangeAsync();
 
             var now = DateTime.Now;
             Order placeOrder = new()
             {
-                PatientId = savePatient.Id,
+                PatientId = patient.Id,
                 DoctorId = doctor.Id,
                 TreatmentServiceId = treatmentService.Id,
                 Status = OrderStatus.InProgress,
                 TotalEgg = 0,
                 StartDate = DateOnly.FromDateTime(DateTime.Now),
+                IsFrozen = false,
+                TotalAmount = 0,
+                EndDate = null,
                 UpdatedAt = now,
             };
 
             await _orderRepository.SaveAsync(placeOrder);
 
             var orderSteps = treatmentService.TreatmentSteps?
-                .OrderBy(step => step.StepOrder)
-                .Select(step => new OrderStep
-                {
-                    OrderId = placeOrder.Id,
-                    TreatmentStepId = step.Id,
-                    PaymentStatus = PaymentStatus.Pending,
-                    TotalAmount = step.Amount,
-                    Status = step.StepOrder == 1 ? StepStatus.InProgress : StepStatus.Planned,
-                    StartDate = step.StepOrder == 1 ? DateOnly.FromDateTime(now) : DateOnly.MinValue,
-                    EndDate = null,
-                }).ToList() ?? new List<OrderStep>();
+                    .OrderBy(step => step.StepOrder)
+                    .Select(step => new OrderStep
+                    {
+                        OrderId = placeOrder.Id,
+                        TreatmentStepId = step.Id,
+                        PaymentStatus = PaymentStatus.Pending,
+                        TotalAmount = step.Amount,
+                        Status = step.StepOrder == 1 ? StepStatus.InProgress : StepStatus.Planned,
+                        StartDate = step.StepOrder == 1 ? DateOnly.FromDateTime(now) : DateOnly.MinValue,
+                        EndDate = null,
+                    }).ToList() ?? new List<OrderStep>();
 
             await _stepRepository.SaveAllAsync(orderSteps);
-
-            placeOrder.OrderSteps = orderSteps;
-            placeOrder.Doctor = doctor;
-            placeOrder.TreatmentService = treatmentService;
-            placeOrder.Patient = savePatient;
-            await _orderRepository.SaveChangeAsync();
 
             var firstStep = orderSteps.FirstOrDefault(x => x.Status == StepStatus.InProgress)
                     ?? throw new InvalidOperationException("No first step found for appointment.");
 
-
             await _appointmentService.PlaceAppointmentWithStartOrderAsync(new CreateAppointmentRequestDTO
             {
-                PatientId = savePatient.Id.ToString(),
+                PatientId = patient.Id.ToString(),
                 DoctorId = doctor.Id.ToString(),
                 DoctorScheduleId = schedule.Id,
                 OrderStepId = firstStep.Id,
                 TreatmentServiceId = treatmentService.Id.ToString(),
-                BookingEmail = request.BookingEmail,
-                BookingPhone = request.BookingPhone,
-                Note = request.Note
             });
 
             return placeOrder.MapToOderDTO();
@@ -177,13 +139,12 @@ namespace FertilityCare.UseCase.Implements
             return order.MapToOderDTO();
         }
 
-        public async Task<IEnumerable<OrderDTO>> GetOrderByPatientIdAsync(Guid patientId)
+        public async Task<IEnumerable<OrderInfo>> GetOrdersByPatientIdAsync(Guid patientId)
         {
-            var patient = await _patientRepository.FindByIdAsync(patientId)
-                ?? throw new NotFoundException("Patient not found!");
+            var patient = await _patientRepository.FindByIdAsync(patientId);
 
             var order = await _orderRepository.FindAllByPatientIdAsync(patientId);
-            return order.Select(x => x.MapToOderDTO());
+            return order.Select(x => x.MapToOrderInfo());
         }
 
         public async Task<long?> SetTotalEgg(long totalEgg, string orderId)
@@ -194,6 +155,24 @@ namespace FertilityCare.UseCase.Implements
             order.UpdatedAt = DateTime.Now;
             var orderUpdate = await _orderRepository.UpdateAsync(order);
             return totalEgg;
+        }
+
+        private Patient SaveInputInfoOrder(CreateOrderRequestDTO request, Patient patient)
+        {
+            patient.UserProfile.FirstName = request.FirstName;
+            patient.UserProfile.LastName = request.LastName;
+            patient.UserProfile.MiddleName = request.MiddleName;
+            patient.UserProfile.Address = request.Address;
+            patient.UserProfile.Gender = request.Gender.Equals(Gender.Female.ToString())
+                ? Gender.Female
+                : Gender.Male;
+            patient.PartnerPhone = request.PartnerPhone;
+            patient.PartnerEmail = request.PartnerEmail;
+            patient.PartnerFullName = request.PartnerFullName;
+            patient.MedicalHistory = request.MedicalHistory;
+            patient.UserProfile.UpdatedAt = DateTime.Now;
+
+            return patient;
         }
     }
 }

@@ -33,5 +33,23 @@ namespace FertilityCare.UseCase.Mappers
             };
         }
 
+        public static OrderInfo MapToOrderInfo(this Order order)
+        {
+            var doctorProfile = order.Doctor.UserProfile;
+            var patientProfile = order.Patient.UserProfile;
+            return new OrderInfo
+            {
+                Id = order.Id.ToString(),
+                DoctorName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
+                PatientName = $"{patientProfile.FirstName} {patientProfile.MiddleName} {patientProfile.LastName}",
+                StartDate = order.StartDate.ToString("dd/MM/yyyy"),
+                EndDate = order.EndDate == null ? "#NoData" : order.EndDate?.ToString("dd/MM/yyyy"),
+                Status = order.Status.ToString(),
+                IsFrozen = order.IsFrozen,
+                TotalEggs = order.TotalEgg,
+                TotalAmount = order.TotalAmount,
+            };
+        }
+
     }
 }
