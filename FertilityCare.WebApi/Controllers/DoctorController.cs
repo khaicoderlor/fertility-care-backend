@@ -1,6 +1,7 @@
 ﻿using Fertilitycare.Share.Comon;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,44 @@ namespace FertilityCare.WebAPI.Controllers
                 }
 
                 return Ok(new ApiResponse<DoctorDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = doctor,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpGet("{id}/patients")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientInfoTable>>>> GetPatientsByDoctorId(string id)
+        {
+            try
+            {
+                var doctor = await _doctorService.GetPatientsByDoctorIdAsync(Guid.Parse(id));
+
+                if (doctor == null)
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = $"Doctor with ID {id} not found.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                return Ok(new ApiResponse<IEnumerable<PatientInfoTable>>
                 {
                     StatusCode = 200,
                     Message = "Fetched successfully.",

@@ -2,6 +2,7 @@
 using Fertilitycare.Share.Comon;
 using FertilityCare.Domain.Entities;
 using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.UseCase.Mappers;
@@ -19,9 +20,12 @@ namespace FertilityCare.UseCase.Implements
     {
         private readonly IDoctorRepository _doctorRepository;
 
-        public DoctorService(IDoctorRepository doctorRepository)
+        private readonly IOrderRepository _orderRepository;
+
+        public DoctorService(IDoctorRepository doctorRepository, IOrderRepository orderRepository)
         {
             _doctorRepository = doctorRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<IEnumerable<DoctorDTO>> GetAllDoctorsAsync()
@@ -51,6 +55,22 @@ namespace FertilityCare.UseCase.Implements
 
             return result.Select(x => x.MapToDoctorDTO()).ToList();
 
+        }
+
+        public async Task<IEnumerable<PatientInfoTable>> GetPatientsByDoctorIdAsync(Guid id)
+        {
+            var order = await _orderRepository.FindAllByDoctorIdAsync(id);
+
+            return order.ToList().Select(x => new PatientInfoTable
+            {
+                PatientId = x.PatientId.ToString(),
+                PatientName = $"{x.Patient.UserProfile.FirstName} {x.Patient.UserProfile.MiddleName} {x.Patient.UserProfile.LastName}",
+                OrderId = x.Id.ToString(),
+                TotalEggs = x.TotalEgg,
+                StartDate = x.StartDate.ToString("dd/MM/yyyy"),
+                EndDate = x.EndDate != null ? x.EndDate?.ToString("dd/MM/yyyy") : "",
+                Status = x.Status.ToString(),
+            });
         }
     }
 }
