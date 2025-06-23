@@ -39,6 +39,12 @@ namespace FertilityCare.UseCase.Implements
             return result?.MapToDoctorDTO();
         }
 
+        public async Task<DoctorDTO> GetDoctorByProfileIdAsync(string id)
+        {
+            var doctor = await _doctorRepository.FindByProfileIdAsync(id);
+            return doctor.MapToDoctorDTO();
+        }
+
         public async Task<IEnumerable<DoctorDTO>> GetDoctorsPagedAsync(PaginationRequestDTO request)
         {
             var result = await _doctorRepository.GetPagedAsync(request.Page, request.PageSize);

@@ -1,6 +1,7 @@
 ﻿using FertilityCare.Domain.Entities;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -98,6 +99,11 @@ namespace FertilityCare.Infrastructure.Repositories
         {
             return await _context.Doctors.SingleOrDefaultAsync(d => d.UserProfileId.Equals(userProfile));
 
+        }
+
+        public async Task<Doctor> FindByProfileIdAsync(string id)
+        {
+           return await _context.Doctors.FirstOrDefaultAsync(x => x.UserProfileId.ToString() == id) ?? throw new NotFoundException("Profile not found");
         }
     }
 }

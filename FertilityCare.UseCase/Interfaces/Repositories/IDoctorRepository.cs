@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Domain.Entities;
+using FertilityCare.UseCase.DTOs.Doctors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task<IEnumerable<Doctor>> GetPagedAsync(int pageNumber, int pageSize);
 
         Task<Doctor> FindByUserProfileIdAsync(Guid userProfile);
+        Task<Doctor> FindByProfileIdAsync(string id);
     }
 }

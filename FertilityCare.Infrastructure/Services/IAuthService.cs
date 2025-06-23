@@ -122,7 +122,7 @@ namespace FertilityCare.Infrastructure.Services
                         PartnerEmail = "",
                         PartnerPhone = "",
                         PartnerFullName = ""
-                    }; 
+                    };
 
                     await _patientRepository.SaveAsync(patient);
 
@@ -289,7 +289,7 @@ namespace FertilityCare.Infrastructure.Services
                     if (!roleAssignResult.Succeeded)
                     {
                         return AuthResult.Failed("Not assign role to user");
-                    } 
+                    }
                     else
                     {
                         Patient patient = new Patient
@@ -310,7 +310,7 @@ namespace FertilityCare.Infrastructure.Services
                     if (!roleAssignResult.Succeeded)
                     {
                         return AuthResult.Failed("Not assign role to user");
-                    } 
+                    }
                     else
                     {
                         Doctor doctor = new Doctor
@@ -382,7 +382,8 @@ namespace FertilityCare.Infrastructure.Services
                     LastName = user.UserProfile.LastName,
                     AvatarUrl = user.UserProfile.AvatarUrl,
                     OrderIds = orderIds
-                }
+                },
+                Role = roles.First()
             });
         }
     }

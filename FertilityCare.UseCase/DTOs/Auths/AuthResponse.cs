@@ -14,6 +14,8 @@ namespace FertilityCare.UseCase.DTOs.Auths
 
         public string RefreshToken { get; set; }
 
+        public string Role { get; set; }
+
         public DateTime ExpiresAt { get; set; }
 
         public UserDto User { get; set; }

@@ -18,49 +18,50 @@ namespace FertilityCare.WebAPI.Controllers
             _doctorService = doctorService;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<ApiResponse<IEnumerable<DoctorDTO>>>> GetAllDoctors()
-        //{
-        //    try
-        //    {
-        //        var result = await _doctorService.GetAllDoctorsAsync();
-
-        //        return Ok(new ApiResponse<IEnumerable<DoctorDTO>>
-        //        {
-        //            StatusCode = 200,
-        //            Message = "Fetched successfully.",
-        //            Data = result,
-        //            ResponsedAt = DateTime.Now
-        //        });
-        //    }
-        //    catch (NotFoundException e)
-        //    {
-        //        return NotFound(new ApiResponse<object>
-        //        {
-        //            StatusCode = 404,
-        //            Message = e.Message,
-        //            Data = null,
-        //            ResponsedAt = DateTime.Now
-        //        });
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(new ApiResponse<object>
-        //        {
-        //            StatusCode = 500,
-        //            Message = e.Message,
-        //            Data = null,
-        //            ResponsedAt = DateTime.Now
-        //        });
-        //    }
-        //}
-
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<DoctorDTO>>> GetDoctorById(string id)
         {
             try
             {
                 var doctor = await _doctorService.GetDoctorByIdAsync(id);
+
+                if (doctor == null)
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = $"Doctor with ID {id} not found.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                return Ok(new ApiResponse<DoctorDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = doctor,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpGet("{id}/profiles")]
+        public async Task<ActionResult<ApiResponse<DoctorDTO>>> GetDoctorByProfileId(string id)
+        {
+            try
+            {
+                var doctor = await _doctorService.GetDoctorByProfileIdAsync(id);
 
                 if (doctor == null)
                 {
