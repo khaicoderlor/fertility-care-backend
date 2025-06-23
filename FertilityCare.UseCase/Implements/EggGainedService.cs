@@ -5,6 +5,7 @@ using FertilityCare.UseCase.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +15,12 @@ namespace FertilityCare.UseCase.Implements
     {
         private readonly IEggGainedRepository _eggGainedRepository;
 
-        public EggGainedService(IEggGainedRepository eggGainedRepository)
+        private readonly IOrderRepository _orderRepository;
+
+        public EggGainedService(IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository)
         {
             _eggGainedRepository = eggGainedRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<CreateEggResponseDTO> AddEggsAsync(Guid orderId, CreateEggGainedListRequestDTO request)
@@ -52,6 +56,24 @@ namespace FertilityCare.UseCase.Implements
                 UsableEggs = usable,
                 UnusableEggs = unusable
             };
+        }
+
+        public async Task<IEnumerable<EggDataStatistic>> GetStatisticEggGradeAndViableAsync(Guid orderId)
+        {
+            var order = await _orderRepository.FindByIdAsync(orderId);
+
+            var result = from e in order.EggGaineds
+                         group e by e.Grade into t
+                         let q = t.Count()
+                         let vc = t.Count(x => x.IsUsable == true)
+                         select new EggDataStatistic
+                         {
+                             Grade = t.Key.ToString(),
+                             Quantity = q,
+                             ViableCount = vc
+                         };
+
+            return result.ToList();
         }
 
         public async Task<IEnumerable<EmbryoDropdownEggDTO>> GetUsableEggsByOrderIdAsync(Guid orderId)

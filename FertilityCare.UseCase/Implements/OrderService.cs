@@ -55,7 +55,6 @@ namespace FertilityCare.UseCase.Implements
             _appointmentRepository = appointmentRepository;
         }
 
-
         // None process the scenario of patient is exist before placing order
         public async Task<OrderDTO> PlaceOrderAsync(CreateOrderRequestDTO request)
         {
@@ -118,6 +117,8 @@ namespace FertilityCare.UseCase.Implements
                 OrderStepId = firstStep.Id,
                 TreatmentServiceId = treatmentService.Id.ToString(),
             });
+
+            placeOrder.OrderSteps = orderSteps;
 
             return placeOrder.MapToOderDTO();
         }

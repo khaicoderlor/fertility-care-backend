@@ -11,7 +11,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     public interface IEggGainedService
     {
         Task<CreateEggResponseDTO> AddEggsAsync(Guid orderId, CreateEggGainedListRequestDTO request);
-
+        Task<IEnumerable<EggDataStatistic>> GetStatisticEggGradeAndViableAsync(Guid guid);
         Task<IEnumerable<EmbryoDropdownEggDTO>> GetUsableEggsByOrderIdAsync(Guid orderId);
     }
 }

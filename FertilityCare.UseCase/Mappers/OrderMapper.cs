@@ -17,6 +17,7 @@ namespace FertilityCare.UseCase.Mappers
 
         public static OrderDTO MapToOderDTO(this Order order)
         {
+
             return new OrderDTO
             {
                 Id = order.Id.ToString(),
@@ -31,6 +32,7 @@ namespace FertilityCare.UseCase.Mappers
                 UpdatedAt = order.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),
                 OrderSteps = order.OrderSteps?.Select(x => x.MapToStepDTO()).ToList()
             };
+
         }
 
         public static OrderInfo MapToOrderInfo(this Order order)
@@ -40,6 +42,7 @@ namespace FertilityCare.UseCase.Mappers
             return new OrderInfo
             {
                 Id = order.Id.ToString(),
+                TreatmentServiceName = order.TreatmentService.Name,
                 DoctorName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
                 PatientName = $"{patientProfile.FirstName} {patientProfile.MiddleName} {patientProfile.LastName}",
                 StartDate = order.StartDate.ToString("dd/MM/yyyy"),

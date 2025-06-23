@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Domain.Entities;
+using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.DTOs.TreatmentStep;
 using System;
@@ -23,9 +24,10 @@ namespace FertilityCare.UseCase.Mappers
                 EndDate = orderStep.EndDate?.ToString("dd/MM/yyyy"),
                 PaymentStatus = orderStep.PaymentStatus.ToString(),
                 TotalAmount = orderStep.TotalAmount,
-                Appointments = orderStep.Appointments.Select(x => x.MapToAppointmentFollowStep()).ToList(),
+                Appointments = orderStep.Appointments != null ? orderStep.Appointments.Select(x => x.MapToAppointmentFollowStep()).ToList() : new List<AppointmentFollowStep>(),
 
             };
+
         }
 
     }

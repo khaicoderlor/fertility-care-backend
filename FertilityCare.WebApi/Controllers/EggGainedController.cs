@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FertilityCare.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/v1/egg-gained")]
+    [Route("api/v1/eggs")]
     public class EggGainedController : ControllerBase
     {
         private readonly IEggGainedService _eggGainedService;
@@ -115,6 +115,32 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("viable/{orderId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<EggDataStatistic>>>> GetStatisticEggGradeAndViable([FromRoute] string orderId)
+        {
+            try
+            {
+                var result = await _eggGainedService.GetStatisticEggGradeAndViableAsync(Guid.Parse(orderId));
+                return Ok(new ApiResponse<IEnumerable<EggDataStatistic>>
+                {
+                    StatusCode = 200,
+                    Message= "",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception e) 
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
 
 
     }
