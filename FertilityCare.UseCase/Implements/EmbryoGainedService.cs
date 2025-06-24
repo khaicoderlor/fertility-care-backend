@@ -83,7 +83,7 @@ namespace FertilityCare.UseCase.Implements
                 IsFrozen = x.IsFrozen,
                 IsTransferred = x.IsTransfered,
                 EmbryoStatus = x.EmbryoStatus.ToString(),
-                EmbyoGrade = x.Grade.ToString()
+                EmbryoGrade = x.Grade.ToString()
             });
         }
 

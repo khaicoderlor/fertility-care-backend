@@ -116,12 +116,6 @@ namespace FertilityCare.UseCase.Implements
         public async Task PlaceAppointmentToEmbryoTransferAsync(Guid guid, CreateAppointmentEmbryoTransferRequest request)
         {
             var loadedOrder = await _orderRepository.FindByIdAsync(guid);
-
-            if(loadedOrder.DoctorId.ToString().Equals(request.DoctorId, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotFoundException("Doctor of order not found!");
-            }
-
             var loadedSchedule = await _scheduleRepository.FindByIdAsync(request.DoctorScheduleId);
             var appointmentCount = await _appointmentRepository.CountAppointmentByScheduleId(request.DoctorScheduleId);
             

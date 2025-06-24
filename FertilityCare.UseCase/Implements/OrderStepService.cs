@@ -47,13 +47,24 @@ namespace FertilityCare.UseCase.Implements
             step.Status = stepStatus;
             await _stepRepository.UpdateAsync(step);
 
+            if(step.TreatmentStep.StepOrder == 6 
+                && step.Status.Equals(StepStatus.Completed) 
+                && step.Order.TreatmentService.Name.Equals("IVF"))
+            {
+                var order = await _orderRepository.FindByIdAsync(step.OrderId);
+                order.Status = OrderStatus.Completed;
+            }
+
             if (stepStatus == StepStatus.Completed)
             {
                 var orderId = step.OrderId;
                 var steps = await _stepRepository.FindAllByOrderIdAsync(orderId);
                 var currentStepOrder = step.TreatmentStep.StepOrder;
-                steps.Where(x => x.TreatmentStep.StepOrder == (currentStepOrder + 1)).First().Status = StepStatus.InProgress;
-                await _stepRepository.SaveChangeAsync();
+                if ((currentStepOrder + 1) <= step.Order.TreatmentService?.TreatmentSteps?.Count())
+                {
+                    steps.Where(x => x.TreatmentStep.StepOrder == (currentStepOrder + 1)).First().Status = StepStatus.InProgress;
+                    await _stepRepository.SaveChangeAsync();
+                }
 
                 return new(step.MapToStepDTO(), StepStatus.InProgress.ToString());
             }
