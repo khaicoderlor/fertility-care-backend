@@ -12,5 +12,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task AddEmbryosAsync(Guid orderId, CreateEmbryoGainedListRequestDTO request);
         Task<List<EmbryoData>> GetEmbryosByOrderIdAsync(string orderId);
+        Task<IEnumerable<EmbryoReportResponse>> GetEmbryosReportByOrderIdAsync(Guid orderId);
     }
 }

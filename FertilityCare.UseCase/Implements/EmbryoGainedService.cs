@@ -68,6 +68,24 @@ namespace FertilityCare.UseCase.Implements
             }).ToList();
 
         }
+
+        public async Task<IEnumerable<EmbryoReportResponse>> GetEmbryosReportByOrderIdAsync(Guid orderId)
+        {
+            var result = await _repository.FindByOrderIdAsync(orderId);
+
+            return result.Select(x => new EmbryoReportResponse
+            {
+                Id = x.Id,
+                OrderId = x.OrderId.ToString(),
+                EggId = x.EggGainedId,
+                EggGrade = x.EggGained.Grade.ToString(),
+                IsViable = x.IsViable,
+                IsFrozen = x.IsFrozen,
+                IsTransferred = x.IsTransfered,
+                EmbryoStatus = x.EmbryoStatus.ToString(),
+                EmbyoGrade = x.Grade.ToString()
+            });
+        }
     }
 
 }

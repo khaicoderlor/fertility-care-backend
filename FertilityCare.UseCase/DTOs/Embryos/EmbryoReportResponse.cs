@@ -24,7 +24,7 @@ namespace FertilityCare.UseCase.DTOs.Embryos
 
         public bool IsTransferred { get; set; }
 
-        public string orderId { get; set; }
+        public string OrderId { get; set; }
 
 
     }
