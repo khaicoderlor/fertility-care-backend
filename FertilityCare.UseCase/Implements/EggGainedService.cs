@@ -41,7 +41,12 @@ namespace FertilityCare.UseCase.Implements
 
             await _eggGainedRepository.BulkInsertAsync(entities);
 
-            // Lấy lại danh sách vừa lưu
+            var order = await _orderRepository.FindByIdAsync(orderId);
+            var eggGains = await _eggGainedRepository.FindAllByOrderIdAsync(orderId);
+
+            order.TotalEgg = eggGains.Count();
+            await _orderRepository.SaveChangeAsync();
+
             var usable = entities
                 .Where(e => e.IsUsable)
                 .Select(e => new EggGainedDropdownDTO { Id = e.Id, Grade = e.Grade, DateGained = e.DateGained })
