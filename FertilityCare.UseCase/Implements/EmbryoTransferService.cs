@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FertilityCare.Domain.Entities;
 using FertilityCare.Domain.Enums;
 using FertilityCare.Shared.Exceptions;
-using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.EmbryoTransfers;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -39,10 +38,10 @@ namespace FertilityCare.UseCase.Implements
             var order = await _orderRepository.FindByIdAsync(Guid.Parse(request.OrderId));
             var orderstep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 5).First()
                 ?? throw new NotFoundException($"orderStep is not exist!");
-            var embryoGained = await _embryoGainedRepository.FindByIdAsync(request.EmbryoGainedId)
-                ?? throw new NotFoundException($"Embryo gained with ID {request.EmbryoGainedId} not found.");
+            var embryoGained = await _embryoGainedRepository.FindByIdAsync(request.EmbryoId)
+                ?? throw new NotFoundException($"Embryo gained with ID {request.EmbryoId} not found.");
             var embryoList = await _embryoGainedRepository.FindAllAsync();
-            embryoList = embryoList.Where(x => x.Id != request.EmbryoGainedId);
+            embryoList = embryoList.Where(x => x.Id != request.EmbryoId);
             var transferType = TransferType.Fresh;
             if (orderstep.Status.Equals(StepStatus.ReTranfer))
             {
@@ -61,7 +60,7 @@ namespace FertilityCare.UseCase.Implements
 
             var embryoTransfer = new EmbryoTransfer()
             {
-                EmbryoGainedId = request.EmbryoGainedId,
+                EmbryoGainedId = request.EmbryoId,
                 TransferDate = DateTime.Now,
                 TransferType = transferType,
                 AppointmentId = request.AppointmentId != null ? Guid.Parse(request.AppointmentId) : null,

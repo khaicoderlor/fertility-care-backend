@@ -9,8 +9,8 @@ namespace FertilityCare.UseCase.DTOs.EmbryoGained
 {
     public class CreateEmbryoGainedRequestDTO
     {
-        public long EggGainedId { get; set; }      
+        public long EggId { get; set; }      
         public string Grade { get; set; }     
-        public bool IsViable { get; set; }         
+        public bool IsQualified { get; set; }         
     }
 }

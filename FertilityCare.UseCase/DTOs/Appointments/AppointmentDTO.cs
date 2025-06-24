@@ -27,10 +27,6 @@ namespace FertilityCare.UseCase.DTOs.Appointments
 
         public OrderStepDTO? OrderStep { get; set; }
 
-        public string? BookingName { get; set; }
-
-        public string? BookingPhone { get; set; }
-
         public string? AppointmentDate { get; set; }
 
         public string? StartTime { get; set; }

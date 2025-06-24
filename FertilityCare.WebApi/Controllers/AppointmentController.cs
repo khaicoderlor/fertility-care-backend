@@ -103,6 +103,54 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("{orderId}/embryo-transfers")]
+        public async Task<ActionResult<ApiResponse<object>>> CreateAppointmentEmbryoTransfer([FromRoute] string orderId, [FromBody] CreateAppointmentEmbryoTransferRequest request)
+        {
+            try
+            {
+                await _appointmentService.PlaceAppointmentToEmbryoTransferAsync(Guid.Parse(orderId), request);
+                return Ok(new ApiResponse<AppointmentDTO?>
+                {
+                    StatusCode = 200,
+                    Message = "Appointment created successfully",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (AppointmentSlotLimitExceededException e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+
+            }
+        }
+
         [HttpGet]
         [Route("{orderId}/{stepId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<AppointmentDTO>>>> GetAppointmentsByOrderIdAndStepId([FromRoute] string orderId, [FromRoute] long stepId)

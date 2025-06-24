@@ -22,6 +22,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<AppointmentDTO> UpdateInfoAppointmentByAppointmentIdAsync(
             Guid appointmentId, UpdateInfoAppointmentRequestDTO request);
         Task<List<AppointmentDTO>> GetPagedAppointmentsAsync(AppointmentQueryDTO query);
-
+        Task PlaceAppointmentToEmbryoTransferAsync(Guid guid, CreateAppointmentEmbryoTransferRequest request);
     }
 }

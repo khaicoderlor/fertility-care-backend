@@ -1,5 +1,4 @@
 ﻿using FertilityCare.Shared.Exceptions;
-using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.EmbryoTransfers;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Services;
@@ -96,7 +95,7 @@ namespace FertilityCare.WebApi.Controllers
         }
 
         [HttpGet("{orderId}/report")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<EmbryoTransferredReportResponse>>>> GetEmbryoTransferReportByOrderId([FromQuery] string orderId)
+        public async Task<ActionResult<ApiResponse<IEnumerable<EmbryoTransferredReportResponse>>>> GetEmbryoTransferReportByOrderId([FromRoute] string orderId)
         {
             try
             {

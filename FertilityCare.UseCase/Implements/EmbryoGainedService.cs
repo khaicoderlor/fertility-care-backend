@@ -38,9 +38,9 @@ namespace FertilityCare.UseCase.Implements
 
                 embryos.Add(new EmbryoGained
                 {
-                    EggGainedId = e.EggGainedId,
+                    EggGainedId = e.EggId,
                     Grade = parsedGrade, 
-                    IsViable = e.IsViable,
+                    IsViable = e.IsQualified,
                     EmbryoStatus = EmbryoStatus.Available,
                     IsFrozen = false,
                     IsTransfered = false,
