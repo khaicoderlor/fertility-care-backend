@@ -27,21 +27,30 @@ namespace FertilityCare.UseCase.Implements
         public async Task AddEmbryosAsync(Guid orderId, CreateEmbryoGainedListRequestDTO request)
         {
             if (request == null || request.Embryos == null || !request.Embryos.Any())
-                throw new ArgumentException("Danh sách phôi không được để trống");
+                throw new ArgumentException("Embryos is not empty!");
 
-            var embryos = request.Embryos.Select(e => new EmbryoGained
+            var embryos = new List<EmbryoGained>();
+
+            foreach (var e in request.Embryos)
             {
-                EggGainedId = e.EggGainedId,
-                Grade = e.Grade,
-                IsViable = e.IsViable,
-                EmbryoStatus = EmbryoStatus.Available,
-                IsFrozen = false,
-                IsTransfered = false,
-                OrderId = orderId
-            }).ToList();
+                if (!Enum.TryParse<EmbryoGrade>(e.Grade, out var parsedGrade))
+                    throw new ArgumentException($"Embryo grade not suitable: {e.Grade}");
+
+                embryos.Add(new EmbryoGained
+                {
+                    EggGainedId = e.EggGainedId,
+                    Grade = parsedGrade, 
+                    IsViable = e.IsViable,
+                    EmbryoStatus = EmbryoStatus.Available,
+                    IsFrozen = false,
+                    IsTransfered = false,
+                    OrderId = orderId
+                });
+            }
 
             await _repository.BulkInsertAsync(embryos);
         }
+
 
         public async Task<List<EmbryoData>> GetEmbryosByOrderIdAsync(string orderId)
         {

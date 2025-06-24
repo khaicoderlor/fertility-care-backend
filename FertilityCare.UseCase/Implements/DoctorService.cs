@@ -67,6 +67,7 @@ namespace FertilityCare.UseCase.Implements
                 PatientName = $"{x.Patient.UserProfile.FirstName} {x.Patient.UserProfile.MiddleName} {x.Patient.UserProfile.LastName}",
                 OrderId = x.Id.ToString(),
                 TotalEggs = x.TotalEgg,
+                TreatmentName = x.TreatmentService.Name,
                 StartDate = x.StartDate.ToString("dd/MM/yyyy"),
                 EndDate = x.EndDate != null ? x.EndDate?.ToString("dd/MM/yyyy") : "",
                 Status = x.Status.ToString(),

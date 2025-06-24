@@ -10,6 +10,6 @@ namespace FertilityCare.UseCase.DTOs.EggGained
     public class EmbryoDropdownEggDTO
     {
         public long Id { get; set; }
-        public EggGrade Grade { get; set; } 
+        public string Grade { get; set; } 
     }
 }

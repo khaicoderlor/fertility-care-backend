@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FertilityCare.UseCase.DTOs.Patients
 {
@@ -13,6 +12,8 @@ namespace FertilityCare.UseCase.DTOs.Patients
         public string PatientId { get; set; }
 
         public string PatientName { get; set; }
+
+        public string TreatmentName { get; set; }
 
         public string OrderId { get;set; }
 

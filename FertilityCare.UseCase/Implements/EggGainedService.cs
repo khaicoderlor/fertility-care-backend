@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.EggGained;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
@@ -32,8 +33,8 @@ namespace FertilityCare.UseCase.Implements
 
             var entities = request.Eggs.Select(x => new EggGained
             {
-                Grade = x.Grade,
-                IsUsable = x.IsUsable,
+                Grade = x.Grade.Equals("M2")?EggGrade.M2:x.Grade.Equals("M1")?EggGrade.M1:EggGrade.GV,
+                IsUsable = x.isQualified,
                 DateGained = dateGained,
                 OrderId = orderId
             }).ToList();
@@ -83,7 +84,7 @@ namespace FertilityCare.UseCase.Implements
             return eggs.Select(e => new EmbryoDropdownEggDTO
             {
                 Id = e.Id,
-                Grade = e.Grade
+                Grade = e.Grade.ToString()
             }).ToList();
         }
     }

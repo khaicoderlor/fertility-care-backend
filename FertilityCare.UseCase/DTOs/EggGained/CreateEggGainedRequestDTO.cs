@@ -9,7 +9,7 @@ namespace FertilityCare.UseCase.DTOs.EggGained
 {
     public class CreateEggGainedRequestDTO
     {
-        public EggGrade Grade { get; set; }
-        public bool IsUsable { get; set; }
+        public string Grade { get; set; } = string.Empty;
+        public bool isQualified { get; set; } = false;
     }
 }
