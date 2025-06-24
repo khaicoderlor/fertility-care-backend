@@ -8,7 +8,7 @@ namespace FertilityCare.UseCase.DTOs.Embryos
 {
     public class EmbryoData
     {
-        public string EmbryoId { get; set; }
+        public string Id { get; set; }
 
         public string EmbryoGrade { get; set; }
         public string EggGrade { get; set; }

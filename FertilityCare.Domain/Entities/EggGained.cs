@@ -15,7 +15,7 @@ namespace FertilityCare.Domain.Entities
 
         public bool IsUsable { get; set; }
 
-        public DateOnly DateGained { get; set; }
+        public DateOnly DateGained { get; set; }    
 
         public Guid OrderId { get; set; }
 

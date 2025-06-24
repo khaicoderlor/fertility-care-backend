@@ -115,6 +115,54 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet("{orderId}/report")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<EggReportResponse>>>> GetEggsReportByOrderId([FromRoute] string orderId)
+        {
+            if (!Guid.TryParse(orderId, out var parsedOrderId))
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "OrderId không hợp lệ",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+
+            try
+            {
+                var result = await _eggGainedService.GetEggReportByOrderId(parsedOrderId);
+
+                return Ok(new ApiResponse<IEnumerable<EggReportResponse>>
+                {
+                    StatusCode = 200,
+                    Message = "Lấy trứng usable thành công!",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+
         [HttpGet]
         [Route("viable/{orderId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<EggDataStatistic>>>> GetStatisticEggGradeAndViable([FromRoute] string orderId)

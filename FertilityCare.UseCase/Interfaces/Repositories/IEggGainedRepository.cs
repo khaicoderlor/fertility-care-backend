@@ -10,7 +10,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
     public interface IEggGainedRepository
     {
         Task BulkInsertAsync(IEnumerable<EggGained> eggs);
-
+        Task<IEnumerable<EggGained>> FindAllByOrderIdAsync(Guid orderId);
         Task<IEnumerable<EggGained>> GetUsableEggsByOrderIdAsync(Guid orderId);
 
     }

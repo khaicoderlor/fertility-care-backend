@@ -59,6 +59,20 @@ namespace FertilityCare.UseCase.Implements
             };
         }
 
+        public async Task<IEnumerable<EggReportResponse>> GetEggReportByOrderId(Guid orderId)
+        {
+            var eggs = await _eggGainedRepository.FindAllByOrderIdAsync(orderId);
+
+            return eggs.Select(x => new EggReportResponse
+            {
+                Id = x.Id,
+                Grade = x.Grade.ToString(),
+                DateGain = x.DateGained.ToString("dd/MM/yyyy"),
+                IsUsable = x.IsUsable,
+                OrderId = x.OrderId.ToString()
+            }).ToList();
+        }
+
         public async Task<IEnumerable<EggDataStatistic>> GetStatisticEggGradeAndViableAsync(Guid orderId)
         {
             var order = await _orderRepository.FindByIdAsync(orderId);

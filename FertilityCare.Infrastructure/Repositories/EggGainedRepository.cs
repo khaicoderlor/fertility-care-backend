@@ -25,6 +25,11 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<EggGained>> FindAllByOrderIdAsync(Guid orderId)
+        {
+            return await _context.EggGaineds.Where(x => x.OrderId == orderId).ToListAsync();
+        }
+
         public async Task<IEnumerable<EggGained>> GetUsableEggsByOrderIdAsync(Guid orderId)
         {
             return await _context.EggGaineds

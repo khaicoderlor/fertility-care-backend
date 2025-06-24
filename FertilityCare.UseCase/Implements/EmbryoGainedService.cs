@@ -60,7 +60,7 @@ namespace FertilityCare.UseCase.Implements
                 ?? throw new NotFoundException($"Embryo with order id {orderId} not exist!");
             return embryos.Select(e => new EmbryoData
             {
-                EmbryoId = e.Id.ToString(),
+                Id = e.Id.ToString(),
                 EmbryoGrade = e.Grade.ToString(),
                 Status = e.EmbryoStatus.ToString(),
                 IsFrozen = e.IsFrozen,
