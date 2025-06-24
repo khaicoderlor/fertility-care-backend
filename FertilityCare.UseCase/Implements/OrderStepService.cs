@@ -47,12 +47,19 @@ namespace FertilityCare.UseCase.Implements
             step.Status = stepStatus;
             await _stepRepository.UpdateAsync(step);
 
-            if(step.TreatmentStep.StepOrder == 6 
-                && step.Status.Equals(StepStatus.Completed) 
-                && step.Order.TreatmentService.Name.Equals("IVF"))
+            var finalSteps = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["IVF"] = 6,
+                ["IUI"] = 4
+            };
+
+            if (step.Status == StepStatus.Completed &&
+                finalSteps.TryGetValue(step.Order.TreatmentService.Name, out var finalStep) &&
+                step.TreatmentStep.StepOrder == finalStep)
             {
                 var order = await _orderRepository.FindByIdAsync(step.OrderId);
                 order.Status = OrderStatus.Completed;
+                order.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
             }
 
             if (stepStatus == StepStatus.Completed)
