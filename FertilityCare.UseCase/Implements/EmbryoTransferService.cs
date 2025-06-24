@@ -73,6 +73,22 @@ namespace FertilityCare.UseCase.Implements
             return embryoTransfer.MapToEmbryoTranferDTO();
         }
 
+        public async Task<IEnumerable<EmbryoTransferredReportResponse>> GetEmbryoTransferReportByOrderIdAsync(Guid guid)
+        {
+            var result = await _embryoTransferRepository.FindAllByOrderIdAsync(guid);
+
+            return result.Select(x => new EmbryoTransferredReportResponse
+            {
+                Id = x.Id,
+                EggId = x.EmbryoGained.EggGainedId,
+                EmbryoId = x.EmbryoGainedId,
+                OrderId = x.OrderId.ToString(),
+                EmbryoGrade = x.EmbryoGained.Grade.ToString(),
+                TransferDate = x.TransferDate.ToString("dd/MM/yyyy"),
+                TransferType = x.TransferType.ToString(),
+            });
+        }
+
         public async Task<OrderStepDTO> ReTransferAsync(string orderId)
         {
             var order = await _orderRepository.FindByIdAsync(Guid.Parse(orderId))

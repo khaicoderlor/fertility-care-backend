@@ -9,5 +9,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 {
     public interface IEmbryoTransferRepository : IBaseRepository<EmbryoTransfer, long>
     {
+        Task<IEnumerable<EmbryoTransfer>> FindAllByOrderIdAsync(Guid guid);
     }
 }

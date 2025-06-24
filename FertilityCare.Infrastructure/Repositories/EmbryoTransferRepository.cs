@@ -34,6 +34,11 @@ namespace FertilityCare.Infrastructure.Repositories
             return await _context.EmbryoTransfers.ToListAsync();
         }
 
+        public async Task<IEnumerable<EmbryoTransfer>> FindAllByOrderIdAsync(Guid guid)
+        {
+            return await _context.EmbryoTransfers.Where(x => x.OrderId == guid).ToListAsync();
+        }
+
         public async Task<EmbryoTransfer> FindByIdAsync(long id)
         {
             var entity = await _context.EmbryoTransfers.FindAsync(id);

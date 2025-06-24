@@ -11,6 +11,8 @@ namespace FertilityCare.UseCase.DTOs.EmbryoTransfers
         public long Id { get; set; }
 
         public long EmbryoId { get; set; }
+
+        public long EggId { get; set; }
         
         public string EmbryoGrade { get; set; }
 
