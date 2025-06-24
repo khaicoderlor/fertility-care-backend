@@ -54,6 +54,43 @@ public class EmbryoGainedController : ControllerBase
         }
     }
 
+    [HttpGet("usable/{orderId}")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<EmbryoData>>>> GetEmbryosUsableByOrderIdAsync(
+        [FromRoute] string orderId)
+    {
+        try
+        {
+            var embryos = await _service.GetEmbryosUsableByOrderIdAsync(orderId);
+            return Ok(new ApiResponse<IEnumerable<EmbryoData>>
+            {
+                StatusCode = 200,
+                Message = "Load embryos success",
+                Data = embryos,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new ApiResponse<object>
+            {
+                StatusCode = 404,
+                Message = e.Message,
+                Data = null,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse<object>
+            {
+                StatusCode = 400,
+                Message = ex.Message,
+                Data = null,
+                ResponsedAt = DateTime.UtcNow
+            });
+        }
+    }
+
     [HttpGet("{orderId}/report")]
     public async Task<ActionResult<ApiResponse<IEnumerable<EmbryoReportResponse>>>> GetEmbryoReportByOrderIdAsync(
         [FromRoute] string orderId)

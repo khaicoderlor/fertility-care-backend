@@ -86,6 +86,13 @@ namespace FertilityCare.UseCase.Implements
                 EmbyoGrade = x.Grade.ToString()
             });
         }
+
+        public async Task<IEnumerable<EmbryoData>> GetEmbryosUsableByOrderIdAsync(string orderId)
+        {
+            var result = await GetEmbryosByOrderIdAsync(orderId);
+
+            return result.Where(x => x.Status.Equals(EmbryoStatus.Available.ToString())).ToList();
+        }
     }
 
 }
