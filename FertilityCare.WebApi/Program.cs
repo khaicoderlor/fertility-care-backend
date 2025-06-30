@@ -27,7 +27,8 @@ namespace FertilityCare.WebApi
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
-
+            builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
+          
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowClient", policy =>
@@ -120,7 +121,9 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IEmbryoGainedService, EmbryoGainedService>();
             builder.Services.AddScoped<IEmbryoTransferRepository, EmbryoTransferRepository>();
             builder.Services.AddScoped<IEmbryoTransferService, EmbryoTransferService>();
-
+            builder.Services.AddScoped<IMomoService, MomoService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddHttpClient<IMomoService, MomoService>();
 
 
             builder.Services
@@ -129,6 +132,7 @@ namespace FertilityCare.WebApi
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
 
             var app = builder.Build();
 

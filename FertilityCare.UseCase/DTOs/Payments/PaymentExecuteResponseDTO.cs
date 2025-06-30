@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.DTOs.Payments
 {
-    public class PaymentExecuteResponseDTO
+    public record PaymentExecuteResponseDTO
     {
-        public string Amount { get; set; }
-        public string OrderId { get; set; }
-        public string OrderInfo { get; set; }
-        public string ResultCode { get; set; }
-        public string Message { get; set; }
-        public string ExtraData { get; set; }
-        public string Signature { get; set; }
+        public string Amount { get; set; } = string.Empty;
+        public string OrderId { get; set; } = string.Empty;
+        public string OrderInfo { get; set; } = string.Empty;
+        public string ResultCode { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string ExtraData { get; set; } = string.Empty;
+        public string Signature { get; set; } = string.Empty;
     }
 }

@@ -11,7 +11,6 @@ namespace FertilityCare.WebAPI.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IMomoService _momoService;
-
         private readonly IPaymentService _paymentService;
 
         public PaymentController(IMomoService momoService, IPaymentService paymentService)
@@ -29,11 +28,11 @@ namespace FertilityCare.WebAPI.Controllers
                 StatusCode = 200,
                 Message = "",
                 Data = payUrl,
-                ResponsedAt = DateTime.UtcNow  
+                ResponsedAt = DateTime.UtcNow
             });
         }
 
-        [HttpGet("callback")]
+        [HttpPost("callback")]
         public async Task<ActionResult<ApiResponse<PaymentExecuteResponseDTO>>> CallBackPayment()
         {
             var dto = ParseCallbackPayment(HttpContext.Request.Query);
@@ -58,7 +57,7 @@ namespace FertilityCare.WebAPI.Controllers
                 StatusCode = 200,
                 Message = "Payment callback verified",
                 Data = dto,
-                ResponsedAt = DateTime.UtcNow 
+                ResponsedAt = DateTime.UtcNow
             });
         }
 
@@ -70,11 +69,11 @@ namespace FertilityCare.WebAPI.Controllers
                 OrderId = qc["orderId"],
                 OrderInfo = qc["orderInfo"],
                 ResultCode = qc["resultCode"],
-                Message = qc["message"],
+                Message = qc.TryGetValue("message", out var msg) ? msg.ToString() : string.Empty,
                 ExtraData = qc["extraData"],
                 Signature = qc["signature"]
             };
         }
-
     }
+
 }

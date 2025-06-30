@@ -8,19 +8,13 @@ namespace FertilityCare.Infrastructure.Configurations
 {
     public class MomoPaymentConfiguration
     {
-        public string ApiUrl { get; set; }
-
-        public string SecretKey { get; set; }
-
-        public string AccessKey { get; set; }
-
-        public string ReturnUrl { get; set; }
-
-        public string NotifyUrl { get; set; }
-
-        public string PartnerCode { get; set; }
-
-        public string RequestType { get; set; }
-
+        public required string ApiUrl { get; set; }
+        public required string SecretKey { get; set; }
+        public required string AccessKey { get; set; }
+        public required string ReturnUrl { get; set; }
+        public required string NotifyUrl { get; set; }
+        public required string PartnerCode { get; set; }
+        public string RequestType { get; set; } = "captureWallet";
     }
+
 }

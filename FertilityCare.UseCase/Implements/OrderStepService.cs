@@ -45,6 +45,11 @@ namespace FertilityCare.UseCase.Implements
             }
 
             step.Status = stepStatus;
+            if(stepStatus == StepStatus.Completed)
+            {
+                step.EndDate = DateOnly.FromDateTime(new DateTime());
+            }
+
             await _stepRepository.UpdateAsync(step);
 
             var finalSteps = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)

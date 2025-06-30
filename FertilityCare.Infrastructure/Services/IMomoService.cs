@@ -2,14 +2,11 @@
 using FertilityCare.UseCase.DTOs.Payments;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FertilityCare.Infrastructure.Services
 {
@@ -23,63 +20,82 @@ namespace FertilityCare.Infrastructure.Services
 
     public class MomoService : IMomoService
     {
+        private readonly MomoPaymentConfiguration _cfg;
 
-        private readonly MomoPaymentConfiguration _momoConfig;
+        private readonly HttpClient _client;
 
-        public MomoService(IOptions<MomoPaymentConfiguration> momoConfig)
+        public MomoService(IOptions<MomoPaymentConfiguration> cfg, HttpClient httpClient)
         {
-            _momoConfig = momoConfig.Value;
+            _cfg = cfg.Value;
+            _client = httpClient;
         }
 
-        public async Task<string> CreatePaymentAsync(CreateMomoRequest requestdto)
+        public async Task<string> CreatePaymentAsync(CreateMomoRequest src)
         {
-            var request = new MomoPaymentRequest
+            string originalOrderInfo = src.OrderInfo;
+            string encodedOrderInfo = Uri.EscapeDataString(originalOrderInfo); // chỉ dùng sau
+
+            var req = new MomoPaymentRequest
             {
-                PartnerCode = _momoConfig.PartnerCode,
-                AccessKey = _momoConfig.AccessKey,
+                PartnerCode = _cfg.PartnerCode,
+                AccessKey = _cfg.AccessKey,
                 RequestId = Guid.NewGuid().ToString(),
-                Amount = requestdto.Amount,
-                OrderId = requestdto.OrderId,
-                OrderInfo = requestdto.OrderInfo,
-                RedirectUrl = _momoConfig.ReturnUrl,
-                NotifyUrl = _momoConfig.NotifyUrl,
-                RequestType = _momoConfig.RequestType
+                Amount = src.Amount.ToString(),
+                OrderId = src.OrderId,
+                RedirectUrl = _cfg.ReturnUrl,
+                IpnUrl = _cfg.NotifyUrl,
+                RequestType = _cfg.RequestType,
+                ExtraData = ""
             };
 
-            string rawSignature =
-                $"accessKey={request.AccessKey}&amount={request.Amount}&extraData={request.ExtraData}" +
-                $"&ipnUrl={request.NotifyUrl}&orderId={request.OrderId}&orderInfo={request.OrderInfo}" +
-                $"&partnerCode={request.PartnerCode}&redirectUrl={request.RedirectUrl}" +
-                $"&requestId={request.RequestId}&requestType={request.RequestType}";
+            // raw string để ký → dùng bản GỐC chưa encode
+            var raw = $"accessKey={req.AccessKey}&amount={req.Amount}&extraData={req.ExtraData}" +
+                      $"&ipnUrl={req.IpnUrl}&orderId={req.OrderId}&orderInfo={originalOrderInfo}" +
+                      $"&partnerCode={req.PartnerCode}&redirectUrl={req.RedirectUrl}" +
+                      $"&requestId={req.RequestId}&requestType={req.RequestType}";
 
-            using var hmac = new System.Security.Cryptography.HMACSHA256(Encoding.UTF8.GetBytes(_momoConfig.SecretKey));
-            request.Signature = BitConverter.ToString(hmac.ComputeHash(Encoding.UTF8.GetBytes(rawSignature))).Replace("-", "").ToLower();
+            Console.WriteLine("Raw for signature: " + raw);
 
-            using var client = new HttpClient();
-            var response = await client.PostAsJsonAsync(_momoConfig.ApiUrl, request);
-            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_cfg.SecretKey));
+            req.Signature = Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant();
 
-            if (json.TryGetProperty("payUrl", out var payUrlProperty) && payUrlProperty.ValueKind == JsonValueKind.String)
+            // Gán bản ENCODED vào JSON để gửi đi
+            req.OrderInfo = encodedOrderInfo;
+
+            var json = JsonConvert.SerializeObject(req);
+            Console.WriteLine("Request JSON: " + json);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync(_cfg.ApiUrl, content);
+            var resContent = await res.Content.ReadAsStringAsync();
+
+            Console.WriteLine("MoMo response: " + resContent);
+            res.EnsureSuccessStatusCode();
+
+            dynamic response = JsonConvert.DeserializeObject(resContent)!;
+            if (response.payUrl != null)
             {
-                return payUrlProperty.GetString()!;
+                return response.payUrl;
             }
 
-            throw new InvalidOperationException("The response does not contain a valid 'payUrl'.");
+            throw new InvalidOperationException("Response lacks payUrl");
         }
 
-        public bool VerifySignatureFromCallback(IQueryCollection queryParams)
+
+        public bool VerifySignatureFromCallback(IQueryCollection q)
         {
-            var rawSignature = $"accessKey={_momoConfig.AccessKey}&amount={queryParams["amount"]}&extraData={queryParams["extraData"]}" +
-                               $"&message={queryParams["message"]}&orderId={queryParams["orderId"]}&orderInfo={queryParams["orderInfo"]}" +
-                               $"&orderType={queryParams["orderType"]}&partnerCode={queryParams["partnerCode"]}&payType={queryParams["payType"]}" +
-                               $"&requestId={queryParams["requestId"]}&responseTime={queryParams["responseTime"]}&resultCode={queryParams["resultCode"]}" +
-                               $"&transId={queryParams["transId"]}";
+            q.TryGetValue("message", out var message);
 
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_momoConfig.SecretKey));
-            var computedSignature = BitConverter.ToString(hmac.ComputeHash(Encoding.UTF8.GetBytes(rawSignature)))
-                .Replace("-", "").ToLower();
+            var raw = $"accessKey={_cfg.AccessKey}&amount={q["amount"]}&extraData={q["extraData"]}" +
+                      $"&message={message}&orderId={q["orderId"]}&orderInfo={q["orderInfo"]}&orderType={q["orderType"]}" +
+                      $"&partnerCode={q["partnerCode"]}&payType={q["payType"]}&requestId={q["requestId"]}" +
+                      $"&responseTime={q["responseTime"]}&resultCode={q["resultCode"]}&transId={q["transId"]}";
 
-            return computedSignature == queryParams["signature"];
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_cfg.SecretKey));
+            var sign = Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant();
+
+            return string.Equals(sign, q["signature"], StringComparison.OrdinalIgnoreCase);
         }
+
     }
 }

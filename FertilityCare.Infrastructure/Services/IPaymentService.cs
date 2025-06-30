@@ -19,78 +19,72 @@ namespace FertilityCare.Infrastructure.Services
         Task UpdatePayment(PaymentExecuteResponseDTO paymentExecute);
     }
 
-    public class PaymentService : IPaymentService
+    public sealed class PaymentService : IPaymentService
     {
+        private readonly FertilityCareDBContext _db;
         private readonly IMomoService _momoService;
 
-        private readonly FertilityCareDBContext _context;
-
-        public PaymentService(FertilityCareDBContext context, IMomoService momoService)
+        public PaymentService(FertilityCareDBContext db, IMomoService momoService)
         {
-            _context = context;
+            _db = db;
             _momoService = momoService;
         }
 
         public async Task<string> CreatePaymentAsync(CreatePaymentRequestDTO dto)
         {
-            var paymentCode = $"{dto.TreatmentName}-{Guid.NewGuid().ToString().ToUpper().Substring(0,8)}";
+            var guid = Guid.NewGuid().ToString("N"); 
+            var orderId = $"IVF-{guid.Substring(0, 8)}"; 
 
-            var paymentStep = new OrderStepPayment
+            var payment = new OrderStepPayment
             {
                 PatientId = dto.PatientId,
                 OrderStepId = dto.OrderStepId,
-                PaymentCode = paymentCode,
+                PaymentCode = orderId,
                 TotalAmount = dto.TotalAmount,
-                PaymentMethod = dto.PaymentMethod.Equals("Momo", StringComparison.OrdinalIgnoreCase)
-                ?PaymentMethod.Momo:PaymentMethod.Cashier,
+                PaymentMethod = dto.PaymentMethod.Equals("momo", StringComparison.OrdinalIgnoreCase)
+                                 ? PaymentMethod.Momo
+                                 : PaymentMethod.Cashier,
                 Status = PaymentStatus.Pending,
-                PaymentDate = DateTime.Now
+                PaymentDate = DateTime.UtcNow
             };
 
-            _context.orderStepPayments.Add(paymentStep);
-            await _context.SaveChangesAsync();
+            _db.orderStepPayments.Add(payment);
+            await _db.SaveChangesAsync();
 
-            var payUrl = await _momoService.CreatePaymentAsync(new CreateMomoRequest
+            if (payment.PaymentMethod == PaymentMethod.Momo)
             {
-                Amount = dto.TotalAmount,
-                OrderId = paymentCode,
-                OrderInfo = dto.OrderInfo ?? "Thanh toán đơn hàng IVF"
-            });
+                var payUrl = await _momoService.CreatePaymentAsync(new CreateMomoRequest
+                {
+                    Amount = dto.TotalAmount,
+                    OrderId = orderId,
+                    OrderInfo = dto.OrderInfo ?? "Thanh toán đơn hàng IVF"
+                });
 
-            return payUrl;
+                return payUrl;
+            }
+
+            return string.Empty;
         }
 
-        public async Task UpdatePayment(PaymentExecuteResponseDTO paymentExecute)
+        public async Task UpdatePayment(PaymentExecuteResponseDTO dto)
         {
-            var loadedPayment = await _context.orderStepPayments.Where(x => x.PaymentCode == paymentExecute.OrderId).FirstOrDefaultAsync();
+            var payment = await _db.orderStepPayments.FirstOrDefaultAsync(p => p.PaymentCode == dto.OrderId);
+            if (payment is null) throw new InvalidOperationException("Không tìm thấy thông tin thanh toán.");
+            if (payment.Status == PaymentStatus.Paid) return; 
 
-            if (loadedPayment == null)
-            {
-                throw new Exception("Không tìm thấy thông tin thanh toán.");
-            }
+            payment.GatewayResponseCode = dto.ResultCode;
+            payment.GatewayMessage = dto.Message;
 
-            if (loadedPayment.Status == PaymentStatus.Paid)
-            {
-                return;
-            }
 
-            loadedPayment.GatewayResponseCode = paymentExecute.ResultCode;
-            loadedPayment.GatewayMessage = paymentExecute.Message;
+            payment.Status = dto.ResultCode switch
+            {
+                "0" => PaymentStatus.Paid,
+                "1006" => PaymentStatus.Cancelled,
+                _ => PaymentStatus.Failed
+            };
 
-            if (paymentExecute.ResultCode.Equals(MomoCallbackResult.PAID))
-            {
-                loadedPayment.Status = PaymentStatus.Paid;
-            }
-            else if(paymentExecute.ResultCode.Equals(MomoCallbackResult.CANCELLED))
-            {
-                loadedPayment.Status = PaymentStatus.Cancelled;
-            } 
-            else
-            {
-                loadedPayment.Status = PaymentStatus.Failed;
-            }
-
-            await _context.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
     }
+
 }
