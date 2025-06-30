@@ -12,5 +12,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<IEnumerable<PatientDTO>> FindAllAsync();
 
         Task<PatientDTO> FindPatientByPatientIdAsync(string patientId);
+
     }
 }

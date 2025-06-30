@@ -125,7 +125,6 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddHttpClient<IMomoService, MomoService>();
 
-
             builder.Services
             .AddControllers()
             .AddJsonOptions(options =>

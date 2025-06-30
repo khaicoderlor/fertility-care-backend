@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Domain.Entities;
 using FertilityCare.Infrastructure.Identity;
+using FertilityCare.Infrastructure.Repositories;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -17,6 +18,9 @@ namespace FertilityCare.Infrastructure.Services
         Task<PatientSecretInfo> GetPatientByUserIdAsync(string userId);
 
         Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId);
+
+        Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId);
+
     }
 
     public class PatientSecretService : IPatientSecretService
@@ -27,6 +31,8 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly IUserProfileRepository _profileRepository;
 
+        private readonly UserManager<ApplicationUser> _userManager;
+
         public PatientSecretService(IPatientRepository patientRepository, 
             IUserProfileRepository profileRepository, 
             UserManager<ApplicationUser> userManager,
@@ -35,6 +41,7 @@ namespace FertilityCare.Infrastructure.Services
             _patientRepository = patientRepository;
             _profileRepository = profileRepository;
             _orderRepository = orderRepository;
+            _userManager = userManager;
         }
 
         public async Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId)
@@ -70,6 +77,19 @@ namespace FertilityCare.Infrastructure.Services
                 PatientId = patient.Id.ToString(),
                 UserProfileId = profile.Id.ToString(),
                 OrderIds = new List<string> { (orders.First().Id.ToString()) }
+            };
+        }
+
+        public async Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId)
+        {
+            var loadedPatient = await _patientRepository.FindByIdAsync(Guid.Parse(patientId));
+
+            var loadedUser = await _userManager.FindByProfileIdAsync(loadedPatient.UserProfileId);
+
+            return new PatientInfoContactDTO
+            {
+                Email = loadedUser.Email,
+                PhoneNumber = loadedUser.PhoneNumber
             };
         }
     }
