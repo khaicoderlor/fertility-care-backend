@@ -58,7 +58,7 @@ namespace FertilityCare.WebAPI.Controllers
                 StatusCode = 200,
                 Message = "Payment callback verified",
                 Data = dto,
-                ResponsedAt = DateTime.UtcNow
+                ResponsedAt = DateTime.UtcNow 
             });
         }
 
