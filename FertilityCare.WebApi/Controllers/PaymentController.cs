@@ -7,7 +7,7 @@ using System.Text;
 namespace FertilityCare.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/payments")]
+    [Route("api/v1/payments")]
     public class PaymentController : ControllerBase
     {
         private readonly IMomoService _momoService;
@@ -29,7 +29,7 @@ namespace FertilityCare.WebAPI.Controllers
                 StatusCode = 200,
                 Message = "",
                 Data = payUrl,
-                ResponsedAt = DateTime.UtcNow
+                ResponsedAt = DateTime.UtcNow  
             });
         }
 
