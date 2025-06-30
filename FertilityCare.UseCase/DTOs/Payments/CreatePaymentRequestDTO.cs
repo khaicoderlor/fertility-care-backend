@@ -15,7 +15,7 @@ namespace FertilityCare.UseCase.DTOs.Payments
 
         public decimal TotalAmount { get; set; }
 
-        public Guid PaymentMethodId { get; set; }
+        public string PaymentMethod { get; set; }
 
         public string TreatmentName { get; set; }
 

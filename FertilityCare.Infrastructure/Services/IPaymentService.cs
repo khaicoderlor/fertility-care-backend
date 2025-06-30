@@ -41,8 +41,8 @@ namespace FertilityCare.Infrastructure.Services
                 OrderStepId = dto.OrderStepId,
                 PaymentCode = paymentCode,
                 TotalAmount = dto.TotalAmount,
-                PaymentMethodId = dto.PaymentMethodId,
-                Note = "",
+                PaymentMethod = dto.PaymentMethod.Equals("Momo", StringComparison.OrdinalIgnoreCase)
+                ?PaymentMethod.Momo:PaymentMethod.Cashier,
                 Status = PaymentStatus.Pending,
                 PaymentDate = DateTime.Now
             };
@@ -74,7 +74,6 @@ namespace FertilityCare.Infrastructure.Services
                 return;
             }
 
-            loadedPayment.ConfirmedAt = DateTime.Now;
             loadedPayment.GatewayResponseCode = paymentExecute.ResultCode;
             loadedPayment.GatewayMessage = paymentExecute.Message;
 
