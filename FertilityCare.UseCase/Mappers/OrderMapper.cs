@@ -27,6 +27,7 @@ namespace FertilityCare.UseCase.Mappers
                 Status = order.Status.ToString(),
                 TotalAmount = order.TotalAmount,
                 TotalEgg = order.TotalEgg,
+                IsFrozen = order.IsFrozen,
                 StartDate = order.StartDate.ToString("dd/MM/yyyy"),
                 EndDate = order.EndDate?.ToString("dd/MM/yyyy"),
                 UpdatedAt = order.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss"),

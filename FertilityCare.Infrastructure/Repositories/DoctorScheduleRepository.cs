@@ -105,7 +105,7 @@ namespace FertilityCare.Infrastructure.Repositories
                 .Where(ds =>
                     ds.WorkDate == parsedDate &&
                     ds.DoctorId == parsedDoctorId &&
-                    ds.IsAcceptingPatients == true)
+                    ds.IsAcceptingPatients)
                 .ToListAsync();
 
             // Lọc lại theo số lượng appointments thực tế

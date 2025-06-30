@@ -33,7 +33,7 @@ namespace FertilityCare.UseCase.Implements
             _embryoGainedRepository = embryoGainedRepository;
             _appointmentService = appointmentService;
         }
-        public async Task<EmbryoTransferDTO> CreateEmbryoTransferAsync(CreateEmbryoTransferRequestDTO request, bool isFrozen)
+        public async Task<EmbryoTransferDTO> CreateEmbryoTransferAsync(CreateEmbryoTransferRequestDTO request)
         {
             var order = await _orderRepository.FindByIdAsync(Guid.Parse(request.OrderId));
             var orderstep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 5).First()
@@ -43,19 +43,9 @@ namespace FertilityCare.UseCase.Implements
             var embryoList = await _embryoGainedRepository.FindAllAsync();
             embryoList = embryoList.Where(x => x.Id != request.EmbryoId);
             var transferType = TransferType.Fresh;
-            if (orderstep.Status.Equals(StepStatus.ReTranfer))
+            if (orderstep.Status.Equals(StepStatus.ReTransfer))
             {
                 transferType = TransferType.Frozen;
-            }
-
-            if (isFrozen)
-            {
-                embryoList.ToList().ForEach(x => x.IsFrozen = true);
-                order.IsFrozen = true;
-            }
-            else
-            {
-                embryoList.ToList().ForEach(x => { x.IsFrozen = false; x.EmbryoStatus = EmbryoStatus.Discarded; });
             }
 
             var embryoTransfer = new EmbryoTransfer()
@@ -90,6 +80,37 @@ namespace FertilityCare.UseCase.Implements
             });
         }
 
+        public async Task<bool> MakeStatusOrderIsFrozen(string orderId, bool isFrozen)
+        {
+            var order = await _orderRepository.FindByIdAsync(Guid.Parse(orderId))
+                ?? throw new NotFoundException($"Order with ID {orderId} not found.");
+
+            var embryoList = await _embryoGainedRepository.FindByOrderIdAsync(Guid.Parse(orderId))
+                ?? throw new NotFoundException($"Embryo gained with orderID {orderId} not found.");
+
+            if (isFrozen)
+            {
+                foreach (var embryo in embryoList)
+                {
+                    embryo.IsFrozen = true;
+                }
+                order.IsFrozen = true;
+            }
+            else
+            {
+                foreach (var embryo in embryoList)
+                {
+                    embryo.IsFrozen = false;
+                    embryo.EmbryoStatus = EmbryoStatus.Discarded;
+                }
+                order.IsFrozen = false;
+            }
+
+            await _orderRepository.SaveChangeAsync();
+            return true;
+        }
+
+
         public async Task<OrderStepDTO> ReTransferAsync(string orderId)
         {
             var order = await _orderRepository.FindByIdAsync(Guid.Parse(orderId))
@@ -106,11 +127,12 @@ namespace FertilityCare.UseCase.Implements
                 var orderStep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 6).FirstOrDefault()
                     ?? throw new NotFoundException($"Order step for embryo transfer not found in order {order.Id}.");
                 orderStep.Status = StepStatus.Planned;
-                await _orderStepRepository.SaveAsync(orderStep);
+
                 orderStep = order.OrderSteps.Where(x => x.TreatmentStep.StepOrder == 5).FirstOrDefault()
                     ?? throw new NotFoundException($"Order step for embryo transfer not found in order {order.Id}.");
-                orderStep.Status = StepStatus.ReTranfer;
+                orderStep.Status = StepStatus.ReTransfer;
 
+                await _orderStepRepository.UpdateAsync(orderStep);
                 return orderStep.MapToStepDTO();
             }
             else
@@ -119,6 +141,7 @@ namespace FertilityCare.UseCase.Implements
                     ?? throw new NotFoundException($"Order step for embryo transfer not found in order {order.Id}.");
                 orderStep.Status = StepStatus.Completed;
                 order.Status = OrderStatus.Completed;
+                await _orderStepRepository.UpdateAsync(orderStep);
                 return orderStep.MapToStepDTO();
             }
         }

@@ -18,10 +18,13 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IOrderRepository _orderRepository;
 
-        public EggGainedService(IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository)
+        private readonly IEmbryoGainedRepository _embryoGainedRepository; 
+
+        public EggGainedService(IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IEmbryoGainedRepository embryoGainedRepository)
         {
             _eggGainedRepository = eggGainedRepository;
             _orderRepository = orderRepository;
+            _embryoGainedRepository = embryoGainedRepository;
         }
 
         public async Task<CreateEggResponseDTO> AddEggsAsync(Guid orderId, CreateEggGainedListRequestDTO request)
@@ -99,6 +102,8 @@ namespace FertilityCare.UseCase.Implements
         public async Task<IEnumerable<EmbryoDropdownEggDTO>> GetUsableEggsByOrderIdAsync(Guid orderId)
         {
             var eggs = await _eggGainedRepository.GetUsableEggsByOrderIdAsync(orderId);
+            var embryos = await _embryoGainedRepository.FindByOrderIdAsync(orderId);
+            eggs = eggs.Where(egg => embryos.All(em => em.EggGainedId != egg.Id));
 
             return eggs.Select(e => new EmbryoDropdownEggDTO
             {

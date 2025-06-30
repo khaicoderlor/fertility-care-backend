@@ -22,11 +22,11 @@ namespace FertilityCare.WebApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<EmbryoTransferDTO>>> CreateEmbryoTransferAsync([FromBody] CreateEmbryoTransferRequestDTO request, [FromQuery] bool isFrozen)
+        public async Task<ActionResult<ApiResponse<EmbryoTransferDTO>>> CreateEmbryoTransferAsync([FromBody] CreateEmbryoTransferRequestDTO request)
         {
             try
             {
-                var result = await _embryoTransferService.CreateEmbryoTransferAsync(request, isFrozen);
+                var result = await _embryoTransferService.CreateEmbryoTransferAsync(request);
                 return Ok(new ApiResponse<EmbryoTransferDTO>
                 {
                     StatusCode = 200,
@@ -57,9 +57,45 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpPut("{orderId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> MakeStatusOrderIsFrozenAsync([FromRoute] string orderId, [FromQuery] bool isAccept)
+        {
+            try
+            {
+                var result = await _embryoTransferService.MakeStatusOrderIsFrozen(orderId, isAccept);
+                return Ok(new ApiResponse<bool>
+                {
+                    StatusCode = 200,
+                    Message = "Update status order successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = "Order Not Found.",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<bool>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = false,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
-        [HttpPut]
-        public async Task<ActionResult<ApiResponse<bool>>> ReTransferAsync([FromQuery]string orderId)
+
+        [HttpPatch("{orderId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> ReTransferAsync([FromRoute]string orderId)
         {
             try
             {
@@ -129,9 +165,5 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-
-
-
-
     }
 }

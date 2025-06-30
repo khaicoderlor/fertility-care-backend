@@ -1,0 +1,11 @@
+﻿E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Contents\GlobalContent.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\AppointmentSlotLimitExceededException.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\BadRequestException .cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\BaseException.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\BookingAppointmentFailedExpception.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\ConflictException .cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\CreateUserFailedExpception.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\NotFoundException.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\UnauthorizedException.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\UserNotExistException.cs
+E:\programming\my_project\fertility-care-backend\FertilityCare\FertilityCare.Share\Exceptions\ValidationException .cs

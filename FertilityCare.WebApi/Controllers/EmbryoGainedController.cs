@@ -6,6 +6,8 @@ using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+namespace FertilityCare.WebApi.Controllers;
+
 [ApiController]
 [Route("api/v1/embryos")]
 public class EmbryoGainedController : ControllerBase
@@ -155,7 +157,7 @@ public class EmbryoGainedController : ControllerBase
                 Data = null,
                 ResponsedAt = DateTime.UtcNow
             });
-        }
+        }   
         catch (NotFoundException e)
         {
             return NotFound(new ApiResponse<object>

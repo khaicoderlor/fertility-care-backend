@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FertilityCare.Domain.constants
 {
-    public class ApplicationConstant
+    public static class ApplicationConstant
     {
-        public static string DefaultAvatar = "avatar.jpg";
+        public static readonly string DefaultAvatar = "avatar.jpg";
 
     }
 }

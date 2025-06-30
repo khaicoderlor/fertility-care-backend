@@ -31,8 +31,10 @@ namespace FertilityCare.UseCase.DTOs.Orders
         public decimal? TotalAmount { get; set; }
 
         public string? Note { get; set; }
-
+            
         public long? TotalEgg { get; set; }
+
+        public bool IsFrozen { get; set; }
 
         public string? CreatedAt { get; set; }
 

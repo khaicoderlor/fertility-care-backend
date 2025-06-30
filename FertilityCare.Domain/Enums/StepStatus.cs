@@ -12,7 +12,7 @@ public enum StepStatus
 
     InProgress,     
 
-    ReTranfer,
+    ReTransfer,
 
     Completed,
 

@@ -106,10 +106,8 @@ namespace FertilityCare.UseCase.Implements
             };
 
             step.TotalAmount += appointment.ExtraFee;
-
-            await _appointmentRepository.SaveAsync(appointment);
-
             await _stepRepository.SaveChangeAsync();
+            await _appointmentRepository.SaveAsync(appointment);
             return appointment.MapToAppointmentDTO();
         }
 
