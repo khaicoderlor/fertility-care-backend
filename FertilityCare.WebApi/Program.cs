@@ -28,6 +28,7 @@ namespace FertilityCare.WebApi
             builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
             builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
+            builder.Services.Configure<CloudStorageSettings>(builder.Configuration.GetSection("CloudStorageSettings"));
           
             builder.Services.AddCors(options =>
             {
@@ -124,6 +125,7 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IMomoService, MomoService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddHttpClient<IMomoService, MomoService>();
+            builder.Services.AddScoped<ICloudStorageService, CloudStorageService>();
 
             builder.Services
             .AddControllers()

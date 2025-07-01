@@ -100,7 +100,7 @@ namespace FertilityCare.Infrastructure.Services
                             FirstName = payload.GivenName,
                             MiddleName = "",
                             LastName = payload.FamilyName,
-                            AvatarUrl = payload.Picture
+                            AvatarUrl = payload.Picture,
                         }
                     };
 

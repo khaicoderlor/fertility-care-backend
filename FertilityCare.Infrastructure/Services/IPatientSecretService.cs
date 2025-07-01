@@ -20,7 +20,7 @@ namespace FertilityCare.Infrastructure.Services
         Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId);
 
         Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId);
-
+        Task UpdateAvatarAsync(string patientId, string file);
     }
 
     public class PatientSecretService : IPatientSecretService
@@ -91,6 +91,13 @@ namespace FertilityCare.Infrastructure.Services
                 Email = loadedUser.Email,
                 PhoneNumber = loadedUser.PhoneNumber
             };
+        }
+
+        public async Task UpdateAvatarAsync(string patientId, string secureUrl)
+        {
+            var patient = await _patientRepository.FindByIdAsync(Guid.Parse(patientId));
+            patient.UserProfile.AvatarUrl = secureUrl;
+            await _patientRepository.SaveChangeAsync();
         }
     }
 }

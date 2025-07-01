@@ -17,10 +17,13 @@ namespace FertilityCare.WebAPI.Controllers
 
         private readonly IPatientSecretService _patientSecretService;
 
-        public PatientController(IPatientService patientService, IPatientSecretService patientSecretService)
+        private readonly ICloudStorageService _cloudStorageService;
+
+        public PatientController(IPatientService patientService, IPatientSecretService patientSecretService, ICloudStorageService cloudStorageService)
         {
             _patientService = patientService;
             _patientSecretService = patientSecretService;
+            _cloudStorageService = cloudStorageService;
         }
 
         [HttpGet]
@@ -87,6 +90,46 @@ namespace FertilityCare.WebAPI.Controllers
                     StatusCode = 200,
                     Message = "",
                     Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpPatch("{patientId}/change-avatar")]
+        public async Task<ActionResult<ApiResponse<object>>> UploadAvatarImagebyPatientId([FromRoute] string patientId, [FromBody] IFormFile file)
+        {
+            try
+            {
+                var secureUrl = await _cloudStorageService.UploadPhotoAsync(file);
+
+                if(secureUrl is null)
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        StatusCode = 400,
+                        Message = "",
+                        Data = "Updated failed!",
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                await _patientSecretService.UpdateAvatarAsync(patientId, secureUrl);
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = secureUrl,
                     ResponsedAt = DateTime.Now
                 });
             }
