@@ -88,6 +88,10 @@ namespace FertilityCare.UseCase.Implements
             }
             return feedbackDTO;
         }
-
+        public async Task<List<FeedbackDTO>> GetAllFeedbacksAsync(FeedbackQueryDTO query)
+        {
+            var loadedFeedbacks = await _feedbackRepository.GetFeedbackByAllIdAsync(query, query.PageNumber, query.PageSize);
+            return loadedFeedbacks.Select(feedback => feedback.MapToFeedbackDTO()).ToList();
+        }
     }
 }
