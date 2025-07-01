@@ -106,7 +106,7 @@ namespace FertilityCare.WebAPI.Controllers
         }
 
         [HttpPatch("{patientId}/change-avatar")]
-        public async Task<ActionResult<ApiResponse<object>>> UploadAvatarImagebyPatientId([FromRoute] string patientId, [FromBody] IFormFile file)
+        public async Task<ActionResult<ApiResponse<object>>> UploadAvatarImagebyPatientId([FromRoute] string patientId, [FromForm] IFormFile file)
         {
             try
             {
@@ -130,6 +130,44 @@ namespace FertilityCare.WebAPI.Controllers
                     StatusCode = 200,
                     Message = "",
                     Data = secureUrl,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpPut("{patientId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateInfoPatientById([FromRoute] string patientId, [FromBody] UpdatePatientInfoDTO request)
+        {
+            try
+            {
+               var isUpdated = await _patientService.UpdateInfoPatientByIdAsync(patientId, request);
+
+                if(!isUpdated)
+                {
+                    return BadRequest(new ApiResponse<bool>
+                    {
+                        StatusCode = 400,
+                        Message = "",
+                        Data = isUpdated,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                return Ok(new ApiResponse<bool>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = isUpdated,
                     ResponsedAt = DateTime.Now
                 });
             }
