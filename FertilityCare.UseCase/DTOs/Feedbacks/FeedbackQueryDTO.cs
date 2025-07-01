@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.DTOs.Feedbacks
 {
-    public class CreateFeedbackRequestDTO
+    public class FeedbackQueryDTO
     {
-        public string PatientId { get; set; }
+        public string? PatientId { get; set; }
         public string? DoctorId { get; set; }
         public string? TreatmentServiceId { get; set; }
-        public decimal Rating { get; set; }
-        public string? Comment { get; set; }
-
+        public decimal? rating { get; set; } 
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
 
     }
 }
