@@ -15,5 +15,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<PrescriptionDTO> AddPrescriptionItemToPrescriptionAsync(PrescriptionItemDTO prescriptionItem, string prescriptionId);
 
         Task<IEnumerable<PrescriptionDetailDTO>> GetPrescriptionByPatientId(string patientId);
+        Task<IEnumerable< PrescriptionDetailDTO>> GetPrescriptionDetailByOrderIdAsync(string orderId);
     }
 }

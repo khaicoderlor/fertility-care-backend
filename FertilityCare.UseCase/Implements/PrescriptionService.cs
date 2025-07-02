@@ -88,5 +88,27 @@ namespace FertilityCare.UseCase.Implements
                 PrescriptionItems = p.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList() ?? new List<PrescriptionItemDTO>(),
             }).ToList();
         }
+
+        public async Task<IEnumerable< PrescriptionDetailDTO>> GetPrescriptionDetailByOrderIdAsync(string orderId)
+        {
+            var prescription = await _prescriptionRepository.FindPrescriptionsByOrderIdAsync(Guid.Parse(orderId));
+            var order = await _orderRepository.FindByIdAsync(Guid.Parse(orderId));
+            if (prescription is null)
+                throw new NotFoundException("Prescription not found for the given order ID");
+            var patientProfile = await _userProfileRepository.FindByIdAsync(order.PatientId);
+            var doctorProfile = await _userProfileRepository.FindByIdAsync(order.DoctorId);
+            return prescription.Select(p => new PrescriptionDetailDTO
+            {
+                Id = p.Id.ToString(),
+                OrderId = p.OrderId.ToString(),
+                PatientId = p.Order.PatientId.ToString(),
+                PatientFullName = $"{patientProfile.FirstName} {patientProfile.MiddleName} {patientProfile.LastName}",
+                DoctorId = p.Order.DoctorId.ToString(),
+                DoctorFullName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
+                TreatmentServiceName = p.Order.TreatmentService?.Name ?? "N/A",
+                PrescriptionDate = p.PrescriptionDate.ToString("yyyy-MM-dd"),
+                PrescriptionItems = p.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList() ?? new List<PrescriptionItemDTO>(),
+            }).ToList();
+        }
     }
 }

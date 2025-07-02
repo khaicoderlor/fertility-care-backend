@@ -66,12 +66,12 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
         [HttpGet("by-order")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDTO>>>> FindPrescriptionByOrderId([FromQuery] string orderId)
+        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> FindPrescriptionByOrderId([FromQuery] string orderId)
         {
             try
             {
-                var result = await _prescriptionService.FindPrescriptionByOrderIdAsync(orderId);
-                return Ok(new ApiResponse<IEnumerable<PrescriptionDTO>>
+                var result = await _prescriptionService.GetPrescriptionDetailByOrderIdAsync(orderId);
+                return Ok(new ApiResponse<IEnumerable<PrescriptionDetailDTO>>
                 {
                     StatusCode = 200,
                     Message = "",
