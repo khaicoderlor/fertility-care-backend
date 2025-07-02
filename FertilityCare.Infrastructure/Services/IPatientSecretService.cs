@@ -2,8 +2,10 @@
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Infrastructure.Repositories;
 using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
+using FertilityCare.UseCase.Mappers;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ namespace FertilityCare.Infrastructure.Services
 
         Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId);
         Task UpdateAvatarAsync(string patientId, string file);
+        Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid);
     }
 
     public class PatientSecretService : IPatientSecretService
@@ -33,15 +36,17 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly UserManager<ApplicationUser> _userManager;
 
+        private readonly IOrderStepPaymentRepository _orderStepPaymentRepository;
+
         public PatientSecretService(IPatientRepository patientRepository, 
             IUserProfileRepository profileRepository, 
             UserManager<ApplicationUser> userManager,
-            IOrderRepository orderRepository)
+            IOrderStepPaymentRepository orderStepPaymentRepository)
         {
             _patientRepository = patientRepository;
             _profileRepository = profileRepository;
-            _orderRepository = orderRepository;
             _userManager = userManager;
+            _orderStepPaymentRepository = orderStepPaymentRepository;
         }
 
         public async Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId)
@@ -91,6 +96,13 @@ namespace FertilityCare.Infrastructure.Services
                 Email = loadedUser.Email,
                 PhoneNumber = loadedUser.PhoneNumber
             };
+        }
+
+        public async Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid)
+        {
+            var payments = await _orderStepPaymentRepository.FindAllByPatientIdAsync(guid);
+            
+            return payments.Select(x => x.MapToOrderStepPaymentTuple()).ToList();
         }
 
         public async Task UpdateAvatarAsync(string patientId, string secureUrl)

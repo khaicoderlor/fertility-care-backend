@@ -126,6 +126,8 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddHttpClient<IMomoService, MomoService>();
             builder.Services.AddScoped<ICloudStorageService, CloudStorageService>();
+            builder.Services.AddScoped<IOrderStepPaymentRepository, OrderStepPaymentRepository>();
+            
 
             builder.Services
             .AddControllers()

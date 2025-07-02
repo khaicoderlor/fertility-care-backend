@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using FertilityCare.Infrastructure.Services;
 using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -17,13 +18,16 @@ namespace FertilityCare.WebAPI.Controllers
 
         private readonly IPatientSecretService _patientSecretService;
 
+        private readonly IPaymentService _paymentService;   
+
         private readonly ICloudStorageService _cloudStorageService;
 
-        public PatientController(IPatientService patientService, IPatientSecretService patientSecretService, ICloudStorageService cloudStorageService)
+        public PatientController(IPatientService patientService, IPatientSecretService patientSecretService, ICloudStorageService cloudStorageService, IPaymentService paymentService)
         {
             _patientService = patientService;
             _patientSecretService = patientSecretService;
             _cloudStorageService = cloudStorageService;
+            _paymentService = paymentService;
         }
 
         [HttpGet]
@@ -86,6 +90,32 @@ namespace FertilityCare.WebAPI.Controllers
             {
                 var result = await _patientSecretService.GetPatientInfoContactByPatientIdAsync(patientId);
                 return Ok(new ApiResponse<PatientInfoContactDTO>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpGet("{patientId}/payment-histories")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<OrderStepPaymentTuple>>>> GetPaymentHistories([FromRoute] string patientId)
+        {
+            try
+            {
+                var result = await _patientSecretService.GetPaymentHistoriesByPatientId(Guid.Parse(patientId));
+                return Ok(new ApiResponse<IEnumerable<OrderStepPaymentTuple>>
                 {
                     StatusCode = 200,
                     Message = "",

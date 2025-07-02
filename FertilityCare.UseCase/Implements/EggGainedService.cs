@@ -3,12 +3,6 @@ using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.EggGained;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.Implements
 {

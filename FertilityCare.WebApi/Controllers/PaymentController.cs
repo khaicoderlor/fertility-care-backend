@@ -33,47 +33,57 @@ namespace FertilityCare.WebAPI.Controllers
         }
 
         [HttpPost("callback")]
-        public async Task<ActionResult<ApiResponse<PaymentExecuteResponseDTO>>> CallBackPayment()
+        public async Task<ActionResult<ApiResponse<PaymentExecuteResponseDTO>>> CallBackPayment([FromBody] Dictionary<string, string> parameters)
         {
-            var dto = ParseCallbackPayment(HttpContext.Request.Query);
-
-            var isValid = _momoService.VerifySignatureFromCallback(HttpContext.Request.Query);
-
-            if (!isValid)
+            try
             {
-                return BadRequest(new ApiResponse<PaymentExecuteResponseDTO>
+                var dto = new PaymentExecuteResponseDTO
                 {
-                    StatusCode = 400,
-                    Message = "Invalid signature. This callback is not trusted.",
+                    Amount = parameters.GetValueOrDefault("amount"),
+                    OrderId = parameters.GetValueOrDefault("orderId"),
+                    OrderInfo = parameters.GetValueOrDefault("orderInfo"),
+                    ResultCode = parameters.GetValueOrDefault("resultCode"),
+                    Message = parameters.GetValueOrDefault("message"),
+                    ExtraData = parameters.GetValueOrDefault("extraData"),
+                    Signature = parameters.GetValueOrDefault("signature")
+                };
+
+                var isValid = _momoService.VerifySignatureFromCallback(parameters);
+
+                if (!isValid)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid signature.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                await _paymentService.UpdatePayment(dto);
+
+                return Ok(new ApiResponse<PaymentExecuteResponseDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Verified from return url.",
                     Data = dto,
                     ResponsedAt = DateTime.UtcNow
                 });
             }
-
-            await _paymentService.UpdatePayment(dto);
-
-            return Ok(new ApiResponse<PaymentExecuteResponseDTO>
+            catch (Exception ex)
             {
-                StatusCode = 200,
-                Message = "Payment callback verified",
-                Data = dto,
-                ResponsedAt = DateTime.UtcNow
-            });
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "Error: " + ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
         }
 
-        private PaymentExecuteResponseDTO ParseCallbackPayment(IQueryCollection qc)
-        {
-            return new PaymentExecuteResponseDTO
-            {
-                Amount = qc["amount"],
-                OrderId = qc["orderId"],
-                OrderInfo = qc["orderInfo"],
-                ResultCode = qc["resultCode"],
-                Message = qc.TryGetValue("message", out var msg) ? msg.ToString() : string.Empty,
-                ExtraData = qc["extraData"],
-                Signature = qc["signature"]
-            };
-        }
+      
     }
 
 }

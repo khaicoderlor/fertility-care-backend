@@ -57,7 +57,8 @@ namespace FertilityCare.Infrastructure.Services
                 {
                     Amount = dto.TotalAmount,
                     OrderId = orderId,
-                    OrderInfo = dto.OrderInfo ?? "Thanh toán đơn hàng IVF"
+                    OrderInfo = dto.OrderInfo ?? "Thanh toán đơn hàng IVF",
+                    ExtraData = dto.ExtraData ?? string.Empty
                 });
 
                 return payUrl;
@@ -70,7 +71,6 @@ namespace FertilityCare.Infrastructure.Services
         {
             var payment = await _db.orderStepPayments.FirstOrDefaultAsync(p => p.PaymentCode == dto.OrderId);
             if (payment is null) throw new InvalidOperationException("Không tìm thấy thông tin thanh toán.");
-            if (payment.Status == PaymentStatus.Paid) return; 
 
             payment.GatewayResponseCode = dto.ResultCode;
             payment.GatewayMessage = dto.Message;
@@ -82,6 +82,21 @@ namespace FertilityCare.Infrastructure.Services
                 "1006" => PaymentStatus.Cancelled,
                 _ => PaymentStatus.Failed
             };
+
+            if(payment.Status == PaymentStatus.Paid)
+            {
+                payment.OrderStep.PaymentStatus = PaymentStatus.Paid;
+            } 
+            else if (payment.Status == PaymentStatus.Cancelled)
+            {
+                payment.OrderStep.PaymentStatus = PaymentStatus.Cancelled;
+            }
+            else
+            {
+                payment.OrderStep.PaymentStatus = PaymentStatus.Failed;
+            }
+
+            payment.PaymentDate = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();
         }

@@ -20,6 +20,8 @@ namespace FertilityCare.UseCase.DTOs.Payments
         public string TreatmentName { get; set; }
 
         public string? OrderInfo { get; set; }
+
+        public string? ExtraData { get; set; } 
     }
 
 }

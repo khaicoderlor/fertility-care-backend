@@ -14,7 +14,7 @@ namespace FertilityCare.Infrastructure.Services
     {
         Task<string> CreatePaymentAsync(CreateMomoRequest request);
 
-        bool VerifySignatureFromCallback(IQueryCollection queryParams);
+        bool VerifySignatureFromCallback(Dictionary<string, string> queryParams);
 
     }
 
@@ -33,7 +33,7 @@ namespace FertilityCare.Infrastructure.Services
         public async Task<string> CreatePaymentAsync(CreateMomoRequest src)
         {
             string originalOrderInfo = src.OrderInfo;
-            string encodedOrderInfo = Uri.EscapeDataString(originalOrderInfo); // chỉ dùng sau
+            string encodedOrderInfo = Uri.EscapeDataString(originalOrderInfo);
 
             var req = new MomoPaymentRequest
             {
@@ -45,10 +45,9 @@ namespace FertilityCare.Infrastructure.Services
                 RedirectUrl = _cfg.ReturnUrl,
                 IpnUrl = _cfg.NotifyUrl,
                 RequestType = _cfg.RequestType,
-                ExtraData = ""
+                ExtraData = src.ExtraData ?? string.Empty,
             };
 
-            // raw string để ký → dùng bản GỐC chưa encode
             var raw = $"accessKey={req.AccessKey}&amount={req.Amount}&extraData={req.ExtraData}" +
                       $"&ipnUrl={req.IpnUrl}&orderId={req.OrderId}&orderInfo={originalOrderInfo}" +
                       $"&partnerCode={req.PartnerCode}&redirectUrl={req.RedirectUrl}" +
@@ -59,7 +58,6 @@ namespace FertilityCare.Infrastructure.Services
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_cfg.SecretKey));
             req.Signature = Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant();
 
-            // Gán bản ENCODED vào JSON để gửi đi
             req.OrderInfo = encodedOrderInfo;
 
             var json = JsonConvert.SerializeObject(req);
@@ -81,13 +79,10 @@ namespace FertilityCare.Infrastructure.Services
             throw new InvalidOperationException("Response lacks payUrl");
         }
 
-
-        public bool VerifySignatureFromCallback(IQueryCollection q)
+        public bool VerifySignatureFromCallback(Dictionary<string, string> q)
         {
-            q.TryGetValue("message", out var message);
-
             var raw = $"accessKey={_cfg.AccessKey}&amount={q["amount"]}&extraData={q["extraData"]}" +
-                      $"&message={message}&orderId={q["orderId"]}&orderInfo={q["orderInfo"]}&orderType={q["orderType"]}" +
+                      $"&message={q["message"]}&orderId={q["orderId"]}&orderInfo={q["orderInfo"]}&orderType={q["orderType"]}" +
                       $"&partnerCode={q["partnerCode"]}&payType={q["payType"]}&requestId={q["requestId"]}" +
                       $"&responseTime={q["responseTime"]}&resultCode={q["resultCode"]}&transId={q["transId"]}";
 
@@ -96,6 +91,7 @@ namespace FertilityCare.Infrastructure.Services
 
             return string.Equals(sign, q["signature"], StringComparison.OrdinalIgnoreCase);
         }
+
 
     }
 }
