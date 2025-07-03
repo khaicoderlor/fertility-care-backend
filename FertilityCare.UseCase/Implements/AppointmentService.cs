@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Domain.Entities;
 using FertilityCare.Domain.Enums;
+using FertilityCare.Share.Exceptions;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -56,17 +57,30 @@ namespace FertilityCare.UseCase.Implements
 
         public async Task<AppointmentDTO> MarkStatusAppointmentAsync(Guid appointmentId, string status)
         {
-            var appointment = await _appointmentRepository.FindByIdAsync(appointmentId)
-                ?? throw new NotFoundException("Appointment not found!");
+            var appointment = await _appointmentRepository.FindByIdAsync(appointmentId);
 
-            if (!Enum.TryParse<AppointmentStatus>(status, true, out var appointmentStatus))
+            //if (!Enum.TryParse<AppointmentStatus>(status, true, out var appointmentStatus))
+            //{
+            //    throw new ArgumentException("Invalid appointment status provided.");
+            //}
+
+            var orderStep = await _stepRepository.FindByIdAsync(appointment.OrderStepId ?? 0);
+            if (orderStep is not null && orderStep.Appointments is not null)
             {
-                throw new ArgumentException("Invalid appointment status provided.");
+                bool s = orderStep.Appointments
+                    .Where(x => x.AppointmentDate < appointment.AppointmentDate)
+                    .ToList()
+                    .All(x => x.Status == AppointmentStatus.Completed);
+
+                if (!s)
+                {
+                    throw new PreviousNotCompletedExpception("Cannot mark this appointment as completed because there are previous appointments that are not completed yet.");
+                }
             }
 
-            appointment.Status = appointmentStatus;
+            appointment.Status = AppointmentStatus.Completed;
             appointment.UpdatedAt = DateTime.Now;
-            await _appointmentRepository.UpdateAsync(appointment);
+            await _appointmentRepository.SaveChangesAsync();
 
             return appointment.MapToAppointmentDTO();
         }

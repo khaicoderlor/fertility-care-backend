@@ -1,4 +1,5 @@
-﻿using FertilityCare.Shared.Exceptions;
+﻿using FertilityCare.Share.Exceptions;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
@@ -61,11 +62,31 @@ namespace FertilityCare.WebApi.Controllers
             try
             {
                 var result = await _stepService.MarkStatusByStepIdAsync(stepId, status);
-                return Ok(new ApiResponse<(OrderStepDTO, string)>
+                return Ok(new ApiResponse<bool>
                 {
                     StatusCode = 200,
                     Message = "Order step fetched successfully!",
-                    Data = result,
+                    Data = true,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (PreviousNotCompletedExpception e) //1000
+            {
+                return BadRequest(new ApiResponse<bool>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = "Bước điều trị trước chưa hoàn thành",
+                    Data = false,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotPaidOrderStepException e) // 1001
+            {
+                return BadRequest(new ApiResponse<bool>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = "Bệnh nhân chưa thanh toán bước này không thể hoàn thành",
+                    Data = false,
                     ResponsedAt = DateTime.Now
                 });
             }

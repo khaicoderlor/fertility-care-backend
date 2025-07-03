@@ -142,7 +142,7 @@ namespace FertilityCare.WebAPI.Controllers
             {
                 var secureUrl = await _cloudStorageService.UploadPhotoAsync(file);
 
-                if(secureUrl is null)
+                if (secureUrl is null)
                 {
                     return BadRequest(new ApiResponse<string>
                     {

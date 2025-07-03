@@ -1,4 +1,5 @@
-﻿using FertilityCare.Shared.Exceptions;
+﻿using FertilityCare.Share.Exceptions;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
@@ -192,14 +193,23 @@ namespace FertilityCare.WebApi.Controllers
         [Route("mark-status/{appointmentId}")]
         public async Task<ActionResult<AppointmentDTO>> MarkStatusAppointmentById([FromRoute] string appointmentId, [FromQuery] string status)
         {
-            try
-            {
+            try { 
                 var result = await _appointmentService.MarkStatusAppointmentAsync(Guid.Parse(appointmentId), status);
-                return Ok(new ApiResponse<AppointmentDTO>
+                return Ok(new ApiResponse<bool>
                 {
                     StatusCode = 200,
                     Message = "Marked status successfully!",
-                    Data = result,
+                    Data = true,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (PreviousNotCompletedExpception e)
+            {
+                return BadRequest(new ApiResponse<bool>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = e.Message,
+                    Data = false,
                     ResponsedAt = DateTime.Now
                 });
             }

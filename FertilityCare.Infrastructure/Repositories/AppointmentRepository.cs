@@ -100,5 +100,9 @@ namespace FertilityCare.Infrastructure.Repositories
             return entity;
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

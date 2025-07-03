@@ -1,4 +1,6 @@
-﻿using FertilityCare.Domain.Enums;
+﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
+using FertilityCare.Share.Exceptions;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -38,53 +40,83 @@ namespace FertilityCare.UseCase.Implements
         public async Task<(OrderStepDTO, string)> MarkStatusByStepIdAsync(long stepId, string status)
         {
             var step = await _stepRepository.FindByIdAsync(stepId);
+            if (step == null)
+                throw new NotFoundException($"OrderStep with ID {stepId} not found.");
+
+            var allSteps = await _stepRepository.FindAllByOrderIdAsync(step.OrderId);
+            OrderStep? beforeStep = null;
+
+            if (step.TreatmentStep.StepOrder > 1)
+            {
+                beforeStep = allSteps.FirstOrDefault(x => x.TreatmentStep.StepOrder == step.TreatmentStep.StepOrder - 1);
+            }
 
             if (!Enum.TryParse(status, true, out StepStatus stepStatus))
             {
                 throw new ArgumentException($"Invalid status: {status}");
             }
 
-            step.Status = stepStatus;
-            if(stepStatus == StepStatus.Completed)
+            if (step.Appointments.Any(x => x.Status != AppointmentStatus.Completed))
             {
-                step.EndDate = DateOnly.FromDateTime(new DateTime());
+                throw new PreviousNotCompletedExpception("Cannot mark step as completed while there are pending appointments.");
+            }
+
+            if (step.PaymentStatus != PaymentStatus.Paid)
+            {
+                throw new NotPaidOrderStepException("Not paid order step cannot be marked as completed.");
+            }
+
+            if (step.TreatmentStep.StepOrder > 1 && (beforeStep == null || beforeStep.Status != StepStatus.Completed))
+            {
+                throw new PreviousNotCompletedExpception("Cannot mark step as completed before the previous step is completed.");
+            }
+
+            step.Status = stepStatus;
+            if (stepStatus == StepStatus.Completed)
+            {
+                step.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
             }
 
             await _stepRepository.UpdateAsync(step);
 
+            // Nếu là bước cuối → hoàn tất đơn hàng
             var finalSteps = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
             {
                 ["IVF"] = 6,
                 ["IUI"] = 4
             };
 
-            if (step.Status == StepStatus.Completed &&
+            if (stepStatus == StepStatus.Completed &&
                 finalSteps.TryGetValue(step.Order.TreatmentService.Name, out var finalStep) &&
                 step.TreatmentStep.StepOrder == finalStep)
             {
                 var order = await _orderRepository.FindByIdAsync(step.OrderId);
                 order.Status = OrderStatus.Completed;
                 order.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
+                await _orderRepository.UpdateAsync(order);
             }
 
+            // Nếu completed thì cập nhật bước kế tiếp sang InProgress
             if (stepStatus == StepStatus.Completed)
             {
-                var orderId = step.OrderId;
-                var steps = await _stepRepository.FindAllByOrderIdAsync(orderId);
                 var currentStepOrder = step.TreatmentStep.StepOrder;
-                if ((currentStepOrder + 1) <= step.Order.TreatmentService?.TreatmentSteps?.Count())
+                var nextStep = allSteps.FirstOrDefault(x => x.TreatmentStep.StepOrder == currentStepOrder + 1);
+                if (nextStep != null)
                 {
-                    steps.Where(x => x.TreatmentStep.StepOrder == (currentStepOrder + 1)).First().Status = StepStatus.InProgress;
-                    await _stepRepository.SaveChangeAsync();
+                    nextStep.Status = StepStatus.InProgress;
+                    await _stepRepository.UpdateAsync(nextStep);
                 }
 
-                return new(step.MapToStepDTO(), StepStatus.InProgress.ToString());
+                await _stepRepository.SaveChangeAsync();
+
+                return (step.MapToStepDTO(), StepStatus.InProgress.ToString());
             }
             else
             {
-                return new(step.MapToStepDTO(), "");
+                await _stepRepository.SaveChangeAsync();
+                return (step.MapToStepDTO(), "");
             }
-
         }
+
     }
 }

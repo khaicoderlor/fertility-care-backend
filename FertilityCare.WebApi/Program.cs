@@ -9,6 +9,7 @@ using FertilityCare.UseCase.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -23,13 +24,26 @@ namespace FertilityCare.WebApi
 
             // Add services to the container.
             builder.Services.AddControllers();
+            //builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            //builder.Services.AddSwaggerGen(opt =>
+            //{
+            //    opt.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            //    {
+            //        Title = "FertilityCare API",
+            //        Version = "v1"
+            //    });
+
+            //    opt.OperationFilter<FileUploadOperationFilter>();
+
+            //});
+
+                builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
             builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
             builder.Services.Configure<CloudStorageSettings>(builder.Configuration.GetSection("CloudStorageSettings"));
-          
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowClient", policy =>
@@ -40,6 +54,7 @@ namespace FertilityCare.WebApi
                           .AllowCredentials();
                 });
             });
+
 
             builder.Services.AddDbContext<FertilityCareDBContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -147,6 +162,12 @@ namespace FertilityCare.WebApi
                 await SeedRolesAsync(roleManager);
             }
 
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI();
+            //}
+
             app.UseHttpsRedirection();
             app.UseCors("AllowClient");
             //app.UseAuthentication();
@@ -154,6 +175,7 @@ namespace FertilityCare.WebApi
             app.MapControllers();
             await app.RunAsync();
         }
+            
 
         private static async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
