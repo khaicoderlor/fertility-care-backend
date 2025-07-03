@@ -52,6 +52,30 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackDTO>>>> GetAllFeedbacksByFilterAsync([FromQuery] FeedbackQueryDTO query)
+        {
+            try
+            {
+                var feedbacks = await _feedbackService.GetAllFeedbacksAsync(query);
+                return Ok(new ApiResponse<IEnumerable<FeedbackDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = feedbacks,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }
