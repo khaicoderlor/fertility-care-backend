@@ -38,7 +38,7 @@ namespace FertilityCare.WebApi
 
             //});
 
-                builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
             builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
@@ -142,7 +142,11 @@ namespace FertilityCare.WebApi
             builder.Services.AddHttpClient<IMomoService, MomoService>();
             builder.Services.AddScoped<ICloudStorageService, CloudStorageService>();
             builder.Services.AddScoped<IOrderStepPaymentRepository, OrderStepPaymentRepository>();
-            
+            builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+            builder.Services.AddScoped<IBlogService, BlogService>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+            builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
             builder.Services
             .AddControllers()
