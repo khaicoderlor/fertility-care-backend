@@ -54,7 +54,7 @@ namespace FertilityCare.UseCase.Implements
 
         public async Task<List<BlogDTO>> GetBlogByDoctorId(BlogQueryDTO query)
         {
-            var blogs = await _blogRepository.GetBlogByDoctorIdAsync(Guid.Parse(query.doctorId), query.PageNumber, query.PageSize);
+            var blogs = await _blogRepository.GetBlogByDoctorIdAsync(Guid.Parse(query.DoctorId), query.PageNumber, query.PageSize);
             return blogs.Select(b => b.MapToBlogDTO()).ToList();
         }
         public async Task<List<BlogDTO>> GetAllBlog(int pageNumber, int pageSize)
