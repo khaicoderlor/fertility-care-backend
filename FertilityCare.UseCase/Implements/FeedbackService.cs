@@ -93,12 +93,13 @@ namespace FertilityCare.UseCase.Implements
             var loadedFeedbacks = await _feedbackRepository.GetFeedbackByAllIdAsync(query, query.PageNumber, query.PageSize);
             return loadedFeedbacks.Select(feedback => feedback.MapToFeedbackDTO()).ToList();
         }
-        public async Task<FeedbackDTO> UpdateFeedbackAsync(string feedbackId, CreateFeedbackRequestDTO request)
+        public async Task<FeedbackDTO> UpdateFeedbackAsync(string feedbackId, UpdateFeedbackDTO request)
         {
             var loadedFeedback = await _feedbackRepository.FindByIdAsync(Guid.Parse(feedbackId))
                 ?? throw new NotFoundException($"Feedback with id {feedbackId} not found.");
 
             loadedFeedback.Comment = request.Comment;
+            loadedFeedback.Rating = request.Rating;
             loadedFeedback.UpdatedAt = DateTime.Now;
             await _feedbackRepository.UpdateAsync(loadedFeedback);
             return loadedFeedback.MapToFeedbackDTO();

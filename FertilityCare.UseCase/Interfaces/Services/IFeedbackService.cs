@@ -11,7 +11,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task<List<FeedbackDTO>> GetAllFeedbacksAsync(FeedbackQueryDTO query);//retrun list paginated
         Task<FeedbackDTO> CreateFeedbackAsync(CreateFeedbackRequestDTO request);
-        Task<FeedbackDTO> UpdateFeedbackAsync(string feedbackId, CreateFeedbackRequestDTO request);
+        Task<FeedbackDTO> UpdateFeedbackAsync(string feedbackId, UpdateFeedbackDTO request);
         Task<FeedbackDTO> UpdateStatusFeedbackAsync(string feedbackId, bool status);// for admin 
 
     }

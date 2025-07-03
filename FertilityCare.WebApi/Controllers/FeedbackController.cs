@@ -77,5 +77,40 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpPut("{feedbackId}")]
+        public async Task<ActionResult<ApiResponse<FeedbackDTO>>> UpdateFeedbackAsync(string feedbackId, [FromBody] UpdateFeedbackDTO request)
+        {
+            try
+            {
+                var result = await _feedbackService.UpdateFeedbackAsync(feedbackId, request);
+                return Ok(new ApiResponse<FeedbackDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Feedback updated successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new ApiResponse<string>
+                {
+                    StatusCode = 404,
+                    Message = "Feedback not found",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }
