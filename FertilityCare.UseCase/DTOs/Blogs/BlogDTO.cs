@@ -10,6 +10,7 @@ namespace FertilityCare.UseCase.DTOs.Blogs
 {
     public class BlogDTO
     {
+        public string Id { get; set; }
         public string UserProfileId { get; set; }
         public string UserName { get; set; }
         public string Content { get; set; }
