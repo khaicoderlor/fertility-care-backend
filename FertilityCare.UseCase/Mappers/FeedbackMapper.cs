@@ -32,10 +32,9 @@ namespace FertilityCare.UseCase.Mappers
         {
             return new Feedback()
             {
-                Id = Guid.Parse(feedbackDTO.Id),
                 PatientId = Guid.Parse(feedbackDTO.PatientId),
                 DoctorId = string.IsNullOrEmpty(feedbackDTO.DoctorId) ? Guid.Empty : Guid.Parse(feedbackDTO.DoctorId),
-                TreatmentServiceId = string.IsNullOrEmpty(feedbackDTO.TreatmentServiceId) ? Guid.Empty : Guid.Parse(feedbackDTO.TreatmentServiceId),
+                TreatmentServiceId = string.IsNullOrEmpty(feedbackDTO.TreatmentServiceId) ? null : Guid.Parse(feedbackDTO.TreatmentServiceId),
                 Status = feedbackDTO.Status,
                 Rating = feedbackDTO.Rating,
                 Comment = feedbackDTO.Comment,

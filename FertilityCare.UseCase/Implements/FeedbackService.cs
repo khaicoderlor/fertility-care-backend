@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FertilityCare.Domain.Entities;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -46,45 +47,17 @@ namespace FertilityCare.UseCase.Implements
  
             if(!string.IsNullOrWhiteSpace(feedbackDTO.DoctorId) && !string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId))
             {
-                var feedbackDoctor = await _feedbackRepository
-                    .FindDoctorByIdAsync(Guid.Parse(feedbackDTO.DoctorId))
-                    ?? throw new NotFoundException($"Feedback with doctorId {feedbackDTO.DoctorId} not found.");
-                
-                var feedbackTreatmentService = await _feedbackRepository
-                    .FindTreatmentServiceByIdAsync(Guid.Parse(feedbackDTO.TreatmentServiceId))
-                    ?? throw new NotFoundException($"Feedback with treatmentServiceId {feedbackDTO.TreatmentServiceId} not found.");
-
-                var doctor = await _doctorRepository.FindByIdAsync(Guid.Parse(feedbackDTO.DoctorId));
-                var treatmentService = await _treatmentServiceRepository
-                    .FindByIdAsync(Guid.Parse(feedbackDTO.TreatmentServiceId));
-                doctor.Rating = feedbackDoctor.Average(f => f.Rating);
-                treatmentService.SuccessRate = feedbackTreatmentService.Average(f => f.Rating); // Update treatment service's rating based on feedback
-                treatmentService.UpdatedAt = DateTime.Now;
-                await _treatmentServiceRepository.UpdateAsync(treatmentService);
-                await _doctorRepository.UpdateAsync(doctor);
+                await RatingDoctor(Guid.Parse(feedbackDTO.DoctorId));
+                await RatingTreatmentService(Guid.Parse(feedbackDTO.TreatmentServiceId));
             }
             else if (!string.IsNullOrWhiteSpace(feedbackDTO.DoctorId) && string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId))
             {
-                var feedbackDoctor = await _feedbackRepository
-                    .FindDoctorByIdAsync(Guid.Parse(feedbackDTO.DoctorId))
-                    ?? throw new NotFoundException($"Feedback with doctorId {feedbackDTO.DoctorId} not found.");
+                await RatingDoctor(Guid.Parse(feedbackDTO.DoctorId));
 
-                var doctor = await _doctorRepository.FindByIdAsync(Guid.Parse(feedbackDTO.DoctorId));
-                doctor.Rating = feedbackDoctor.Average(f => f.Rating); // Update doctor's rating based on feedback
-                doctor.UpdatedAt = DateTime.Now;
-                await _doctorRepository.UpdateAsync(doctor);
             }
             else if (!string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId) && string.IsNullOrWhiteSpace(feedbackDTO.DoctorId))
             {
-                var feedbackTreatmentService = await _feedbackRepository
-                    .FindTreatmentServiceByIdAsync(Guid.Parse(feedbackDTO.TreatmentServiceId))
-                    ?? throw new NotFoundException($"Feedback with treatmentServiceId {feedbackDTO.TreatmentServiceId} not found.");
-
-                var treatmentService = await _treatmentServiceRepository
-                    .FindByIdAsync(Guid.Parse(feedbackDTO.TreatmentServiceId));
-                treatmentService.SuccessRate = feedbackTreatmentService.Average(f => f.Rating); // Update treatment service's rating based on feedback
-                treatmentService.UpdatedAt = DateTime.Now;
-                await _treatmentServiceRepository.UpdateAsync(treatmentService);
+                await RatingTreatmentService(Guid.Parse(feedbackDTO.TreatmentServiceId));
             }
             return feedbackDTO;
         }
@@ -97,11 +70,18 @@ namespace FertilityCare.UseCase.Implements
         {
             var loadedFeedback = await _feedbackRepository.FindByIdAsync(Guid.Parse(feedbackId))
                 ?? throw new NotFoundException($"Feedback with id {feedbackId} not found.");
-
             loadedFeedback.Comment = request.Comment;
             loadedFeedback.Rating = request.Rating;
             loadedFeedback.UpdatedAt = DateTime.Now;
             await _feedbackRepository.UpdateAsync(loadedFeedback);
+            if(loadedFeedback.DoctorId != null)
+            {
+                await RatingDoctor(loadedFeedback.DoctorId);
+            }
+            if (loadedFeedback.TreatmentServiceId != null)
+            {
+                await RatingTreatmentService(loadedFeedback.TreatmentServiceId ?? Guid.Empty);
+            }
             return loadedFeedback.MapToFeedbackDTO();
         }
 
@@ -113,7 +93,32 @@ namespace FertilityCare.UseCase.Implements
             loadedFeedback.Status = status;
             loadedFeedback.UpdatedAt = DateTime.Now;
             await _feedbackRepository.UpdateAsync(loadedFeedback);
+
+            await RatingDoctor(loadedFeedback.DoctorId);
+            await RatingTreatmentService(loadedFeedback.TreatmentServiceId ?? Guid.Empty);
+
             return loadedFeedback.MapToFeedbackDTO();
+        }
+        private async Task RatingTreatmentService(Guid treatmentServicesId)
+        {
+            var feedbackTreatmentService = await _feedbackRepository
+                        .FindTreatmentServiceByIdAsync(treatmentServicesId);
+            var treatmentService = await _treatmentServiceRepository
+                .FindByIdAsync(treatmentServicesId);
+            treatmentService.SuccessRate = feedbackTreatmentService.Where(x => x.Status).Average(f => f.Rating); // Update treatment service's rating based on feedback
+            treatmentService.UpdatedAt = DateTime.Now;
+            await _treatmentServiceRepository.UpdateAsync(treatmentService);
+        }
+        private async Task RatingDoctor(Guid doctorId)
+        {
+            var feedbackDoctor = await _feedbackRepository
+                    .FindDoctorByIdAsync(doctorId)
+                    ?? throw new NotFoundException($"Feedback with doctorId {doctorId} not found.");
+
+            var doctor = await _doctorRepository.FindByIdAsync(doctorId);
+            doctor.Rating = feedbackDoctor.Where(x => x.Status).Average(f => f.Rating); // Update doctor's rating based on feedback
+            doctor.UpdatedAt = DateTime.Now;
+            await _doctorRepository.UpdateAsync(doctor);
         }
     }
 }

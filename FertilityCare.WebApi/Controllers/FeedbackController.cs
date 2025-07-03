@@ -112,7 +112,7 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-        [HttpPut("{feedbackId}")]
+        [HttpPut("{feedbackId}/status")]
         public async Task<ActionResult<ApiResponse<FeedbackDTO>>> UpdateFeedbackStatusAsync(string feedbackId, [FromQuery]bool status)
         {
             try
