@@ -57,20 +57,24 @@ namespace FertilityCare.UseCase.Implements
 
         }
 
-        public async Task<IEnumerable<PatientInfoTable>> GetPatientsByDoctorIdAsync(Guid id)
+        public async Task<IEnumerable<PatientDashboard>> GetPatientsByDoctorIdAsync(Guid id)
         {
             var order = await _orderRepository.FindAllByDoctorIdAsync(id);
 
-            return order.ToList().Select(x => new PatientInfoTable
+            return order.ToList().Select(x => new PatientDashboard
             {
                 PatientId = x.PatientId.ToString(),
                 PatientName = $"{x.Patient.UserProfile.FirstName} {x.Patient.UserProfile.MiddleName} {x.Patient.UserProfile.LastName}",
-                OrderId = x.Id.ToString(),
-                TotalEggs = x.TotalEgg,
                 TreatmentName = x.TreatmentService.Name,
+                Email = "",
+                Phone = "",
+                OrderId = x.Id.ToString(),
                 StartDate = x.StartDate.ToString("dd/MM/yyyy"),
                 EndDate = x.EndDate != null ? x.EndDate?.ToString("dd/MM/yyyy") : "",
                 Status = x.Status.ToString(),
+                TotalEggs = x.TotalEgg,
+                TotalEmbryos = x.EmbryoGaineds?.Count > 0 ? x.EmbryoGaineds.Count : 0,
+                IsFrozen = x.IsFrozen
             });
         }
     }

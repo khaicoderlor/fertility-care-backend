@@ -16,6 +16,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<DoctorDTO?> GetDoctorByIdAsync(string id);
         Task<DoctorDTO> GetDoctorByProfileIdAsync(string id);
         Task<IEnumerable<DoctorDTO>> GetDoctorsPagedAsync(PaginationRequestDTO request);
-        Task<IEnumerable<PatientInfoTable>> GetPatientsByDoctorIdAsync(Guid id);
+        Task<IEnumerable<PatientDashboard>> GetPatientsByDoctorIdAsync(Guid id);
     }
 }

@@ -58,7 +58,7 @@ namespace FertilityCare.WebAPI.Controllers
         }
 
         [HttpGet("{id}/patients")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PatientInfoTable>>>> GetPatientsByDoctorId(string id)
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientDashboard>>>> GetPatientsByDoctorId(string id)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace FertilityCare.WebAPI.Controllers
                     });
                 }
 
-                return Ok(new ApiResponse<IEnumerable<PatientInfoTable>>
+                return Ok(new ApiResponse<IEnumerable<PatientDashboard>>
                 {
                     StatusCode = 200,
                     Message = "Fetched successfully.",
