@@ -1,0 +1,44 @@
+﻿using FertilityCare.UseCase.DTOs.Patients;
+using FertilityCare.UseCase.Interfaces.Services;
+using FertilityCare.WebAPI;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FertilityCare.WebApi.Controllers
+{
+    [Route("api/v1/statistic")]
+    [ApiController]
+    public class StatisticsController : ControllerBase
+    {
+        private readonly IStatisticsService _statisticsService;
+        public StatisticsController(IStatisticsService statisticsService)
+        {
+            _statisticsService = statisticsService;
+        }
+        [HttpGet("patients/count/{year}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear(int year)
+        {
+            try
+            {
+                var result = await _statisticsService.GetPatientCountByYearAsync(year);
+                return Ok(new ApiResponse<IEnumerable<PatientMonthlyCountDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+    }
+}

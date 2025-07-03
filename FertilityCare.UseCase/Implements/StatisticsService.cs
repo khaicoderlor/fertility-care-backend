@@ -17,7 +17,7 @@ namespace FertilityCare.UseCase.Implements
             _appointmentRepository = appointmentRepository;
         }
 
-        public async Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(int year)
+        public async Task<IEnumerable<PatientMonthlyCountDTO>>  GetPatientCountByYearAsync(int year)
         {
             var appointments = await _appointmentRepository.FindAllAsync();
             var countByMonth = appointments
