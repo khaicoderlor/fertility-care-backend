@@ -1,6 +1,7 @@
 ﻿
 using Fertilitycare.Share.Comon;
 using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -24,11 +25,22 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IAppointmentRepository _appointmentRepository;
 
-        public DoctorService(IDoctorRepository doctorRepository, IOrderRepository orderRepository, IAppointmentRepository appointmentRepository)
+        private readonly IUserProfileRepository _userProfileRepository;
+
+        public DoctorService(IDoctorRepository doctorRepository, IOrderRepository orderRepository, IAppointmentRepository appointmentRepository, IUserProfileRepository userProfileRepository)
         {
             _doctorRepository = doctorRepository;
             _orderRepository = orderRepository;
             _appointmentRepository = appointmentRepository;
+            _userProfileRepository = userProfileRepository;
+        }
+
+        public async Task ChangeAvatarDoctorByIdAsync(Guid guid, string secureUrl)
+        {
+            var doctor = await _doctorRepository.FindByIdAsync(guid);
+            doctor.UserProfile.AvatarUrl = secureUrl;
+            doctor.UserProfile.UpdatedAt = DateTime.UtcNow;
+            await _doctorRepository.SaveChangeAsync();
         }
 
         public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
@@ -84,6 +96,43 @@ namespace FertilityCare.UseCase.Implements
                 TotalEmbryos = x.EmbryoGaineds?.Count > 0 ? x.EmbryoGaineds.Count : 0,
                 IsFrozen = x.IsFrozen
             });
+        }
+
+        public async Task<bool> UpdateDoctorAsync(Guid doctorId, UpdateDoctorRequestDTO request)
+        {
+            var doctor = await _doctorRepository.FindByIdAsync(doctorId);
+            if (doctor == null) return false;
+
+            // Update Doctor fields
+            doctor.Degree = request.Degree;
+            doctor.Specialization = request.Specialization;
+            doctor.YearsOfExperience = request.YearsOfExperience;
+            doctor.Biography = request.Biography;
+            doctor.UpdatedAt = DateTime.UtcNow;
+
+            // Update UserProfile
+            var profile = doctor.UserProfile;
+            if (profile != null)
+            {
+                profile.FirstName = request.FirstName;
+                profile.MiddleName = request.MiddleName;
+                profile.LastName = request.LastName;
+                profile.Address = request.Address;
+
+                if (Enum.TryParse<Gender>(request.Gender, true, out var gender))
+                    profile.Gender = gender;
+
+                if (DateOnly.TryParse(request.DateOfBirth, out var dob))
+                    profile.DateOfBirth = dob;
+
+                profile.UpdatedAt = DateTime.UtcNow;
+
+                await _userProfileRepository.UpdateAsync(profile);
+            }
+
+            await _doctorRepository.UpdateAsync(doctor);
+
+            return true;
         }
     }
 }

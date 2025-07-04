@@ -150,15 +150,28 @@ namespace FertilityCare.UseCase.Implements
 
             return schedules.Select(s => new DoctorScheduleViewDTO
             {
-                WorkDate = s.WorkDate,
-                StartTime = s.Slot.StartTime,
-                EndTime = s.Slot.EndTime,
-                FirstName = s.Doctor.UserProfile.FirstName!,
+                WorkDate = s.WorkDate.ToString("dd/MM/yyyy"),
+                DoctorId = s.DoctorId.ToString(),
+                ScheduleId = s.Id,
+                StartTime = s.Slot.StartTime.ToString("HH:mm"),
+                EndTime = s.Slot.EndTime.ToString("HH:mm"),
+                FirstName = s.Doctor.UserProfile.FirstName??"",
                 MiddleName = s.Doctor.UserProfile.MiddleName,
-                LastName = s.Doctor.UserProfile.LastName!
+                LastName = s.Doctor.UserProfile.LastName??"",
+                ShiftType = GetShiftType(s.Slot.StartTime, s.Slot.EndTime)
             }).ToList();
         }
 
+        private string GetShiftType(TimeOnly startTime, TimeOnly endTime)
+        {
+            if (startTime < new TimeOnly(12, 0) && endTime <= new TimeOnly(12, 0))
+                return "morning";
+            if (startTime >= new TimeOnly(12, 0) && endTime <= new TimeOnly(18, 0))
+                return "afternoon";
+            if (startTime >= new TimeOnly(18, 0))
+                return "evening";
+            return "Unknown";
+        }
 
         public async Task<DoctorScheduleDTO> UpdateScheduleAsync(UpdateDoctorScheduleRequestDTO request)
         {

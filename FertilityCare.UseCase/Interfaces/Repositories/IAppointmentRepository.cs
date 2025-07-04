@@ -18,6 +18,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task<IEnumerable<Appointment>> FindAllByStepIdAsync(long stepId);
 
         Task<List<Appointment>> GetPageAsync(AppointmentQueryDTO query);
+
         Task SaveChangesAsync();
 
         Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId);
