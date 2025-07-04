@@ -3,6 +3,7 @@ using FertilityCare.Domain.Enums;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Appointments;
+using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Mappers;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +104,62 @@ namespace FertilityCare.Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var allAppointments = await _context.Appointments
+                .Where(a => a.DoctorId == doctorId)
+                .ToListAsync();
+
+            var groupedAppointments = allAppointments
+                .GroupBy(a => a.PatientId);
+
+            var results = groupedAppointments
+                .Select(g =>
+                {
+                    var lastAppointment = g
+                        .Where(a => a.Status == AppointmentStatus.Completed)
+                        .OrderByDescending(a => a.AppointmentDate)
+                        .FirstOrDefault();
+
+                    var nextAppointment = g
+                        .Where(a => a.AppointmentDate > today)
+                        .OrderBy(a => a.AppointmentDate)
+                        .FirstOrDefault();
+
+                    // Lấy thông tin user từ cuộc hẹn nào có trước
+                    var patient = lastAppointment?.Patient ?? nextAppointment?.Patient;
+                    var user = patient?.UserProfile;
+
+                    if (lastAppointment == null || patient == null || user == null)
+                    {
+                        // Nếu thiếu thông tin cơ bản => bỏ qua
+                        return null;
+                    }
+
+                    var age = user.DateOfBirth.HasValue
+                        ? DateTime.Now.Year - user.DateOfBirth.Value.Year -
+                          (DateTime.Now.DayOfYear < user.DateOfBirth.Value.DayOfYear ? 1 : 0)
+                        : 0;
+
+                    return new RecentPatientAppointmentDTO
+                    {
+                        FullName = $"{user.LastName} {user.MiddleName} {user.FirstName}".Trim(),
+                        Age = age,
+                        TreatmentServiceName = lastAppointment.TreatmentService?.Name ?? "N/A",
+                        LastAppointmentDate = lastAppointment.AppointmentDate,
+                        NextAppointmentDate = nextAppointment?.AppointmentDate
+                    };
+                })
+                .Where(x => x != null) // loại bỏ null (do thiếu dữ liệu)
+                .OrderByDescending(x => x.LastAppointmentDate)
+                .Take(5)
+                .ToList();
+
+            return results!;
         }
     }
 }
