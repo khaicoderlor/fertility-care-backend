@@ -42,7 +42,7 @@ namespace FertilityCare.UseCase.Implements
 
             for (var date = request.StartDate.Value; date <= request.EndDate.Value; date = date.AddDays(1))
             {
-                if (!request.WorkingDays.Contains(date.DayOfWeek))
+                if (!request.WorkingDays.Contains(date.DayOfWeek) || date.DayOfWeek == DayOfWeek.Sunday)
                     continue;
 
                 foreach (var slotId in request.SlotIds)
@@ -140,6 +140,25 @@ namespace FertilityCare.UseCase.Implements
             var result = await _scheduleRepository.GetSchedulesByDateAndDoctorAsync(workDate, id);
             return result.MapToSlotWithScheduleIdsDTO();
         }
+
+        public async Task<IEnumerable<DoctorScheduleViewDTO>> GetWeeklySchedulesAsync(Guid doctorId, DateOnly weekDate)
+        {
+            var startOfWeek = weekDate.AddDays(-(int)weekDate.DayOfWeek + (int)DayOfWeek.Monday);
+            var endOfWeek = startOfWeek.AddDays(6);
+
+            var schedules = await _scheduleRepository.GetSchedulesByWeekAsync(doctorId, startOfWeek, endOfWeek);
+
+            return schedules.Select(s => new DoctorScheduleViewDTO
+            {
+                WorkDate = s.WorkDate,
+                StartTime = s.Slot.StartTime,
+                EndTime = s.Slot.EndTime,
+                FirstName = s.Doctor.UserProfile.FirstName!,
+                MiddleName = s.Doctor.UserProfile.MiddleName,
+                LastName = s.Doctor.UserProfile.LastName!
+            }).ToList();
+        }
+
 
         public async Task<DoctorScheduleDTO> UpdateScheduleAsync(UpdateDoctorScheduleRequestDTO request)
         {
