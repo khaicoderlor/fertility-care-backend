@@ -35,6 +35,14 @@ namespace FertilityCare.UseCase.Implements
             _userProfileRepository = userProfileRepository;
         }
 
+        public async Task ChangeAvatarDoctorByIdAsync(Guid guid, string secureUrl)
+        {
+            var doctor = await _doctorRepository.FindByIdAsync(guid);
+            doctor.UserProfile.AvatarUrl = secureUrl;
+            doctor.UserProfile.UpdatedAt = DateTime.UtcNow;
+            await _doctorRepository.SaveChangeAsync();
+        }
+
         public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
         {
             return await _appointmentRepository.FindTop5RecentPatientsAsync(doctorId);

@@ -184,7 +184,7 @@ namespace FertilityCare.WebAPI.Controllers
                     });
                 }
 
-                await _doctorService.   (Guid.Parse(doctorId), secureUrl);
+                await _doctorService.ChangeAvatarDoctorByIdAsync(Guid.Parse(doctorId), secureUrl);
 
                 return Ok(new ApiResponse<string>
                 {

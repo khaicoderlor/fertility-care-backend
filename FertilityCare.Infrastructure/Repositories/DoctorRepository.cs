@@ -105,5 +105,10 @@ namespace FertilityCare.Infrastructure.Repositories
         {
            return await _context.Doctors.FirstOrDefaultAsync(x => x.UserProfileId.ToString() == id) ?? throw new NotFoundException("Profile not found");
         }
+
+        public async Task SaveChangeAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }
