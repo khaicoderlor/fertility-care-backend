@@ -85,6 +85,13 @@ namespace FertilityCare.UseCase.Implements
                 IsFrozen = x.IsFrozen
             });
         }
+
+        public async Task UpdateDoctorAvatarByIdAsync(Guid guid, string secureUrl)
+        {
+            var doctor = await _doctorRepository.FindByIdAsync(guid);
+            doctor.UserProfile.AvatarUrl = secureUrl;
+            await _doctorRepository.UpdateAsync(doctor);
+        }
     }
 }
 

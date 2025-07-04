@@ -1,4 +1,5 @@
 ﻿using Fertilitycare.Share.Comon;
+using FertilityCare.Infrastructure.Services;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
@@ -14,9 +15,12 @@ namespace FertilityCare.WebAPI.Controllers
     {
         private readonly IDoctorService _doctorService;
 
-        public DoctorController(IDoctorService doctorService)
+        private readonly ICloudStorageService _cloudStorageService;
+
+        public DoctorController(IDoctorService doctorService, ICloudStorageService cloudStorageService)
         {
             _doctorService = doctorService;
+            _cloudStorageService = cloudStorageService;
         }
 
         [HttpGet("{id}")]
@@ -160,6 +164,48 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+
+        [HttpPatch("{doctorId}/change-avatar")]
+        public async Task<ActionResult<ApiResponse<string>>> ChangeAvatarDoctor([FromRoute] string doctorId, [FromForm] IFormFile avatar)
+        {
+            try
+            {
+                var secureUrl = await _cloudStorageService.UploadPhotoAsync(avatar);
+
+
+                if (secureUrl is null)
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        StatusCode = 400,
+                        Message = "",
+                        Data = "Updated failed!",
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                await _doctorService.   (Guid.Parse(doctorId), secureUrl);
+
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = secureUrl,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
     }
 }
