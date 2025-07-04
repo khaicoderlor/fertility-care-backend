@@ -210,6 +210,54 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+        [HttpPut("{doctorId}")]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateDoctor([FromRoute] string doctorId, [FromBody] UpdateDoctorRequestDTO request)
+        {
+            try
+            {
+                if (!Guid.TryParse(doctorId, out var parsedId))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid doctorId format. Expecting a valid GUID.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                var result = await _doctorService.UpdateDoctorAsync(parsedId, request);
+
+                if (!result)
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = $"Doctor with ID {doctorId} not found.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "Doctor updated successfully.",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "Internal server error: " + ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
 
 
     }
