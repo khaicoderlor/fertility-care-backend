@@ -25,19 +25,6 @@ namespace FertilityCare.UseCase.Mappers
                 UpdatedAt = feedback.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss")
             };
         }
-        public static Feedback MapToFeedback(this FeedbackDTO feedbackDTO)
-        {
-            return new Feedback()
-            {
-                PatientId = Guid.Parse(feedbackDTO.PatientId),
-                DoctorId = string.IsNullOrEmpty(feedbackDTO.DoctorId) ? Guid.Empty : Guid.Parse(feedbackDTO.DoctorId),
-                TreatmentServiceId = string.IsNullOrEmpty(feedbackDTO.TreatmentServiceId) ? null : Guid.Parse(feedbackDTO.TreatmentServiceId),
-                Status = feedbackDTO.Status,
-                Rating = feedbackDTO.Rating,
-                Comment = feedbackDTO.Comment,
-                CreatedAt = feedbackDTO.CreatedAt,
-                UpdatedAt = feedbackDTO.UpdatedAt
-            };
-        }
+        
     }
 }

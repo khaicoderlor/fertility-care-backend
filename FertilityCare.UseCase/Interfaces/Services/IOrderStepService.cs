@@ -12,6 +12,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
 
         Task<IEnumerable<OrderStepDTO>> GetAllStepsByOrderIdAsync(Guid orderId);
 
-        Task<(OrderStepDTO, string)> MarkStatusByStepIdAsync(long stepId, string status);
+        Task<StepStatusUpdateResultDTO> MarkStatusByStepIdAsync(long stepId, string status);
     }
 }

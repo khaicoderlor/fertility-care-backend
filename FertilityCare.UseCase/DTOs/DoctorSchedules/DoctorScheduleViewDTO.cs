@@ -26,5 +26,7 @@ namespace FertilityCare.UseCase.DTOs.DoctorSchedules
 
         public long ScheduleId { get; set; }
 
+        public bool IsWorkingDay { get; set; }
+
     }
 }

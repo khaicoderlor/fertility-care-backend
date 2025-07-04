@@ -35,6 +35,13 @@ namespace FertilityCare.Infrastructure.Repositories
             return await _context.Feedbacks.ToListAsync();
         }
 
+        public Task<List<Feedback>> FindAllByDoctorIdAndMonthAsync(Guid guid, int month, int year)
+        {
+            return _context.Feedbacks
+                .Where(f => f.DoctorId == guid && f.CreatedAt.Month == month && f.CreatedAt.Year == year)
+                .ToListAsync();
+        }
+
         public async Task<Feedback> FindByIdAsync(Guid id)
         {
             var loadedFeedback = await _context.Feedbacks.FindAsync(id);

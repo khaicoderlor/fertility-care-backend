@@ -18,7 +18,7 @@ namespace FertilityCare.UseCase.DTOs.Appointments
 
         public string Type { get;set; }
 
-        public decimal? Extrafee { get; set; } = 0;
+        public decimal? ExtraFee { get; set; } = 0;
 
         public string? Note { get; set; }
 

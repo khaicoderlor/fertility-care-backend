@@ -343,7 +343,7 @@ namespace FertilityCare.WebAPI.Controllers
         [HttpGet("{doctorId}/weekly-schedules")]
         public async Task<ActionResult<ApiResponse<IEnumerable<DoctorScheduleViewDTO>>>> GetWeeklySchedules(
         [FromRoute] string doctorId,
-        [FromBody] DateOnly weekDate)
+        [FromQuery] DateOnly weekDate)
         {
             try
             {

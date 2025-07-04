@@ -112,8 +112,8 @@ namespace FertilityCare.UseCase.Implements
                 Status = AppointmentStatus.Booked,
                 Type = DetermineAppointmentType(request.Type),
                 CancellationReason = "",
-                Note = "",
-                ExtraFee = request.Extrafee,
+                Note = request.Note,
+                ExtraFee = request.ExtraFee,
                 PaymentStatus = PaymentStatus.Pending,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -122,6 +122,9 @@ namespace FertilityCare.UseCase.Implements
             step.TotalAmount += appointment.ExtraFee;
             await _stepRepository.SaveChangeAsync();
             await _appointmentRepository.SaveAsync(appointment);
+
+            appointment.Patient = order.Patient;
+            appointment.Doctor = order.Doctor;
             return appointment.MapToAppointmentDTO();
         }
 

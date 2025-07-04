@@ -57,42 +57,52 @@ namespace FertilityCare.WebApi.Controllers
 
         [HttpPut]
         [Route("{stepId}")]
-        public async Task<ActionResult<ApiResponse<(OrderStepDTO, string)>>> MarkStatusByStepId([FromRoute] long stepId, [FromQuery] string status)
+        public async Task<ActionResult<ApiResponse<StepStatusUpdateResultDTO>>> MarkStatusByStepId([FromRoute] long stepId, [FromQuery] string status)
         {
             try
             {
                 var result = await _stepService.MarkStatusByStepIdAsync(stepId, status);
-                return Ok(new ApiResponse<bool>
+                return Ok(new ApiResponse<StepStatusUpdateResultDTO>
                 {
                     StatusCode = 200,
                     Message = "Order step fetched successfully!",
-                    Data = true,
+                    Data = result,
                     ResponsedAt = DateTime.Now
                 });
             }
-            catch (PreviousNotCompletedExpception e) //1000
+            catch (PreviousNotCompletedExpception e)
             {
-                return BadRequest(new ApiResponse<bool>
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = e.StatusCode,
                     Message = "Bước điều trị trước chưa hoàn thành",
-                    Data = false,
+                    Data = null,
                     ResponsedAt = DateTime.Now
                 });
             }
-            catch (NotPaidOrderStepException e) // 1001
+            catch (AppointmentNotCompleteException e)
             {
-                return BadRequest(new ApiResponse<bool>
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = "Các cuộc hẹn của bước điều trị này chưa được hoàn thành!",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotPaidOrderStepException e)
+            {
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = e.StatusCode,
                     Message = "Bệnh nhân chưa thanh toán bước này không thể hoàn thành",
-                    Data = false,
+                    Data = null,
                     ResponsedAt = DateTime.Now
                 });
             }
             catch (NotFoundException e)
             {
-                return NotFound(new ApiResponse<object>
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = e.StatusCode,
                     Message = e.Message,
@@ -102,7 +112,7 @@ namespace FertilityCare.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse<object>
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = ex.Message,

@@ -260,18 +260,8 @@ namespace FertilityCare.WebAPI.Controllers
         {
             try
             {
-                if (!Guid.TryParse(doctorId, out var parsedId))
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        StatusCode = 400,
-                        Message = "Invalid doctorId format. Expecting a valid GUID.",
-                        Data = null,
-                        ResponsedAt = DateTime.UtcNow
-                    });
-                }
 
-                var result = await _doctorService.UpdateDoctorAsync(parsedId, request);
+                var result = await _doctorService.UpdateDoctorAsync(Guid.Parse(doctorId), request);
 
                 if (!result)
                 {

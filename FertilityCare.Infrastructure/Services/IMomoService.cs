@@ -53,21 +53,17 @@ namespace FertilityCare.Infrastructure.Services
                       $"&partnerCode={req.PartnerCode}&redirectUrl={req.RedirectUrl}" +
                       $"&requestId={req.RequestId}&requestType={req.RequestType}";
 
-            Console.WriteLine("Raw for signature: " + raw);
-
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_cfg.SecretKey));
             req.Signature = Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant();
 
             req.OrderInfo = encodedOrderInfo;
 
             var json = JsonConvert.SerializeObject(req);
-            Console.WriteLine("Request JSON: " + json);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync(_cfg.ApiUrl, content);
             var resContent = await res.Content.ReadAsStringAsync();
 
-            Console.WriteLine("MoMo response: " + resContent);
             res.EnsureSuccessStatusCode();
 
             dynamic response = JsonConvert.DeserializeObject(resContent)!;

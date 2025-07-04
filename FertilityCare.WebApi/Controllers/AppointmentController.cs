@@ -73,7 +73,7 @@ namespace FertilityCare.WebApi.Controllers
             }
             catch (NotFoundException e)
             {
-                return NotFound(new ApiResponse<object>
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = 404,
                     Message = e.Message,
@@ -83,7 +83,7 @@ namespace FertilityCare.WebApi.Controllers
             }
             catch (AppointmentSlotLimitExceededException e)
             {
-                return BadRequest(new ApiResponse<object>
+                return Ok(new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = e.Message,
