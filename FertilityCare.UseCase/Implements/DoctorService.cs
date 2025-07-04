@@ -22,10 +22,18 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IOrderRepository _orderRepository;
 
-        public DoctorService(IDoctorRepository doctorRepository, IOrderRepository orderRepository)
+        private readonly IAppointmentRepository _appointmentRepository;
+
+        public DoctorService(IDoctorRepository doctorRepository, IOrderRepository orderRepository, IAppointmentRepository appointmentRepository)
         {
             _doctorRepository = doctorRepository;
             _orderRepository = orderRepository;
+            _appointmentRepository = appointmentRepository;
+        }
+
+        public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
+        {
+            return await _appointmentRepository.FindTop5RecentPatientsAsync(doctorId);
         }
 
         public async Task<IEnumerable<DoctorDTO>> GetAllDoctorsAsync()
