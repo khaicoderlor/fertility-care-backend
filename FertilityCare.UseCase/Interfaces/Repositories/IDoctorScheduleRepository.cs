@@ -14,5 +14,8 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         public Task<IEnumerable<DoctorSchedule>> GetSchedulesByDateAndDoctorAsync(string workDate, string doctorId);
 
         public Task BulkInsertAsync(IEnumerable<DoctorSchedule> schedules);
+
+        Task<IEnumerable<DoctorSchedule>> GetSchedulesByWeekAsync(Guid doctorId, DateOnly startOfWeek, DateOnly endOfWeek);
+
     }
 }

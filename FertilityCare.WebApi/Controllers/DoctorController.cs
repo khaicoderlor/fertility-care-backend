@@ -206,6 +206,104 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpGet("{doctorId}/recent-patients")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<RecentPatientAppointmentDTO>>>> GetRecentPatients([FromRoute] string doctorId)
+        {
+            try
+            {
+                if (!Guid.TryParse(doctorId, out var parsedDoctorId))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid doctorId format. Expecting a valid GUID.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                var result = await _doctorService.FindTop5RecentPatientsAsync(parsedDoctorId);
+
+                return Ok(new ApiResponse<IEnumerable<RecentPatientAppointmentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched 5 most recent patients successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+        [HttpPut("{doctorId}")]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateDoctor([FromRoute] string doctorId, [FromBody] UpdateDoctorRequestDTO request)
+        {
+            try
+            {
+                if (!Guid.TryParse(doctorId, out var parsedId))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid doctorId format. Expecting a valid GUID.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                var result = await _doctorService.UpdateDoctorAsync(parsedId, request);
+
+                if (!result)
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = $"Doctor with ID {doctorId} not found.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "Doctor updated successfully.",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "Internal server error: " + ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+
 
     }
 }
