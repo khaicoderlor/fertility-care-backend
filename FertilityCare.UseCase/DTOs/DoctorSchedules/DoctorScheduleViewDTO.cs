@@ -8,9 +8,9 @@ namespace FertilityCare.UseCase.DTOs.DoctorSchedules
 {
     public class DoctorScheduleViewDTO
     {
-        public DateOnly WorkDate { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        public string WorkDate { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
 
         public string FirstName { get; set; }
         public string? MiddleName { get; set; }
