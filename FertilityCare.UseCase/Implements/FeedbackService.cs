@@ -33,33 +33,35 @@ namespace FertilityCare.UseCase.Implements
             //nếu order đó không có bác sĩ mà patient muốn feedback thì không cho phép feedback
             // nếu order đó không có dịch vụ điều trị mà patient muốn feedback thì không cho phép feedback
 
-            var feedbackDTO = new FeedbackDTO()
+            var feedback = new Feedback()
             {
-                PatientId = request.PatientId,
-                DoctorId = request.DoctorId,
-                TreatmentServiceId = request.TreatmentServiceId,
+                PatientId = Guid.Parse(request.PatientId),
+                DoctorId = string.IsNullOrWhiteSpace(request.DoctorId) ? Guid.Empty : Guid.Parse(request.DoctorId),
+                TreatmentServiceId = string.IsNullOrWhiteSpace(request.TreatmentServiceId) ? null : Guid.Parse(request.TreatmentServiceId),
+                Status = true,
                 Rating = request.Rating,
                 Comment = request.Comment,
                 CreatedAt = DateTime.Now,
-                Status = true // Default status is true
+                UpdatedAt = null
+
             };
-            await _feedbackRepository.SaveAsync(feedbackDTO.MapToFeedback());
+            await _feedbackRepository.SaveAsync(feedback);
  
-            if(!string.IsNullOrWhiteSpace(feedbackDTO.DoctorId) && !string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId))
+            if(!string.IsNullOrWhiteSpace(feedback.DoctorId.ToString()) && !string.IsNullOrWhiteSpace(feedback.TreatmentServiceId.ToString()))
             {
-                await RatingDoctor(Guid.Parse(feedbackDTO.DoctorId));
-                await RatingTreatmentService(Guid.Parse(feedbackDTO.TreatmentServiceId));
+                await RatingDoctor(feedback.DoctorId);
+                await RatingTreatmentService(feedback.TreatmentServiceId ?? Guid.Empty);
             }
-            else if (!string.IsNullOrWhiteSpace(feedbackDTO.DoctorId) && string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId))
+            else if (!string.IsNullOrWhiteSpace(feedback.DoctorId.ToString()) && string.IsNullOrWhiteSpace(feedback.TreatmentServiceId.ToString()))
             {
-                await RatingDoctor(Guid.Parse(feedbackDTO.DoctorId));
+                await RatingDoctor(feedback.DoctorId);
 
             }
-            else if (!string.IsNullOrWhiteSpace(feedbackDTO.TreatmentServiceId) && string.IsNullOrWhiteSpace(feedbackDTO.DoctorId))
+            else if (!string.IsNullOrWhiteSpace(feedback.TreatmentServiceId.ToString()) && string.IsNullOrWhiteSpace(feedback.DoctorId.ToString()))
             {
-                await RatingTreatmentService(Guid.Parse(feedbackDTO.TreatmentServiceId));
+                await RatingTreatmentService(feedback.TreatmentServiceId ?? Guid.Empty);
             }
-            return feedbackDTO;
+            return feedback.MapToFeedbackDTO();
         }
         public async Task<List<FeedbackDTO>> GetAllFeedbacksAsync(FeedbackQueryDTO query)
         {

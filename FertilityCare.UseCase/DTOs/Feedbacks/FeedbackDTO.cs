@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Patients;
+using FertilityCare.UseCase.DTOs.TreatmentServices;
 
 namespace FertilityCare.UseCase.DTOs.Feedbacks
 {
     public class FeedbackDTO
     {
         public string Id { get; set; }
-        public string PatientId { get; set; }
-        public string PatientName { get; set; }
-        public string? DoctorId { get; set; }
-        public string? DoctorName { get; set; }
-        public string? TreatmentServiceId { get; set; }
-        public string? TreatmentServiceName { get; set; }
+        public PatientDTO Patient { get; set; }
+        public DoctorDTO? Doctor { get; set; }
+        public TreatmentServiceDTO? TreatmentService { get; set; }
         public bool Status { get; set; }
         public decimal Rating { get; set; }
         public string? Comment { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public string CreatedAt { get; set; }
+        public string? UpdatedAt { get; set; }
     }
 }

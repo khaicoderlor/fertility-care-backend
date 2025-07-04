@@ -15,17 +15,14 @@ namespace FertilityCare.UseCase.Mappers
             return new FeedbackDTO()
             {
                 Id = feedback.Id.ToString(),
-                PatientId = feedback.PatientId.ToString(),
-                PatientName = feedback.Patient?.UserProfile?.FirstName + " " + feedback.Patient?.UserProfile?.MiddleName + " " + feedback.Patient?.UserProfile?.LastName,
-                DoctorId = feedback.DoctorId.ToString(),
-                DoctorName = feedback.Doctor?.UserProfile?.FirstName + " " + feedback.Doctor?.UserProfile?.MiddleName + " " + feedback.Doctor?.UserProfile?.LastName,
-                TreatmentServiceId = feedback.TreatmentServiceId.ToString(),
-                TreatmentServiceName = feedback.TreatmentService?.Name,
+                Patient = feedback.Patient.MapToPatientDTO(),
+                Doctor = feedback.Doctor?.MapToDoctorDTO(),
+                TreatmentService = feedback.TreatmentService?.MapToTreatmentServiceDTO(),
                 Status = feedback.Status,
                 Rating = feedback.Rating,
                 Comment = feedback.Comment,
-                CreatedAt = feedback.CreatedAt,
-                UpdatedAt = feedback.UpdatedAt
+                CreatedAt = feedback.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
+                UpdatedAt = feedback.UpdatedAt?.ToString("dd/MM/yyyy HH:mm:ss")
             };
         }
         public static Feedback MapToFeedback(this FeedbackDTO feedbackDTO)
