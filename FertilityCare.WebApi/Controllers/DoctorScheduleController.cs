@@ -339,5 +339,66 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+        [HttpGet("weekly")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DoctorScheduleViewDTO>>>> GetWeeklySchedules(
+        [FromQuery] string doctorId,
+        [FromQuery] string weekDate)
+        {
+            try
+            {
+                if (!Guid.TryParse(doctorId, out var parsedDoctorId))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid doctorId format.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                if (!DateOnly.TryParse(weekDate, out var parsedWeekDate))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid weekDate format. Expecting yyyy-MM-dd.",
+                        Data = null,
+                        ResponsedAt = DateTime.UtcNow
+                    });
+                }
+
+                var result = await _doctorScheduleService.GetWeeklySchedulesAsync(parsedDoctorId, parsedWeekDate);
+
+                return Ok(new ApiResponse<IEnumerable<DoctorScheduleViewDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Doctor schedule fetched successfully!",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = e.StatusCode,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+    
     }
 }
