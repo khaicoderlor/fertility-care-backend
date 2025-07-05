@@ -328,8 +328,23 @@ namespace FertilityCare.Infrastructure.Services
                         await _doctorRepository.SaveAsync(doctor);
                     }
                 }
-
-                return await GenerateTokenAsync(user);
+                else if (request.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    var roleAssignResult = await _userManager.AddToRoleAsync(user, "Admin");
+                    if (!roleAssignResult.Succeeded)
+                    {
+                        return AuthResult.Failed("Not assign role to user");
+                    }
+                }
+                else if (request.Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase))
+                {
+                    var roleAssignResult = await _userManager.AddToRoleAsync(user, "Manager");
+                    if (!roleAssignResult.Succeeded)
+                    {
+                        return AuthResult.Failed("Not assign role to user");
+                    }
+                }
+                    return await GenerateTokenAsync(user);
             }
             catch (Exception ex)
             {

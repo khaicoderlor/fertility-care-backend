@@ -43,7 +43,7 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
-        [HttpGet("/doctors/{doctorId}/overall")]
+        [HttpGet("doctors/{doctorId}/overall")]
         public async Task<ActionResult<ApiResponse<DoctorOverallStatistics>>> GetDoctorOverallStatisticInDashboard([FromRoute] string doctorId)
         {
             try
@@ -69,7 +69,7 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
-        [HttpGet("/orders-status/{doctorId}/overall")]
+        [HttpGet("orders-status/{doctorId}/overall")]
         public async Task<ActionResult<ApiResponse<IEnumerable<StatusTreatmentPatientOverall>>>> GetOrderStatusOverall([FromRoute] string doctorId)
         {
             try

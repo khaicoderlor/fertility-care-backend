@@ -63,6 +63,7 @@ namespace FertilityCare.UseCase.Implements
             }
             return feedback.MapToFeedbackDTO();
         }
+
         public async Task<List<FeedbackDTO>> GetAllFeedbacksAsync(FeedbackQueryDTO query)
         {
             var loadedFeedbacks = await _feedbackRepository.GetFeedbackByAllIdAsync(query, query.PageNumber, query.PageSize);

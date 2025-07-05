@@ -252,17 +252,6 @@ namespace FertilityCare.WebAPI.Controllers
 
                 var result = await _doctorService.UpdateDoctorAsync(Guid.Parse(doctorId), request);
 
-                if (!result)
-                {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = $"Doctor with ID {doctorId} not found.",
-                        Data = null,
-                        ResponsedAt = DateTime.UtcNow
-                    });
-                }
-
                 return Ok(new ApiResponse<object>
                 {
                     StatusCode = 200,
@@ -273,12 +262,12 @@ namespace FertilityCare.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<object>
+                return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "Internal server error: " + ex.Message,
+                    Message = ex.Message,
                     Data = null,
-                    ResponsedAt = DateTime.UtcNow
+                    ResponsedAt = DateTime.Now
                 });
             }
         }

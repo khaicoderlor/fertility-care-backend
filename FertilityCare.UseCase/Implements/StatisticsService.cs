@@ -65,15 +65,22 @@ namespace FertilityCare.UseCase.Implements
 
             var totalRatePreviousMonth = feedbackPrev.Any() ? feedbackPrev.Average(x => x.Rating) : 0;
 
-            var comparingPatientsPreviousMonth = totalPatientsCurrentMonth == 0 ? 0 : (decimal)(totalPatientsCurrentMonth - totalPatientsPreviousMonth) / totalPatientsPreviousMonth * 100;
+            var comparingPatientsPreviousMonth = totalPatientsPreviousMonth == 0
+                ? 0
+                : (decimal)(totalPatientsCurrentMonth - totalPatientsPreviousMonth) / totalPatientsPreviousMonth * 100;
 
-            var comparingAppointmentsPreviousMonth = totalAppointmentCurrentMonth == 0 ? 0 : (decimal)(totalAppointmentCurrentMonth - totalAppointmentPreviousMonth) / totalAppointmentPreviousMonth * 100;
+            var comparingAppointmentsPreviousMonth = totalAppointmentPreviousMonth == 0
+                ? 0
+                : (decimal)(totalAppointmentCurrentMonth - totalAppointmentPreviousMonth) / totalAppointmentPreviousMonth * 100;
 
-            var comparingRatePreviousMonth = totalRateCurrentMonth == 0 ? 0 : (decimal)(totalRateCurrentMonth - totalRatePreviousMonth) / totalRatePreviousMonth * 100;
+            var comparingRatePreviousMonth = totalRatePreviousMonth == 0
+                ? 0
+                : Math.Round((decimal)(totalRateCurrentMonth - totalRatePreviousMonth) / totalRatePreviousMonth * 100, 2);
 
             return new DoctorOverallStatistics
             {
                 TotalPatients = totalPatients,
+                TotalAppointments = appointments.Count(),
                 TotalPatientsCurrentMonth = totalPatientsCurrentMonth,
                 TotalPatientsPreviousMonth = totalPatientsPreviousMonth,
                 TotalAppointmentsPreviousMonth = totalAppointmentPreviousMonth,
@@ -89,17 +96,26 @@ namespace FertilityCare.UseCase.Implements
         {
             var orders = await _orderRepository.FindAllByDoctorIdAsync(guid);
 
-            return orders.Select(x => new StatusTreatmentPatientOverall
-            {
-                Name = x.Status.ToString(),
-                Value = orders.Count(o => o.Status == x.Status),
-                Color = x.Status switch
+            var a = orders
+                .GroupBy(x => x.Status)
+                .Select(g => new StatusTreatmentPatientOverall
                 {
-                    OrderStatus.Completed => "#10B981",
-                    OrderStatus.InProgress => "#3B82F6",
-                    OrderStatus.Cancelled => "#F59E0B",
-                    OrderStatus.Closed => "#EF4444",
-                    _ => "#9E9E9E"
+                    Name = g.Key.ToString(),
+                    Value = g.Select(x => x.Id).Distinct().Count()
+                })
+                .ToList();
+
+            return a.Select(x => new StatusTreatmentPatientOverall
+            {
+                Name = x.Name,
+                Value = x.Value,
+                Color = x.Name switch
+                {
+                    nameof(OrderStatus.Completed) => "#10B981",
+                    nameof(OrderStatus.InProgress) => "#3B82F6",
+                    nameof(OrderStatus.Cancelled) => "#EF4444",
+                    nameof(OrderStatus.Closed) => "#F59E0B",
+                    _ => "#6C757D"
                 }
             });
         }

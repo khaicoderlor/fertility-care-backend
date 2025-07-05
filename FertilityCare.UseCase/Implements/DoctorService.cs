@@ -43,9 +43,9 @@ namespace FertilityCare.UseCase.Implements
             await _doctorRepository.SaveChangeAsync();
         }
 
-        public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
+        public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop6RecentPatientsAsync(Guid doctorId)
         {
-            var appointments = await _appointmentRepository.FindTop5RecentPatientsAsync(doctorId);
+            var appointments = await _appointmentRepository.FindTop6RecentPatientsAsync(doctorId);
 
             var result = new List<RecentPatientAppointmentDTO>();
             foreach (var appointment in appointments)
@@ -75,10 +75,7 @@ namespace FertilityCare.UseCase.Implements
 
         public async Task<DoctorDTO?> GetDoctorByIdAsync(string id)
         {
-            if (!Guid.TryParse(id, out Guid doctorId))
-                return null;
-
-            var result = await _doctorRepository.FindByIdAsync(doctorId);
+            var result = await _doctorRepository.FindByIdAsync(Guid.Parse(id));
             return result?.MapToDoctorDTO();
         }
 
@@ -122,14 +119,12 @@ namespace FertilityCare.UseCase.Implements
             var doctor = await _doctorRepository.FindByIdAsync(doctorId);
             if (doctor == null) return false;
 
-            // Update Doctor fields
             doctor.Degree = request.Degree;
             doctor.Specialization = request.Specialization;
             doctor.YearsOfExperience = request.YearsOfExperience;
             doctor.Biography = request.Biography;
             doctor.UpdatedAt = DateTime.UtcNow;
 
-            // Update UserProfile
             var profile = doctor.UserProfile;
             if (profile != null)
             {
@@ -137,20 +132,12 @@ namespace FertilityCare.UseCase.Implements
                 profile.MiddleName = request.MiddleName;
                 profile.LastName = request.LastName;
                 profile.Address = request.Address;
-
-                if (Enum.TryParse<Gender>(request.Gender, true, out var gender))
-                    profile.Gender = gender;
-
-                if (DateOnly.TryParse(request.DateOfBirth, out var dob))
-                    profile.DateOfBirth = dob;
-
+                profile.DateOfBirth = request.DateOfBirth;
                 profile.UpdatedAt = DateTime.UtcNow;
-
-                await _userProfileRepository.UpdateAsync(profile);
+                profile.Gender = request.Gender.Equals("Male") ? Gender.Male : request.Gender.Equals("Female") ? Gender.Female : Gender.Unknown;
             }
 
-            await _doctorRepository.UpdateAsync(doctor);
-
+            await _doctorRepository.SaveChangeAsync();
             return true;
         }
     }
