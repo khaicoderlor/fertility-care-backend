@@ -50,12 +50,14 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly GoogleAuthConfiguration _googleConfig;
 
+        private readonly IUserProfileRepository _profileRepository;
+
         public AuthService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IJwtService jwtService, IOptions<JwtConfiguration> jwtConfig,
             IOptions<GoogleAuthConfiguration> googleConfig,
             IPatientRepository patientRepository,
-            IOrderRepository orderRepository)
+            IOrderRepository orderRepository, IUserProfileRepository profileRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -64,6 +66,7 @@ namespace FertilityCare.Infrastructure.Services
             _googleConfig = googleConfig.Value;
             _patientRepository = patientRepository;
             _orderRepository = orderRepository;
+            _profileRepository = profileRepository;
         }
 
         public async Task<AuthResult> GoogleLoginAsync(GoogleLoginRequest request)
@@ -335,6 +338,8 @@ namespace FertilityCare.Infrastructure.Services
                     {
                         return AuthResult.Failed("Not assign role to user");
                     }
+                    
+                    await _profileRepository.SaveChangeAsync();
                 }
                 else if (request.Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase))
                 {
@@ -343,6 +348,8 @@ namespace FertilityCare.Infrastructure.Services
                     {
                         return AuthResult.Failed("Not assign role to user");
                     }
+
+                    await _profileRepository.SaveChangeAsync();
                 }
                     return await GenerateTokenAsync(user);
             }

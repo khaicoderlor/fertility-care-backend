@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using FertilityCare.Infrastructure.Services;
 using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Services;
@@ -90,6 +91,33 @@ namespace FertilityCare.WebAPI.Controllers
             {
                 var result = await _patientSecretService.GetPatientInfoContactByPatientIdAsync(patientId);
                 return Ok(new ApiResponse<PatientInfoContactDTO>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+
+        [HttpGet("{patientId}/follow-appointment")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<AppointmentDataTable>>>> GetAppointmentsByPatientId([FromRoute] string patientId)
+        {
+            try
+            {
+                var result = await _patientService.GetAppointmentsDataByPatientIdAsync(Guid.Parse(patientId));
+                return Ok(new ApiResponse<IEnumerable<AppointmentDataTable>>
                 {
                     StatusCode = 200,
                     Message = "",

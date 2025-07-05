@@ -26,5 +26,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task<IEnumerable<Appointment>> FindByDoctorIdAsync(Guid doctorId);
 
         Task<IEnumerable<Appointment>> FindAllByDoctorIdAsync(Guid doctorId);
+
+        Task<IEnumerable<Appointment>> FindByPatientIdAsync(Guid guid);
     }
 }

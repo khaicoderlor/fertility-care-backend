@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.Domain.Enums;
+using FertilityCare.UseCase.DTOs.Appointments;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
@@ -15,9 +16,12 @@ namespace FertilityCare.UseCase.Implements
     {
         private readonly IPatientRepository _patientRepository;
 
-        public PatientService(IPatientRepository patientRepository)
+        private readonly IAppointmentRepository _appointmentRepository;
+
+        public PatientService(IPatientRepository patientRepository, IAppointmentRepository appointmentRepository)
         {
             _patientRepository = patientRepository;
+            _appointmentRepository = appointmentRepository;
         }
 
         public async Task<IEnumerable<PatientDTO>> FindAllAsync()
@@ -30,6 +34,27 @@ namespace FertilityCare.UseCase.Implements
         {
             var loadedPatient = await _patientRepository.FindByIdAsync(Guid.Parse(patientId));
             return loadedPatient.MapToPatientDTO();
+        }
+
+        public async Task<IEnumerable<AppointmentDataTable>> GetAppointmentsDataByPatientIdAsync(Guid guid)
+        {
+            var appointments = await _appointmentRepository.FindByPatientIdAsync(guid);
+
+            return appointments.Select(a => new AppointmentDataTable
+            {
+                Id = a.Id.ToString(),
+                AppointmentDate = a.AppointmentDate.ToString("dd/MM/yyyy"),
+                AppointmentStatus = a.Status.ToString(),
+                TreatmentServiceName = a.OrderStep.Order.TreatmentService.Name,
+                DoctorName = $"{a.Doctor.UserProfile.MiddleName} {a.Doctor.UserProfile.LastName}",
+                ExtraFee = a.ExtraFee ?? 0,
+                EndTime = a.EndTime.ToString("HH:mm") ?? "-",
+                StartTime = a.StartTime.ToString("HH:mm") ?? "-",
+                Target = a.Type.ToString(),
+                Note = a.Note ?? "-",
+                Specialization = a.Doctor.Specialization.ToString(),
+                TreatmentStepName = a.OrderStep.TreatmentStep.StepName ?? "-",
+            }).ToList();
         }
 
         public async Task<bool> UpdateInfoPatientByIdAsync(string patientId, UpdatePatientInfoDTO request)
