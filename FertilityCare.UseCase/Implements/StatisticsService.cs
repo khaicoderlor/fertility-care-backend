@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -82,6 +83,25 @@ namespace FertilityCare.UseCase.Implements
                 ComparingAppointmentsPreviousMonth = comparingAppointmentsPreviousMonth,
                 ComparingRatePreviousMonth = comparingRatePreviousMonth
             };
+        }
+
+        public async Task<IEnumerable<StatusTreatmentPatientOverall>> GetOrderStatusOverallByDoctorIdAsync(Guid guid)
+        {
+            var orders = await _orderRepository.FindAllByDoctorIdAsync(guid);
+
+            return orders.Select(x => new StatusTreatmentPatientOverall
+            {
+                Name = x.Status.ToString(),
+                Value = orders.Count(o => o.Status == x.Status),
+                Color = x.Status switch
+                {
+                    OrderStatus.Completed => "#10B981",
+                    OrderStatus.InProgress => "#3B82F6",
+                    OrderStatus.Cancelled => "#F59E0B",
+                    OrderStatus.Closed => "#EF4444",
+                    _ => "#9E9E9E"
+                }
+            });
         }
 
         public async Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(Guid doctorId, int year)

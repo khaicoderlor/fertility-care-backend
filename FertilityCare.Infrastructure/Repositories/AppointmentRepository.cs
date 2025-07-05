@@ -106,12 +106,12 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Appointment>> FindTop5RecentPatientsAsync(Guid doctorId)
+        public async Task<IEnumerable<Appointment>> FindTop6RecentPatientsAsync(Guid doctorId)
         {
             return await _context.Appointments.OrderByDescending(x => x.AppointmentDate)
                 .Where(x => x.DoctorId == doctorId)
                 .DistinctBy(x => x.PatientId)   
-                .Take(5)
+                .Take(6)
                 .ToListAsync();
 
         }

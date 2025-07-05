@@ -68,5 +68,31 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
+        [HttpGet("/orders-status/{doctorId}/overall")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<StatusTreatmentPatientOverall>>>> GetOrderStatusOverall([FromRoute] string doctorId)
+        {
+            try
+            {
+                var result = await _statisticsService.GetOrderStatusOverallByDoctorIdAsync(Guid.Parse(doctorId));
+                return Ok(new ApiResponse<IEnumerable<StatusTreatmentPatientOverall>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }

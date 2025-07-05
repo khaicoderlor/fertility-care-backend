@@ -211,8 +211,8 @@ namespace FertilityCare.WebAPI.Controllers
         {
             try
             {
-                var result = await _doctorService.FindTop5RecentPatientsAsync(Guid.Parse(doctorId));
-
+                var result = await _doctorService.FindTop6RecentPatientsAsync(Guid.Parse(doctorId));
+                
                 return Ok(new ApiResponse<IEnumerable<RecentPatientAppointmentDTO>>
                 {
                     StatusCode = 200,

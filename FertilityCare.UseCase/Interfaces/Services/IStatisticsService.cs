@@ -11,6 +11,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     public interface IStatisticsService
     {
         Task<DoctorOverallStatistics> GetDoctorOverallStatisticInDashboardAsync(string doctorId);
+        Task<IEnumerable<StatusTreatmentPatientOverall>> GetOrderStatusOverallByDoctorIdAsync(Guid guid);
         Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(Guid doctorId, int year);
     }
 }

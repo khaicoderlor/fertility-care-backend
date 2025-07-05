@@ -21,7 +21,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 
         Task SaveChangesAsync();
 
-        Task<IEnumerable<Appointment>> FindTop5RecentPatientsAsync(Guid doctorId);
+        Task<IEnumerable<Appointment>> FindTop6RecentPatientsAsync(Guid doctorId);
 
         Task<IEnumerable<Appointment>> FindByDoctorIdAsync(Guid doctorId);
 
