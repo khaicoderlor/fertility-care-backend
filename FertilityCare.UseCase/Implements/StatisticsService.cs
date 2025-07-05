@@ -102,7 +102,7 @@ namespace FertilityCare.UseCase.Implements
             var result = Enumerable.Range(1, 12)
                 .Select(month => new PatientMonthlyCountDTO
                 {
-                    Month = month,
+                    Month = "Tháng " + month,
                     Patients = patients.ContainsKey(month) ? patients[month] : 0,
                     Appointments = appointmentsMonthly.ContainsKey(month) ? appointmentsMonthly[month] : 0
                 })

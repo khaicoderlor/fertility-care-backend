@@ -8,10 +8,10 @@ namespace FertilityCare.UseCase.DTOs.Patients
 {
     public class RecentPatientAppointmentDTO
     {
-        public string FullName { get; set; }
-        public int Age { get; set; }
-        public string TreatmentServiceName { get; set; }
-        public DateOnly LastAppointmentDate { get; set; }
-        public DateOnly? NextAppointmentDate { get; set; }
+        public string Name { get; set; }
+        public string Age { get; set; }
+        public string TreatmentName { get; set; } = string.Empty;
+        public string LastVisit { get; set; } = string.Empty;
+        public string? Status { get; set; }
     }
 }

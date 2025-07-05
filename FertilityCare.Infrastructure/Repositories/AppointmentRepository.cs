@@ -106,60 +106,14 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
+        public async Task<IEnumerable<Appointment>> FindTop5RecentPatientsAsync(Guid doctorId)
         {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-
-            var allAppointments = await _context.Appointments
-                .Where(a => a.DoctorId == doctorId)
+            return await _context.Appointments.OrderByDescending(x => x.AppointmentDate)
+                .Where(x => x.DoctorId == doctorId)
+                .DistinctBy(x => x.PatientId)   
+                .Take(5)
                 .ToListAsync();
 
-            var groupedAppointments = allAppointments
-                .GroupBy(a => a.PatientId);
-
-            var results = groupedAppointments
-                .Select(g =>
-                {
-                    var lastAppointment = g
-                        .Where(a => a.Status == AppointmentStatus.Completed)
-                        .OrderByDescending(a => a.AppointmentDate)
-                        .FirstOrDefault();
-
-                    var nextAppointment = g
-                        .Where(a => a.AppointmentDate > today)
-                        .OrderBy(a => a.AppointmentDate)
-                        .FirstOrDefault();
-
-                    // Lấy thông tin user từ cuộc hẹn nào có trước
-                    var patient = lastAppointment?.Patient ?? nextAppointment?.Patient;
-                    var user = patient?.UserProfile;
-
-                    if (lastAppointment == null || patient == null || user == null)
-                    {
-                        // Nếu thiếu thông tin cơ bản => bỏ qua
-                        return null;
-                    }
-
-                    var age = user.DateOfBirth.HasValue
-                        ? DateTime.Now.Year - user.DateOfBirth.Value.Year -
-                          (DateTime.Now.DayOfYear < user.DateOfBirth.Value.DayOfYear ? 1 : 0)
-                        : 0;
-
-                    return new RecentPatientAppointmentDTO
-                    {
-                        FullName = $"{user.LastName} {user.MiddleName} {user.FirstName}".Trim(),
-                        Age = age,
-                        TreatmentServiceName = lastAppointment.TreatmentService?.Name ?? "N/A",
-                        LastAppointmentDate = lastAppointment.AppointmentDate,
-                        NextAppointmentDate = nextAppointment?.AppointmentDate
-                    };
-                })
-                .Where(x => x != null) // loại bỏ null (do thiếu dữ liệu)
-                .OrderByDescending(x => x.LastAppointmentDate)
-                .Take(5)
-                .ToList();
-
-            return results!;
         }
 
         public async Task<IEnumerable<Appointment>> FindByDoctorIdAsync(Guid doctorId)

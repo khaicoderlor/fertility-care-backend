@@ -45,7 +45,26 @@ namespace FertilityCare.UseCase.Implements
 
         public async Task<IEnumerable<RecentPatientAppointmentDTO>> FindTop5RecentPatientsAsync(Guid doctorId)
         {
-            return await _appointmentRepository.FindTop5RecentPatientsAsync(doctorId);
+            var appointments = await _appointmentRepository.FindTop5RecentPatientsAsync(doctorId);
+
+            var result = new List<RecentPatientAppointmentDTO>();
+            foreach (var appointment in appointments)
+            {
+                var profile = appointment.Patient.UserProfile;
+
+                var status = appointment.OrderStep.Order.Status;
+
+                result.Add(new RecentPatientAppointmentDTO
+                {
+                    Name = $"{profile.MiddleName} {profile.LastName}",
+                    Age = profile.DateOfBirth != null ? (DateTime.UtcNow.Year - profile.DateOfBirth.Value.Year).ToString() : "N/A",
+                    LastVisit = _appointmentRepository.FindAllByDoctorIdAsync(doctorId).Result.OrderByDescending(x => x.AppointmentDate).First().AppointmentDate.ToString("dd/MM/yyyy"),
+                    Status = status.ToString(),
+                    TreatmentName = appointment.OrderStep.Order.TreatmentService.Name,
+                });
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<DoctorDTO>> GetAllDoctorsAsync()

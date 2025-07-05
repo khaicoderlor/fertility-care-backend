@@ -16,8 +16,9 @@ namespace FertilityCare.WebApi.Controllers
         {
             _statisticsService = statisticsService;
         }
+
         [HttpGet("patients-appointments/{doctorId}/monthly")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear([FromRoute] string doctorId, int year)
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear([FromRoute] string doctorId, [FromQuery] int year)
         {
             try
             {
