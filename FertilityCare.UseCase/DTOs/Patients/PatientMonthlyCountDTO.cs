@@ -9,6 +9,8 @@ namespace FertilityCare.UseCase.DTOs.Patients
     public class PatientMonthlyCountDTO
     {
         public int Month { get; set; }
-        public int PatientCount { get; set; }
+        public long Patients { get; set; }
+
+        public long Appointments { get; set; }
     }
 }

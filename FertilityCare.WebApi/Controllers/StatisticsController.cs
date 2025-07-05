@@ -16,12 +16,12 @@ namespace FertilityCare.WebApi.Controllers
         {
             _statisticsService = statisticsService;
         }
-        [HttpGet("patients/count/{year}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear(int year)
+        [HttpGet("patients-appointments/{doctorId}/monthly")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear([FromRoute] string doctorId, int year)
         {
             try
             {
-                var result = await _statisticsService.GetPatientCountByYearAsync(year);
+                var result = await _statisticsService.GetPatientCountByYearAsync(Guid.Parse(doctorId), year);
                 return Ok(new ApiResponse<IEnumerable<PatientMonthlyCountDTO>>
                 {
                     StatusCode = 200,

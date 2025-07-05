@@ -168,5 +168,10 @@ namespace FertilityCare.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Appointment>> FindAllByDoctorIdAsync(Guid doctorId)
+        {
+            return await _context.Appointments.Where(x => x.DoctorId == doctorId)
+                .ToListAsync();
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.UseCase.DTOs.Patients;
@@ -68,14 +69,14 @@ namespace FertilityCare.UseCase.Implements
             var comparingAppointmentsPreviousMonth = totalAppointmentCurrentMonth == 0 ? 0 : (decimal)(totalAppointmentCurrentMonth - totalAppointmentPreviousMonth) / totalAppointmentPreviousMonth * 100;
 
             var comparingRatePreviousMonth = totalRateCurrentMonth == 0 ? 0 : (decimal)(totalRateCurrentMonth - totalRatePreviousMonth) / totalRatePreviousMonth * 100;
-            
+
             return new DoctorOverallStatistics
             {
                 TotalPatients = totalPatients,
                 TotalPatientsCurrentMonth = totalPatientsCurrentMonth,
                 TotalPatientsPreviousMonth = totalPatientsPreviousMonth,
                 TotalAppointmentsPreviousMonth = totalAppointmentPreviousMonth,
-                TotalRate = totalRate??0,
+                TotalRate = totalRate ?? 0,
                 TotalRatePreviousMonth = totalRatePreviousMonth,
                 ComparingPatientsPreviousMonth = comparingPatientsPreviousMonth,
                 ComparingAppointmentsPreviousMonth = comparingAppointmentsPreviousMonth,
@@ -83,21 +84,30 @@ namespace FertilityCare.UseCase.Implements
             };
         }
 
-        public async Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(int year)
+        public async Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(Guid doctorId, int year)
         {
-            var appointments = await _appointmentRepository.FindAllAsync();
-            var countByMonth = appointments
+            var orders = await _orderRepository.FindAllByDoctorIdAsync(doctorId);
+            var patients = orders.Where(x => x.StartDate.Year == year)
+                .OrderBy(x => x.StartDate.Month)
+                .GroupBy(x => x.StartDate.Month)
+                .ToDictionary(x => x.Key, x => x.Select(g => g.PatientId).Distinct().Count());
+
+            var appointments = await _appointmentRepository.FindAllByDoctorIdAsync(doctorId);
+            var appointmentsMonthly = appointments
                 .Where(a => a.AppointmentDate.Year == year)
+                .OrderBy(a => a.AppointmentDate.Month)
                 .GroupBy(a => a.AppointmentDate.Month)
-                .ToDictionary(g => g.Key, g => g.Select(x => x.PatientId).Distinct().Count());
+                .ToDictionary(g => g.Key, g => g.Select(x => x.Id).Count());
 
             var result = Enumerable.Range(1, 12)
                 .Select(month => new PatientMonthlyCountDTO
                 {
                     Month = month,
-                    PatientCount = countByMonth.ContainsKey(month) ? countByMonth[month] : 0
+                    Patients = patients.ContainsKey(month) ? patients[month] : 0,
+                    Appointments = appointmentsMonthly.ContainsKey(month) ? appointmentsMonthly[month] : 0
                 })
                 .ToList();
+
             return result;
         }
     }
