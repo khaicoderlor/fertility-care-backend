@@ -45,13 +45,13 @@ namespace FertilityCare.Infrastructure.Repositories
 
         public async Task<IEnumerable<Order>> FindAllByDoctorIdAsync(Guid doctorId)
         {
-           return await _context.Orders.Where(x => x.DoctorId == doctorId).ToListAsync();
+            return await _context.Orders.Where(x => x.DoctorId == doctorId).ToListAsync();
         }
 
         public async Task<bool> IsExistAsync(Guid id)
         {
             var orderExists = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
-            if(orderExists is null)
+            if (orderExists is null)
             {
                 return false;
             }
@@ -99,6 +99,10 @@ namespace FertilityCare.Infrastructure.Repositories
             .Select(o => o.DoctorId)
             .Distinct()
             .CountAsync();
+        }
+        public async Task<int> CountAllOrdersAsync()
+        {
+            return await _context.Orders.CountAsync();
         }
     }
 }

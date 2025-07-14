@@ -196,6 +196,31 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("orders/count")]
+        public async Task<ActionResult<ApiResponse<string>>> GetTotalOrderCount()
+        {
+            try
+            {
+                var total = await _statisticsService.CountTotalOrdersAsync();
 
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Total number of treatment orders retrieved successfully.",
+                    Data = total,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = $"An error occurred: {ex.Message}",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
     }
 }

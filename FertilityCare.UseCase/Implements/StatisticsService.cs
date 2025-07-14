@@ -32,6 +32,11 @@ namespace FertilityCare.UseCase.Implements
             _doctorRepository = doctorRepository;
         }
 
+        public async Task<string> CountTotalOrdersAsync()
+        {
+            return (await _orderRepository.CountAllOrdersAsync()).ToString();
+        }
+
         public async Task<string> FindTotalPatientAsync()
         {
             var count = await _orderRepository.CountDistinctActivePatientsAsync();
