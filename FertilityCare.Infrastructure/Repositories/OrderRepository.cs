@@ -104,5 +104,14 @@ namespace FertilityCare.Infrastructure.Repositories
         {
             return await _context.Orders.CountAsync();
         }
+        public async Task<decimal> GetRevenueByTreatmentServiceAsync(string treatmentName)
+        {
+            return await _context.Orders
+                .Where(o => o.Status == OrderStatus.Completed &&
+                            o.TreatmentService.Name == treatmentName &&
+                            o.TotalAmount != null)
+                .SumAsync(o => o.TotalAmount.Value);
+        }
+
     }
 }

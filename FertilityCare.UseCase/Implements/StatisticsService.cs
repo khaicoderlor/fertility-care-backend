@@ -41,6 +41,12 @@ namespace FertilityCare.UseCase.Implements
             _embryoGainedRepository = embryoGainedRepository;
             _embryoTransferRepository = embryoTransferRepository;
         }
+        public async Task<string> GetRevenueByTreatmentServiceAsync(string treatmentName)
+        {
+            var revenue = await _orderRepository.GetRevenueByTreatmentServiceAsync(treatmentName);
+            return revenue.ToString("N0"); // Format kiểu "100,000"
+        }
+
         public async Task<string> GetTotalEmbryoTransfersAsync()
         {
             var count = await _embryoTransferRepository.CountTotalEmbryoTransfersAsync();

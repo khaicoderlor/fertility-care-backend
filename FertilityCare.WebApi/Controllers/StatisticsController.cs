@@ -361,6 +361,43 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("revenue/treatment")]
+        public async Task<ActionResult<ApiResponse<string>>> GetRevenueByTreatment([FromQuery] string name)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Treatment name is required.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                var result = await _statisticsService.GetRevenueByTreatmentServiceAsync(name);
+
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = $"Revenue fetched for {name}.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
     }
 }
