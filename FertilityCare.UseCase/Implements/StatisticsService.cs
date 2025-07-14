@@ -8,6 +8,7 @@ using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
+using FertilityCare.UseCase.DTOs.TreatmentServices;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.UseCase.Mappers;
@@ -206,5 +207,16 @@ namespace FertilityCare.UseCase.Implements
             return topDoctors;
         }
 
+        public async Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName()
+        {
+            var result = await _orderRepository.FindAllAsync();
+            return result.GroupBy(x => x.TreatmentService.Name)
+            .Select(g => new TurnoverTreatmentDTO
+            {
+                TreatmentName = g.Key,
+                TotalTurnover = g.Sum(x => x.TotalAmount ?? 0)
+            })
+            .ToList();
+        }
     }
 }
