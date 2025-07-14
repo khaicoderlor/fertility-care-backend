@@ -28,6 +28,11 @@ namespace FertilityCare.Infrastructure.Repositories
             _context.EmbryoTransfers.Remove(entity);
             await _context.SaveChangesAsync();
         }
+        public async Task<int> CountTotalEmbryoTransfersAsync()
+        {
+            return await _context.EmbryoTransfers.CountAsync();
+        }
+
 
         public async Task<IEnumerable<EmbryoTransfer>> FindAllAsync()
         {
