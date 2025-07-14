@@ -15,6 +15,9 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 
         Task SaveChangeAsync();
 
+        Task<int> CountDistinctActivePatientsAsync();
+
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -80,6 +81,15 @@ namespace FertilityCare.Infrastructure.Repositories
         public async Task<IEnumerable<Order>> FindAllByPatientIdAsync(Guid patientId)
         {
             return await _context.Orders.Where(x => x.PatientId == patientId).ToListAsync();
+        }
+
+        public async Task<int> CountDistinctActivePatientsAsync()
+        {
+            return await _context.Orders
+                .Where(o => o.Status == OrderStatus.InProgress)
+                .Select(o => o.PatientId)
+                .Distinct()
+                .CountAsync();
         }
 
     }

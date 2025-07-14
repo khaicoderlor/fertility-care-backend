@@ -119,5 +119,31 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("active-patients")]
+        public async Task<ActionResult<ApiResponse<string>>> GetCurrentActivePatientCountAsString()
+        {
+            try
+            {
+                var countString = await _statisticsService.FindTotalPatientAsync();
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = countString,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
     }
 }
