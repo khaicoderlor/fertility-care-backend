@@ -1,6 +1,7 @@
 ﻿using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
+using FertilityCare.UseCase.DTOs.TreatmentServices;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,31 @@ namespace FertilityCare.WebApi.Controllers
         public StatisticsController(IStatisticsService statisticsService)
         {
             _statisticsService = statisticsService;
+        }
+        [HttpGet("turnover-by-treatment")]
+        public async Task<ActionResult<ApiResponse<List<TurnoverTreatmentDTO>>>> GetTurnoverByTreatmentAsync()
+        {
+            try
+            {
+                var result = await _statisticsService.GetTurnoverByTreatmentName();
+                return Ok(new ApiResponse<List<TurnoverTreatmentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
         }
 
         [HttpGet("top-5-doctors/most-appointment")]

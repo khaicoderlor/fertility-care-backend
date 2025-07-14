@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
+using FertilityCare.UseCase.DTOs.TreatmentServices;
 
 namespace FertilityCare.UseCase.Interfaces.Services
 {
@@ -22,5 +23,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<string> CountAppointmentsTodayAsync();
 
 
+        Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName();
     }
 }
