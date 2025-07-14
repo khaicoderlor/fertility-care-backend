@@ -205,6 +205,10 @@ namespace FertilityCare.UseCase.Implements
             }
             return topDoctors;
         }
-
+        public async Task<string> CountAppointmentsTodayAsync()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            return (await _appointmentRepository.CountAppointmentsByDateAsync(today)).ToString();
+        }
     }
 }

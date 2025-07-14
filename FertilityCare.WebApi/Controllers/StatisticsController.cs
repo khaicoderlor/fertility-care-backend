@@ -222,5 +222,32 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("appointments/today/count")]
+        public async Task<ActionResult<ApiResponse<string>>> GetTodayAppointmentCount()
+        {
+            try
+            {
+                var count = await _statisticsService.CountAppointmentsTodayAsync();
+
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Total appointments for today retrieved successfully.",
+                    Data = count,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = $"An error occurred: {ex.Message}",
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
     }
 }

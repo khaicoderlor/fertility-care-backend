@@ -136,5 +136,12 @@ namespace FertilityCare.Infrastructure.Repositories
             return await _context.Appointments.Where(x => x.PatientId == guid)
                 .ToListAsync();
         }
+
+        public async Task<int> CountAppointmentsByDateAsync(DateOnly date)
+        {
+            return await _context.Appointments
+                .Where(a => a.AppointmentDate == date)
+                .CountAsync();
+        }
     }
 }

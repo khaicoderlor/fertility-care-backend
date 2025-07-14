@@ -19,6 +19,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<List<DoctorDTO>> GetTop5DoctorMostApointmentAsync();
         Task<string> GetCurrentActiveDoctorCountAsync();
         Task<string> CountTotalOrdersAsync();
+        Task<string> CountAppointmentsTodayAsync();
 
 
     }
