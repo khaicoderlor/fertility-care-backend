@@ -16,6 +16,32 @@ namespace FertilityCare.WebApi.Controllers
         {
             _feedbackService = feedbackService;
         }
+        [HttpGet("{doctorId}")]
+        public async Task<ActionResult<ApiResponse<List<FeedbackDTO>>>> GetAllFeedbackByDoctorId([FromRoute]string doctorId)
+        {
+            try
+            {
+                var result = await _feedbackService.GetAllFeedbacksByDoctorIdAsync(doctorId);
+                return Ok(new ApiResponse<List<FeedbackDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now,
+                });
+            }catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<List<FeedbackDTO>>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt= DateTime.Now,
+                });
+            }
+        }
+        
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse<FeedbackDTO>>> CreateFeedbackAsync([FromBody] CreateFeedbackRequestDTO request)
         {

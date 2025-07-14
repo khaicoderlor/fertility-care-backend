@@ -129,5 +129,12 @@ namespace FertilityCare.UseCase.Implements
             doctor.UpdatedAt = DateTime.Now;
             await _doctorRepository.UpdateAsync(doctor);
         }
+
+        public async Task<List<FeedbackDTO>> GetAllFeedbacksByDoctorIdAsync(string doctorId)
+        {
+            var feedbackList = await _feedbackRepository.GetFeedbackByDoctorIdAsync(Guid.Parse(doctorId));
+            feedbackList.OrderByDescending(x => x.CreatedAt);
+            return feedbackList.Select(x => x.MapToFeedbackDTO()).ToList();
+        }
     }
 }

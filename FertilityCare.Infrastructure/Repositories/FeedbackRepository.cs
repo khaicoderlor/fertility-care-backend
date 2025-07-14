@@ -100,6 +100,11 @@ namespace FertilityCare.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Feedback>> GetFeedbackByDoctorIdAsync(Guid doctorId)
+        {
+            return await _context.Feedbacks.Where(x => x.DoctorId.Equals(doctorId)).ToListAsync();
+        }
+
         public async Task<bool> IsExistAsync(Guid id)
         {
             var loadedFeedback = await _context.Feedbacks.FindAsync(id);
