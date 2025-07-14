@@ -164,11 +164,11 @@ namespace FertilityCare.UseCase.Implements
 
         private string GetShiftType(TimeOnly startTime, TimeOnly endTime)
         {
-            if (startTime < new TimeOnly(12, 0) && endTime <= new TimeOnly(12, 0))
+            if (startTime >= new TimeOnly(8, 0) && endTime <= new TimeOnly(12, 0))
                 return "morning";
             if (startTime >= new TimeOnly(13, 0) && endTime <= new TimeOnly(17, 0))
                 return "afternoon";
-            if (startTime >= new TimeOnly(18, 0))
+            if (startTime >= new TimeOnly(18, 0) && endTime <= new TimeOnly(22, 0))
                 return "evening";
             return "Unknown";
         }

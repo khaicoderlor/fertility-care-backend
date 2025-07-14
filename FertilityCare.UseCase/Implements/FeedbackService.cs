@@ -17,12 +17,14 @@ namespace FertilityCare.UseCase.Implements
         private IFeedbackRepository _feedbackRepository;
         private IDoctorRepository _doctorRepository;
         private ITreatmentServiceRepository _treatmentServiceRepository;
+        private IPatientRepository _patientRepository;
         public FeedbackService(IFeedbackRepository feedbackRepository, 
             IDoctorRepository doctorRepository,
-            ITreatmentServiceRepository treatmentServiceRepository)
+            ITreatmentServiceRepository treatmentServiceRepository, IPatientRepository patientRepository)
         {
             _feedbackRepository = feedbackRepository;
             _doctorRepository = doctorRepository;
+            _patientRepository = patientRepository;
             _treatmentServiceRepository = treatmentServiceRepository;
         }
 
@@ -61,6 +63,10 @@ namespace FertilityCare.UseCase.Implements
             {
                 await RatingTreatmentService(feedback.TreatmentServiceId ?? Guid.Empty);
             }
+
+            var patient = await _patientRepository.FindByIdAsync(feedback.PatientId);
+            feedback.Patient = patient;
+
             return feedback.MapToFeedbackDTO();
         }
 

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
 {
-    [Route("api/v1/feedback")]
+    [Route("api/v1/feedbacks")]
     [ApiController]
     public class FeedbackController : ControllerBase
     {

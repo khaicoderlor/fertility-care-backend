@@ -209,9 +209,19 @@ namespace FertilityCare.WebAPI.Controllers
         [HttpGet("{doctorId}/recent-patients")]
         public async Task<ActionResult<ApiResponse<IEnumerable<RecentPatientAppointmentDTO>>>> GetRecentPatients([FromRoute] string doctorId)
         {
+            if(Guid.TryParse(doctorId, out var parsedDoctorId) == false)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "Invalid doctor ID format.",
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
             try
             {
-                var result = await _doctorService.FindTop6RecentPatientsAsync(Guid.Parse(doctorId));
+                var result = await _doctorService.FindTop6RecentPatientsAsync(parsedDoctorId);
                 
                 return Ok(new ApiResponse<IEnumerable<RecentPatientAppointmentDTO>>
                 {
