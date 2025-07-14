@@ -12,6 +12,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task BulkInsertAsync(IEnumerable<EggGained> eggs);
         Task<IEnumerable<EggGained>> FindAllByOrderIdAsync(Guid orderId);
         Task<IEnumerable<EggGained>> GetUsableEggsByOrderIdAsync(Guid orderId);
+        Task<int> CountEggGainedByMonthAsync(int month);
 
     }
 }

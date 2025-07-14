@@ -21,6 +21,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<string> GetCurrentActiveDoctorCountAsync();
         Task<string> CountTotalOrdersAsync();
         Task<string> CountAppointmentsTodayAsync();
+        Task<string> GetTotalEggsByMonthAsync(int month);
 
 
         Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName();

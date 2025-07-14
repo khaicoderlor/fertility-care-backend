@@ -36,5 +36,12 @@ namespace FertilityCare.Infrastructure.Repositories
             .Where(e => e.OrderId == orderId && e.IsUsable)
             .ToListAsync();
         }
+        public async Task<int> CountEggGainedByMonthAsync(int month)
+        {
+            return await _context.EggGaineds
+                .Where(e => e.DateGained.Month == month)
+                .CountAsync();
+        }
+
     }
 }

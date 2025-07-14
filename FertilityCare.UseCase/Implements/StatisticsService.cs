@@ -25,12 +25,15 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IDoctorRepository _doctorRepository;
 
-        public StatisticsService(IAppointmentRepository appointmentRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
+        private readonly IEggGainedRepository _eggGainedRepository;
+
+        public StatisticsService(IAppointmentRepository appointmentRepository, IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
         {
             _appointmentRepository = appointmentRepository;
             _orderRepository = orderRepository;
             _feedbackRepository = feedbackRepository;
             _doctorRepository = doctorRepository;
+            _eggGainedRepository = eggGainedRepository;
         }
 
         public async Task<string> CountTotalOrdersAsync()
@@ -205,6 +208,11 @@ namespace FertilityCare.UseCase.Implements
                 topDoctors.Add(doctorEntity.MapToDoctorDTO());
             }
             return topDoctors;
+        }
+        public async Task<string> GetTotalEggsByMonthAsync(int month)
+        {
+            var total = await _eggGainedRepository.CountEggGainedByMonthAsync(month);
+            return total.ToString();
         }
 
         public async Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName()

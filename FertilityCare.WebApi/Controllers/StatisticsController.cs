@@ -146,6 +146,43 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("eggs-gained/total")]
+        public async Task<ActionResult<ApiResponse<string>>> GetTotalEggsByMonth([FromQuery] string month)
+        {
+            try
+            {
+                if (!int.TryParse(month, out int monthInt) || monthInt < 1 || monthInt > 12)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid month. Must be a number from 1 to 12.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                var result = await _statisticsService.GetTotalEggsByMonthAsync(monthInt);
+
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
         [HttpGet("orders-status/{doctorId}/overall")]
         public async Task<ActionResult<ApiResponse<IEnumerable<StatusTreatmentPatientOverall>>>> GetOrderStatusOverall([FromRoute] string doctorId)
