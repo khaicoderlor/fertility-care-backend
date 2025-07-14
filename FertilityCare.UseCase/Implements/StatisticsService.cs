@@ -5,10 +5,12 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.Domain.Enums;
+using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
+using FertilityCare.UseCase.Mappers;
 
 namespace FertilityCare.UseCase.Implements
 {
@@ -171,5 +173,27 @@ namespace FertilityCare.UseCase.Implements
             }
             return avgRateMonth;
         }
+
+        public async Task<List<DoctorDTO>> GetTop5DoctorMostApointmentAsync()
+        {
+            var listDoctors = _appointmentRepository.FindAllAsync().Result
+                .GroupBy(x => x.DoctorId)
+                .Select(g => new
+                {
+                    DoctorId = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)
+                .ToList();
+            List<DoctorDTO> topDoctors = new List<DoctorDTO>();
+            foreach (var doctor in listDoctors)
+            {
+                var doctorEntity = await _doctorRepository.FindByIdAsync(doctor.DoctorId);
+                topDoctors.Add(doctorEntity.MapToDoctorDTO());
+            }
+            return topDoctors;
+        }
+
     }
 }

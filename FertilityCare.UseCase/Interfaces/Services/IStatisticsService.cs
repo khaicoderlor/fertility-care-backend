@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 
@@ -15,7 +16,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(Guid doctorId, int year);
         Task<List<AverageRateMonthly>> GetStatisticAverageRateMonthlyDoctor(Guid doctorId);
         Task<string> FindTotalPatientAsync();
-
+        Task<List<DoctorDTO>> GetTop5DoctorMostApointmentAsync();
 
     }
 }
