@@ -84,6 +84,33 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
+        [HttpGet("admin-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientSideAdminPage>>>> GetPatientSideAdminPages()
+        {
+            try
+            {
+                var result = await _patientSecretService.GetPatientSideAdminPages();
+                return Ok(new ApiResponse<IEnumerable<PatientSideAdminPage>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+
         [HttpGet("{patientId}/contact")]
         public async Task<ActionResult<ApiResponse<PatientInfoContactDTO>>> GetPatientInfoContactByIdAsync([FromRoute] string patientId)
         {

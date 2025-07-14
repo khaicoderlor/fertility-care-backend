@@ -22,8 +22,13 @@ namespace FertilityCare.Infrastructure.Services
         Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId);
 
         Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId);
+ 
         Task UpdateAvatarAsync(string patientId, string file);
+
         Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid);
+
+        Task<IEnumerable<PatientSideAdminPage>> GetPatientSideAdminPages();
+
     }
 
     public class PatientSecretService : IPatientSecretService
@@ -96,6 +101,26 @@ namespace FertilityCare.Infrastructure.Services
                 Email = loadedUser.Email,
                 PhoneNumber = loadedUser.PhoneNumber
             };
+        }
+
+        public async Task<IEnumerable<PatientSideAdminPage>> GetPatientSideAdminPages()
+        {
+            var patients = await _patientRepository.FindAllAsync();
+            var patientSideAdminPages = new List<PatientSideAdminPage>();
+            foreach (var patient in patients)
+            {
+                var orders = await _orderRepository.FindAllByPatientIdAsync(patient.Id);
+                var loadedUser = await _userManager.FindByProfileIdAsync(patient.UserProfileId);
+                var patientSideAdminPage = new PatientSideAdminPage
+                {
+                    EmailContact = loadedUser.Email,
+                    PhoneContact = loadedUser.PhoneNumber,
+                    Patient = patient.MapToPatientDTO(),
+                    Orders = orders.Select(o => o.MapToOderDTO()).ToList()
+                };
+                patientSideAdminPages.Add(patientSideAdminPage);
+            }
+            return patientSideAdminPages;
         }
 
         public async Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid)

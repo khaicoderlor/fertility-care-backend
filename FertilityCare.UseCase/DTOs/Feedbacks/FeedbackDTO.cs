@@ -14,6 +14,8 @@ namespace FertilityCare.UseCase.DTOs.Feedbacks
         public string Id { get; set; }
         public PatientDTO Patient { get; set; }
         public DoctorDTO? Doctor { get; set; }
+        public string PatientEmail { get; set; } = string.Empty;
+        public string PatientPhone { get; set; } = string.Empty;
         public TreatmentServiceDTO? TreatmentService { get; set; }
         public bool Status { get; set; }
         public decimal Rating { get; set; }

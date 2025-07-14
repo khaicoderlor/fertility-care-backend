@@ -2,7 +2,6 @@
 using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
@@ -12,10 +11,12 @@ namespace FertilityCare.WebApi.Controllers
     public class FeedbackController : ControllerBase
     {
         private readonly IFeedbackService _feedbackService;
+
         public FeedbackController(IFeedbackService feedbackService)
         {
             _feedbackService = feedbackService;
         }
+        
         [HttpGet("{doctorId}")]
         public async Task<ActionResult<ApiResponse<List<FeedbackDTO>>>> GetAllFeedbackByDoctorId([FromRoute]string doctorId)
         {
@@ -40,7 +41,6 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-        
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<FeedbackDTO>>> CreateFeedbackAsync([FromBody] CreateFeedbackRequestDTO request)
@@ -78,6 +78,7 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackDTO>>>> GetAllFeedbacksByFilterAsync([FromQuery] FeedbackQueryDTO query)
         {
@@ -103,6 +104,7 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
         [HttpPut("{feedbackId}")]
         public async Task<ActionResult<ApiResponse<FeedbackDTO>>> UpdateFeedbackAsync(string feedbackId, [FromBody] UpdateFeedbackDTO request)
         {
@@ -138,6 +140,7 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
         [HttpPut("{feedbackId}/status")]
         public async Task<ActionResult<ApiResponse<FeedbackDTO>>> UpdateFeedbackStatusAsync(string feedbackId, [FromQuery]bool status)
         {
