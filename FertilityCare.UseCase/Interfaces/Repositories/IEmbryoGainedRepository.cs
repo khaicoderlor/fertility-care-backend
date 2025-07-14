@@ -11,5 +11,7 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
     {
         Task BulkInsertAsync(IEnumerable<EmbryoGained> embryos);
         public Task<IEnumerable<EmbryoGained>> FindByOrderIdAsync(Guid orderId);
+        Task<int> CountTotalEmbryosAsync();
+
     }
 }

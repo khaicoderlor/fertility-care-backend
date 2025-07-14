@@ -27,13 +27,16 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IEggGainedRepository _eggGainedRepository;
 
-        public StatisticsService(IAppointmentRepository appointmentRepository, IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
+        private readonly IEmbryoGainedRepository _embryoGainedRepository;
+
+        public StatisticsService(IAppointmentRepository appointmentRepository, IEmbryoGainedRepository embryoGainedRepository, IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
         {
             _appointmentRepository = appointmentRepository;
             _orderRepository = orderRepository;
             _feedbackRepository = feedbackRepository;
             _doctorRepository = doctorRepository;
             _eggGainedRepository = eggGainedRepository;
+            _embryoGainedRepository = embryoGainedRepository;
         }
 
         public async Task<string> CountTotalOrdersAsync()
@@ -231,5 +234,11 @@ namespace FertilityCare.UseCase.Implements
             var today = DateOnly.FromDateTime(DateTime.Today);
             return (await _appointmentRepository.CountAppointmentsByDateAsync(today)).ToString();
         }
+        public async Task<string> GetTotalEmbryosAsync()
+        {
+            var count = await _embryoGainedRepository.CountTotalEmbryosAsync();
+            return count.ToString();
+        }
+
     }
 }

@@ -81,5 +81,10 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+        public async Task<int> CountTotalEmbryosAsync()
+        {
+            return await _context.EmbryoGaineds.CountAsync();
+        }
+
     }
 }

@@ -311,6 +311,31 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("embryos/total")]
+        public async Task<ActionResult<ApiResponse<string>>> GetTotalEmbryos()
+        {
+            try
+            {
+                var total = await _statisticsService.GetTotalEmbryosAsync();
+                return Ok(new ApiResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = total,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
     }
 }
