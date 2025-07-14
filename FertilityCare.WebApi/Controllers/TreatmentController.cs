@@ -25,7 +25,7 @@ namespace FertilityCare.WebAPI.Controllers
                 return Ok(new ApiResponse<IEnumerable<TreatmentServiceDTO>>
                 {
                     StatusCode = 200,
-                    Message = "hihiih",
+                    Message = "",
                     Data = result,
                     ResponsedAt = DateTime.Now
                 });

@@ -146,5 +146,24 @@ namespace FertilityCare.UseCase.Implements
 
             return result;
         }
+
+        public async Task<List<AverageRateMonthly>> GetStatisticAverageRateMonthlyDoctor(Guid doctorId)
+        {
+            var feedbackDotor = await _feedbackRepository.GetFeedbackByDoctorIdAsync(doctorId);
+            var avgRateMonth = new List<AverageRateMonthly>();
+            var year = DateTime.Now.Year;
+            for (int i = 1; i <= 12; i++)
+            {
+                var avgRating = feedbackDotor.Where(x => x.CreatedAt.Year == year && x.CreatedAt.Month == i).Average(x => x.Rating);
+
+                avgRateMonth.Add(new AverageRateMonthly
+                {
+                    Rating = avgRating,
+                    Monthly = i,
+                    IsData = avgRating > 0 ? true : false
+                });
+            }
+            return avgRateMonth;
+        }
     }
 }

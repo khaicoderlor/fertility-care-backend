@@ -17,6 +17,31 @@ namespace FertilityCare.WebApi.Controllers
             _statisticsService = statisticsService;
         }
 
+        [HttpGet("doctor/{doctorId}/monthly")]
+        public async Task<ActionResult<ApiResponse<List<AverageRateMonthly>>>> GetStatisticAverageRateMonthlyDoctor([FromRoute] string doctorId)
+        {
+            try
+            {
+                var result = await _statisticsService.GetStatisticAverageRateMonthlyDoctor(Guid.Parse(doctorId));
+                return Ok(new ApiResponse<List<AverageRateMonthly>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
         [HttpGet("patients-appointments/{doctorId}/monthly")]
         public async Task<ActionResult<ApiResponse<IEnumerable<PatientMonthlyCountDTO>>>> GetPatientCountByYear([FromRoute] string doctorId, [FromQuery] int year)
         {
