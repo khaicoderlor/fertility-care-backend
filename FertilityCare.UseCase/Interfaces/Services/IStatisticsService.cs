@@ -15,6 +15,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<IEnumerable<PatientMonthlyCountDTO>> GetPatientCountByYearAsync(Guid doctorId, int year);
         Task<List<AverageRateMonthly>> GetStatisticAverageRateMonthlyDoctor(Guid doctorId);
         Task<string> FindTotalPatientAsync();
+        Task<string> GetCurrentActiveDoctorCountAsync();
 
 
     }

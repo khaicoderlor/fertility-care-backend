@@ -92,5 +92,13 @@ namespace FertilityCare.Infrastructure.Repositories
                 .CountAsync();
         }
 
+        public async Task<int> CountDistinctDoctorsAsync()
+        {
+            return await _context.Orders
+            .Where(o => o.Status == OrderStatus.InProgress)
+            .Select(o => o.DoctorId)
+            .Distinct()
+            .CountAsync();
+        }
     }
 }
