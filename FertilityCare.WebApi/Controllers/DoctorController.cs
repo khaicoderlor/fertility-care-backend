@@ -17,10 +17,12 @@ namespace FertilityCare.WebAPI.Controllers
 
         private readonly ICloudStorageService _cloudStorageService;
 
-        public DoctorController(IDoctorService doctorService, ICloudStorageService cloudStorageService)
+        private readonly IDoctorSecretService _doctorSecretService;
+        public DoctorController(IDoctorService doctorService, ICloudStorageService cloudStorageService, IDoctorSecretService doctorSecretService)
         {
             _doctorService = doctorService;
             _cloudStorageService = cloudStorageService;
+            _doctorSecretService = doctorSecretService;
         }
 
         [HttpGet("{id}")]
@@ -60,6 +62,34 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+
+        [HttpGet("admin-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DoctorSideAdminPage>>>> GetDoctorSideAdminPages()
+        {
+            try
+            {
+                var doctor = await _doctorSecretService.GetDoctorSideAdminPages();
+
+                return Ok(new ApiResponse<IEnumerable<DoctorSideAdminPage>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully.",
+                    Data = doctor,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
         [HttpGet("{id}/patients")]
         public async Task<ActionResult<ApiResponse<IEnumerable<PatientDashboard>>>> GetPatientsByDoctorId(string id)
