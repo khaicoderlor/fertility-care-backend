@@ -24,9 +24,9 @@ namespace FertilityCare.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<OrderStepPayment>> FindAllAsync()
+        public async Task<IEnumerable<OrderStepPayment>> FindAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.orderStepPayments.ToListAsync();
         }
 
         public async Task<IEnumerable<OrderStepPayment>> FindAllByPatientIdAsync(Guid patientId)

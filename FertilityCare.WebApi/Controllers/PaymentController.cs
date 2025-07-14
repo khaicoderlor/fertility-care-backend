@@ -12,11 +12,13 @@ namespace FertilityCare.WebAPI.Controllers
     {
         private readonly IMomoService _momoService;
         private readonly IPaymentService _paymentService;
+        private readonly IOrderStepPaymentService _orderStepPaymentService;
 
-        public PaymentController(IMomoService momoService, IPaymentService paymentService)
+        public PaymentController(IMomoService momoService, IPaymentService paymentService, IOrderStepPaymentService orderStepPaymentService)
         {
             _momoService = momoService;
             _paymentService = paymentService;
+            _orderStepPaymentService = orderStepPaymentService;
         }
 
         [HttpPost]
@@ -83,7 +85,32 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
-      
+        [HttpGet("admin-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<OrderStepPaymentDTO>>>> GetAllPayments()
+        {
+            try
+            {
+                var payments = await _orderStepPaymentService.GetOrderStepPaymentsAsync();
+                return Ok(new ApiResponse<IEnumerable<OrderStepPaymentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = payments,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+        }
+
     }
 
 }

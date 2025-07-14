@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Domain.Entities;
 using FertilityCare.UseCase.DTOs.OrderSteps;
+using FertilityCare.UseCase.DTOs.Payments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,24 @@ namespace FertilityCare.UseCase.Mappers
             };
         }
 
+        public static OrderStepPaymentDTO MapToOrderStepPaymentDTO(this OrderStepPayment orderStepPayment)
+        {
+            return new OrderStepPaymentDTO
+            {
+                Id = orderStepPayment.Id.ToString(),
+                Patient = orderStepPayment.Patient.MapToPatientDTO(),
+                TreatmentServiceName = orderStepPayment.OrderStep.Order.TreatmentService.Name,
+                OrderStep = orderStepPayment.OrderStep.MapToStepDTO(),
+                PaymentCode = orderStepPayment.PaymentCode ?? string.Empty,
+                TotalAmount = orderStepPayment.TotalAmount,
+                PaymentMethod = orderStepPayment.PaymentMethod.ToString(),
+                TransactionCode = orderStepPayment.TransactionCode ?? string.Empty,
+                PaymentDate = orderStepPayment.PaymentDate.ToString("dd/MM/yyyy"),
+                PaymentStatus = orderStepPayment.Status.ToString(),
+                GatewayResponseCode = orderStepPayment.GatewayResponseCode ?? string.Empty,
+                GatewayMessage = orderStepPayment.GatewayMessage ?? string.Empty
+            };
+        }
 
     }
 }
