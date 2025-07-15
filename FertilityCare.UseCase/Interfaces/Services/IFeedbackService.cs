@@ -14,5 +14,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<FeedbackDTO> UpdateFeedbackAsync(string feedbackId, UpdateFeedbackDTO request);
         Task<FeedbackDTO> UpdateStatusFeedbackAsync(string feedbackId, bool status);// for admin 
         Task<List<FeedbackDTO>> GetAllFeedbacksByDoctorIdAsync(string doctorId);
+        Task<IEnumerable<FeedbackLatestSideManager>> GetSecondFeedbackLatestManagerSide();
     }
 }
