@@ -143,5 +143,25 @@ namespace FertilityCare.Infrastructure.Repositories
                 .Where(a => a.AppointmentDate == date)
                 .CountAsync();
         }
+
+        public async Task<string> GetTodayRevenueAsync()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);   // 15‑07‑2025
+
+            // 1. Doanh thu từ TreatmentStep (OrderStep đã Paid)
+            var treatmentRevenue = await _context.OrderSteps
+                .Where(os => os.PaymentStatus == PaymentStatus.Paid
+                          && os.StartDate == today)
+                .SumAsync(os => (decimal?)os.TreatmentStep.Amount)    // LEFT JOIN ngầm
+                ?? 0m;                                                // null‑safe
+
+            // 2. Doanh thu từ ExtraFee (Appointment đã Paid)
+            var extraFeeRevenue = await _context.Appointments
+                .Where(a => a.PaymentStatus == PaymentStatus.Paid
+                         && a.AppointmentDate == today)
+                .SumAsync(a => a.ExtraFee ?? 0m);
+
+            return (treatmentRevenue + extraFeeRevenue).ToString("N0");
+        }
     }
 }

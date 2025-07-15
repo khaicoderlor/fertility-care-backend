@@ -29,6 +29,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 
         Task<IEnumerable<Appointment>> FindByPatientIdAsync(Guid guid);
         Task<int> CountAppointmentsByDateAsync(DateOnly date);
-
+        public Task<string> GetTodayRevenueAsync();
     }
 }

@@ -43,6 +43,32 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("recent-statistics")]
+        public async Task<ActionResult<ApiResponse<RecentStatistics>>> GetRecentStatisticsAsync()
+        {
+            try
+            {
+                var result = await _statisticsService.GetRecentStatisticsAsync();
+
+                return Ok(new ApiResponse<RecentStatistics>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched recent statistics successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
 
         [HttpGet("top-5-doctors/most-appointment")]
         public async Task<ActionResult<ApiResponse<IEnumerable<DoctorDTO>>>> GetTop5DoctorMostAppointment()

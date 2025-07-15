@@ -254,5 +254,21 @@ namespace FertilityCare.UseCase.Implements
             return count.ToString();
         }
 
+        public async Task<RecentStatistics> GetRecentStatisticsAsync()
+        {
+            return new RecentStatistics
+            {
+                totalPatients = (await _orderRepository.CountDistinctActivePatientsAsync()).ToString(),
+                totalDoctor = (await _orderRepository.CountDistinctDoctorsAsync()).ToString(),
+                totalOrders = (await _orderRepository.CountAllOrdersAsync()).ToString(),
+                totalRevenue = (await _appointmentRepository.GetTodayRevenueAsync()),
+                totalAppointments = (await _appointmentRepository.CountAppointmentsByDateAsync(DateOnly.FromDateTime(DateTime.Today))).ToString(),
+                totalEggsByMonth = (await _eggGainedRepository.CountEggGainedByMonthAsync(DateTime.Now.Month)).ToString(),
+                totalEmbryosByMonth = (await _embryoGainedRepository.CountTotalEmbryosAsync()).ToString(),
+                totalEmryoTransfersByMonth = (await _embryoTransferRepository.CountTotalEmbryoTransfersAsync()).ToString(),
+                totalRevenueByIVF = (await _orderRepository.GetRevenueByTreatmentServiceAsync("IVF")).ToString("N0"),
+                totalRevenueByIUI = (await _orderRepository.GetRevenueByTreatmentServiceAsync("IUI")).ToString("N0")
+            };
+        } 
     }
 }
