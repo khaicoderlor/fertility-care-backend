@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 using FertilityCare.UseCase.DTOs.TreatmentServices;
@@ -290,6 +291,25 @@ namespace FertilityCare.UseCase.Implements
                 TotalInProgressOrder = inProgressOrders,
                 TotalCompleteOrder = completedOrders,
                 TotalPlannedOrder = plannedSteps
+            };
+        }
+
+        public async Task<StatisticsFeedbackDTO> GetStatisticFeedbackAsync()
+        {
+            var allFeedback = await _feedbackRepository.FindAllAsync();
+            int total5Start = allFeedback.Count(x => x.Rating == 5);
+            int total4Start = allFeedback.Count(x => x.Rating == 4);
+            int total3Start = allFeedback.Count(x => x.Rating == 3);
+            int total2Start = allFeedback.Count(x => x.Rating == 2);
+            int total1Start = allFeedback.Count(x => x.Rating == 1);
+            return new StatisticsFeedbackDTO
+            {
+                NumberOf5Start = total5Start,
+                NumberOf4Start = total4Start,
+                NumberOf3Start = total3Start,
+                NumberOf2Start = total2Start,
+                NumberOf1Start = total1Start,
+                TotalFeedbacks = allFeedback.Count()
             };
         }
     }
