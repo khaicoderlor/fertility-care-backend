@@ -206,33 +206,5 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-        
-        [HttpGet("full-details")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<AllFeedbackDTO>>>> GetAllFeedbackFullDetailsAsync()
-        {
-            try
-            {
-                var result = await _feedbackService.GetAllFeedbackAsync();
-
-                return Ok(new ApiResponse<IEnumerable<AllFeedbackDTO>>
-                {
-                    StatusCode = 200,
-                    Message = "Fetched all feedbacks with full details successfully",
-                    Data = result,
-                    ResponsedAt = DateTime.Now
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null,
-                    ResponsedAt = DateTime.Now
-                });
-            }
-        }
-
     }
 }

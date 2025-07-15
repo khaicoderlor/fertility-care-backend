@@ -137,20 +137,5 @@ namespace FertilityCare.UseCase.Implements
             feedbackList.OrderByDescending(x => x.CreatedAt);
             return feedbackList.Select(x => x.MapToFeedbackDTO()).ToList();
         }
-
-        public async Task<IEnumerable<AllFeedbackDTO>> GetAllFeedbackAsync()
-        {
-            var feedbacks = await _feedbackRepository.FindAllAsync();
-
-            var result = feedbacks.Select(fb => new AllFeedbackDTO
-            {
-                Doctor = fb.Doctor.MapToDoctorDTO(),
-                Patient = fb.Patient.MapToPatientDTO(),
-                Feedback = fb.MapToFeedbackDTO(),
-                TreatmentService = fb.TreatmentService?.MapToTreatmentServiceDTO()
-            }).ToList();
-
-            return result;
-        }
     }
 }
