@@ -1,14 +1,15 @@
-﻿using System;
+﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Feedbacks;
+using FertilityCare.UseCase.DTOs.Statistics;
+using FertilityCare.UseCase.Interfaces.Repositories;
+using FertilityCare.UseCase.Interfaces.Services;
+using FertilityCare.UseCase.Mappers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FertilityCare.Domain.Entities;
-using FertilityCare.Shared.Exceptions;
-using FertilityCare.UseCase.DTOs.Feedbacks;
-using FertilityCare.UseCase.Interfaces.Repositories;
-using FertilityCare.UseCase.Interfaces.Services;
-using FertilityCare.UseCase.Mappers;
 
 namespace FertilityCare.UseCase.Implements
 {
@@ -166,6 +167,20 @@ namespace FertilityCare.UseCase.Implements
 
                 result.Add(mapped);
             }
+
+            return result;
+        }
+        public async Task<IEnumerable<AllFeedbackDTO>> GetAllFeedbackAsync()
+        {
+            var feedbacks = await _feedbackRepository.FindAllAsync();
+
+            var result = feedbacks.Select(fb => new AllFeedbackDTO
+            {
+                Doctor = fb.Doctor.MapToDoctorDTO(),
+                Patient = fb.Patient.MapToPatientDTO(),
+                Feedback = fb.MapToFeedbackDTO(),
+                TreatmentService = fb.TreatmentService?.MapToTreatmentServiceDTO()
+            }).ToList();
 
             return result;
         }

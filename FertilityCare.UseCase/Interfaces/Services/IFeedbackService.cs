@@ -1,9 +1,10 @@
-﻿using System;
+﻿using FertilityCare.UseCase.DTOs.Feedbacks;
+using FertilityCare.UseCase.DTOs.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FertilityCare.UseCase.DTOs.Feedbacks;
 
 namespace FertilityCare.UseCase.Interfaces.Services
 {
@@ -15,5 +16,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<FeedbackDTO> UpdateStatusFeedbackAsync(string feedbackId, bool status);// for admin 
         Task<List<FeedbackDTO>> GetAllFeedbacksByDoctorIdAsync(string doctorId);
         Task<IEnumerable<FeedbackLatestSideManager>> GetSecondFeedbackLatestManagerSide();
+        Task<IEnumerable<AllFeedbackDTO>> GetAllFeedbackAsync();
     }
 }
