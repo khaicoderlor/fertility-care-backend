@@ -14,6 +14,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
 
         Task<PatientDTO> FindPatientByPatientIdAsync(string patientId);
         Task<IEnumerable<AppointmentDataTable>> GetAppointmentsDataByPatientIdAsync(Guid guid);
+        Task<IEnumerable<PatientProgress>> GetPatientProgressSideManager();
         Task<bool> UpdateInfoPatientByIdAsync(string patientId, UpdatePatientInfoDTO request);
     }
 }

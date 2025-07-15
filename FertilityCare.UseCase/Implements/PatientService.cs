@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FertilityCare.Domain.Enums;
+﻿using FertilityCare.Domain.Enums;
 using FertilityCare.UseCase.DTOs.Appointments;
+using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Orders;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.UseCase.Mappers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.Implements
 {
@@ -16,12 +18,15 @@ namespace FertilityCare.UseCase.Implements
     {
         private readonly IPatientRepository _patientRepository;
 
+        private readonly IOrderRepository _orderRepository;
+
         private readonly IAppointmentRepository _appointmentRepository;
 
-        public PatientService(IPatientRepository patientRepository, IAppointmentRepository appointmentRepository)
+        public PatientService(IPatientRepository patientRepository, IAppointmentRepository appointmentRepository, IOrderRepository orderRepository)
         {
             _patientRepository = patientRepository;
             _appointmentRepository = appointmentRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<IEnumerable<PatientDTO>> FindAllAsync()
@@ -54,6 +59,25 @@ namespace FertilityCare.UseCase.Implements
                 Note = a.Note ?? "-",
                 Specialization = a.Doctor.Specialization.ToString(),
                 TreatmentStepName = a.OrderStep.TreatmentStep.StepName ?? "-",
+            }).ToList();
+        }
+
+        public async Task<IEnumerable<PatientProgress>> GetPatientProgressSideManager()
+        {
+            var orders = await _orderRepository.FindAllAsync();
+            var ordersSorted = orders.OrderByDescending(o => o.StartDate);
+
+            return ordersSorted.Select(o => new PatientProgress
+            {
+                Patient = o.Patient.MapToPatientDTO(),
+                Doctor = o.Doctor.MapToDoctorDTO(),
+                Order = o.MapToOderDTO(),
+                ServiceName = o.TreatmentService.Name,
+                CurrentStep = o.OrderSteps.FirstOrDefault(x => x.Status == StepStatus.InProgress)?.TreatmentStep.StepOrder ?? 0,
+                TotalSteps = o.TreatmentService.TreatmentSteps.Count(),
+                StartDate = o.StartDate.ToString("dd/MM/yyyy"),
+                EndDate = o.EndDate?.ToString("dd/MM/yyyy"),
+                Status = o.Status.ToString()
             }).ToList();
         }
 

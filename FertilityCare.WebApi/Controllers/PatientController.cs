@@ -58,6 +58,33 @@ namespace FertilityCare.WebAPI.Controllers
 
         }
 
+        [HttpGet("progress/manager-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientProgress>>>> GetPatientProgressSideManager()
+        {
+            try
+            {
+                var result = await _patientService.GetPatientProgressSideManager();
+                return Ok(new ApiResponse<IEnumerable<PatientProgress>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    StatusCode = 400,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+
+        }
+
         [HttpGet("{patientId}")]
         public async Task<ActionResult<ApiResponse<PatientDTO>>> GetPatientByIdAsync([FromRoute]string patientId)
         {

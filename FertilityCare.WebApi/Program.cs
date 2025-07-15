@@ -24,43 +24,43 @@ namespace FertilityCare.WebApi
 
             // Add services to the container.
             builder.Services.AddControllers();
-            //builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer();
 
-            //builder.Services.AddSwaggerGen(opt =>
-            //{
-            //    opt.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-            //    {
-            //        Title = "FertilityCare API",
-            //        Version = "v1"
-            //    });
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "FertilityCare API",
+                    Version = "v1"
+                });
 
-            //    opt.OperationFilter<FileUploadOperationFilter>();
+                opt.OperationFilter<FileUploadOperationFilter>();
 
-            //});
+            });
 
-            //builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
-            //builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
-            //builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
-            //builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
-            //builder.Services.Configure<CloudStorageSettings>(builder.Configuration.GetSection("CloudStorageSettings"));
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.Configure<GoogleAuthConfiguration>(builder.Configuration.GetSection("GoogleAuth"));
+            builder.Services.Configure<MomoPaymentConfiguration>(builder.Configuration.GetSection("MomoPaymentSettings"));
+            builder.Services.Configure<CloudStorageSettings>(builder.Configuration.GetSection("CloudStorageSettings"));
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowClient", policy =>
-            //    {
-            //        policy.WithOrigins("http://localhost:5174", "http://localhost:5173")
-            //              .AllowAnyHeader()
-            //              .AllowAnyMethod()
-            //              .AllowCredentials();
-            //    });
-            //});
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowClient", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5174", "http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
 
 
             builder.Services.AddDbContext<FertilityCareDBContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
                            .UseLazyLoadingProxies());
 
-            //var jwtConfig = builder.Configuration.GetSection(JwtConfiguration.SectionName).Get<JwtConfiguration>();
+            var jwtConfig = builder.Configuration.GetSection(JwtConfiguration.SectionName).Get<JwtConfiguration>();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
@@ -76,37 +76,37 @@ namespace FertilityCare.WebApi
             }).AddEntityFrameworkStores<FertilityCareDBContext>()
             .AddDefaultTokenProviders();
 
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //}).AddJwtBearer(options =>
-            //{
-            //    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            //    {
-            //        ValidateAudience = true,
-            //        ValidateIssuer = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
-            //        ValidAudience = jwtConfig.Audience,
-            //        ValidIssuer = jwtConfig.Issuer,
-            //        ClockSkew = TimeSpan.Zero,
-            //    };
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+                    ValidAudience = jwtConfig.Audience,
+                    ValidIssuer = jwtConfig.Issuer,
+                    ClockSkew = TimeSpan.Zero,
+                };
 
-            //    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-            //            {
-            //                context.Response.Headers.Add("Token-Expired", "true");
-            //            }
-            //            return Task.CompletedTask;
-            //        }
-            //    };
-            //});
+                options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        {
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
@@ -149,12 +149,12 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<IOrderStepPaymentService, OrderStepPaymentService>();
             builder.Services.AddScoped<IDoctorSecretService, DoctorSecretService>();
-            //builder.Services
-            //.AddControllers()
-            //.AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            //});
+            builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
 
             var app = builder.Build();
@@ -175,7 +175,7 @@ namespace FertilityCare.WebApi
 
             app.UseHttpsRedirection();
             app.UseCors("AllowClient");
-            //app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             await app.RunAsync();
@@ -184,7 +184,7 @@ namespace FertilityCare.WebApi
 
         private static async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
-            var roles = new[] { "User", "Admin", "Doctor", "Patient" };
+            var roles = new[] { "User", "Admin", "Doctor", "Manager" };
 
             foreach (var role in roles)
             {

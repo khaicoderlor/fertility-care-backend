@@ -22,6 +22,8 @@ namespace FertilityCare.Infrastructure.Services
 
         Task<IEnumerable<FeedbackSideDoctor>> GetFeedbacksOfDoctorSide(Guid doctorId);
 
+        Task<IEnumerable<PatientDashboard>> GetPatientsByDoctorIdAsync(Guid id);
+
     }
 
     public class DoctorSecretService : IDoctorSecretService
@@ -80,6 +82,35 @@ namespace FertilityCare.Infrastructure.Services
                     TreatmentService = feedback.TreatmentService?.MapToTreatmentServiceDTO(),
                     Patient = feedback.Patient.MapToPatientDTO(),
                     Doctor = feedback.Doctor?.MapToDoctorDTO()
+                });
+            }
+
+            return res;
+        }
+
+        public async Task<IEnumerable<PatientDashboard>> GetPatientsByDoctorIdAsync(Guid id)
+        {
+            var order = await _orderRepository.FindAllByDoctorIdAsync(id);
+
+            var res = new List<PatientDashboard>();
+            foreach (var x in order)
+            {
+                var loadedUser = await _userManager.FindByProfileIdAsync(x.Patient.UserProfileId);
+
+                res.Add(new PatientDashboard
+                {
+                    PatientId = x.PatientId.ToString(),
+                    PatientName = $"{x.Patient.UserProfile.FirstName} {x.Patient.UserProfile.MiddleName} {x.Patient.UserProfile.LastName}",
+                    TreatmentName = x.TreatmentService.Name,
+                    Email = loadedUser.Email,
+                    Phone = loadedUser.PhoneNumber,
+                    OrderId = x.Id.ToString(),
+                    StartDate = x.StartDate.ToString("dd/MM/yyyy"),
+                    EndDate = x.EndDate != null ? x.EndDate?.ToString("dd/MM/yyyy") : "",
+                    Status = x.Status.ToString(),
+                    TotalEggs = x.TotalEgg,
+                    TotalEmbryos = x.EmbryoGaineds?.Count > 0 ? x.EmbryoGaineds.Count : 0,
+                    IsFrozen = x.IsFrozen
                 });
             }
 

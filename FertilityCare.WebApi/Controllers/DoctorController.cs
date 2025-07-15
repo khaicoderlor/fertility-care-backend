@@ -96,7 +96,7 @@ namespace FertilityCare.WebAPI.Controllers
         {
             try
             {
-                var doctor = await _doctorService.GetPatientsByDoctorIdAsync(Guid.Parse(id));
+                var doctor = await _doctorSecretService.GetPatientsByDoctorIdAsync(Guid.Parse(id));
 
                 if (doctor == null)
                 {
