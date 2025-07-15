@@ -20,6 +20,11 @@ namespace FertilityCare.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<int> CountOrderStepPlannedAsync()
+        {
+            return await _context.OrderSteps.CountAsync(os => os.Status == Domain.Enums.StepStatus.Planned);
+        }
+
         public async Task DeleteByIdAsync(long id)
         {
             var orderStep = await _context.OrderSteps.FindAsync(id);

@@ -26,7 +26,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<string> GetTotalEmbryoTransfersAsync();
         Task<string> GetRevenueByTreatmentServiceAsync(string treatmentName);
         Task<RecentStatistics> GetRecentStatisticsAsync();
-
+        Task<ManagerSideStatistics> GetManagerSideStatisticsAsync();
         Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName();
     }
 }

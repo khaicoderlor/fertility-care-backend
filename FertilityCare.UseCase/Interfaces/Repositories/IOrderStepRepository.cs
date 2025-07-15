@@ -14,5 +14,6 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task<IEnumerable<OrderStep>> SaveAllAsync(IEnumerable<OrderStep> orderSteps);
 
         Task<IEnumerable<OrderStep>> FindAllByOrderIdAsync(Guid orderId);
+        Task<int> CountOrderStepPlannedAsync();
     }
 }

@@ -31,7 +31,9 @@ namespace FertilityCare.UseCase.Implements
 
         private readonly IEmbryoTransferRepository _embryoTransferRepository;
 
-        public StatisticsService(IAppointmentRepository appointmentRepository, IEmbryoTransferRepository embryoTransferRepository, IEmbryoGainedRepository embryoGainedRepository, IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
+        private readonly IOrderStepRepository _orderStepRepository;
+
+        public StatisticsService(IAppointmentRepository appointmentRepository, IOrderStepRepository orderStepRepository, IEmbryoTransferRepository embryoTransferRepository, IEmbryoGainedRepository embryoGainedRepository, IEggGainedRepository eggGainedRepository, IOrderRepository orderRepository, IFeedbackRepository feedbackRepository, IDoctorRepository doctorRepository)
         {
             _appointmentRepository = appointmentRepository;
             _orderRepository = orderRepository;
@@ -40,6 +42,7 @@ namespace FertilityCare.UseCase.Implements
             _eggGainedRepository = eggGainedRepository;
             _embryoGainedRepository = embryoGainedRepository;
             _embryoTransferRepository = embryoTransferRepository;
+            _orderStepRepository = orderStepRepository;
         }
         public async Task<string> GetRevenueByTreatmentServiceAsync(string treatmentName)
         {
@@ -269,6 +272,25 @@ namespace FertilityCare.UseCase.Implements
                 totalRevenueByIVF = (await _orderRepository.GetRevenueByTreatmentServiceAsync("IVF")).ToString("N0"),
                 totalRevenueByIUI = (await _orderRepository.GetRevenueByTreatmentServiceAsync("IUI")).ToString("N0")
             };
-        } 
+        }
+
+        public async Task<ManagerSideStatistics> GetManagerSideStatisticsAsync()
+        {
+            var totalPatients = await _orderRepository.CountDistinctActivePatientsAsync();
+
+            var inProgressOrders = await _orderRepository.CountOrderInProgressAsync();
+
+            var completedOrders = await _orderRepository.CountOrderCompletedAsync();
+
+            var plannedSteps = await _orderStepRepository.CountOrderStepPlannedAsync();
+
+            return new ManagerSideStatistics
+            {
+                TotalPatients = totalPatients,
+                TotalInProgressOrder = inProgressOrders,
+                TotalCompleteOrder = completedOrders,
+                TotalPlannedOrder = plannedSteps
+            };
+        }
     }
 }

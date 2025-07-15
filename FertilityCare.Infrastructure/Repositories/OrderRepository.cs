@@ -113,5 +113,18 @@ namespace FertilityCare.Infrastructure.Repositories
                 .SumAsync(o => o.TotalAmount.Value);
         }
 
+        public async Task<int> CountOrderInProgressAsync()
+        {
+            return await _context.Orders
+                .Where(o => o.Status == OrderStatus.InProgress)
+                .CountAsync();
+        }
+
+        public async Task<int> CountOrderCompletedAsync()
+        {
+            return await _context.Orders
+                .Where(o => o.Status == OrderStatus.Completed)
+                .CountAsync();
+        }
     }
 }

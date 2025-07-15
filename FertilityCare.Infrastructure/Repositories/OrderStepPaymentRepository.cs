@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace FertilityCare.Infrastructure.Repositories
         {
             _context = context;
         }
+
+      
 
         public Task DeleteByIdAsync(Guid id)
         {

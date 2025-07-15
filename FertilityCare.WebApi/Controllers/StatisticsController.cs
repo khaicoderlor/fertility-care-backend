@@ -70,6 +70,33 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet("manager-sides")]
+        public async Task<ActionResult<ApiResponse<ManagerSideStatistics>>> GetManagerSideStatisticsAsync()
+        {
+            try
+            {
+                var result = await _statisticsService.GetManagerSideStatisticsAsync();
+
+                return Ok(new ApiResponse<ManagerSideStatistics>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched manager statistics successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
         [HttpGet("top-5-doctors/most-appointment")]
         public async Task<ActionResult<ApiResponse<IEnumerable<DoctorDTO>>>> GetTop5DoctorMostAppointment()
         {

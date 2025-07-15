@@ -22,5 +22,8 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 
         Task<decimal> GetRevenueByTreatmentServiceAsync(string treatmentName);
 
+        Task<int> CountOrderInProgressAsync();
+
+        Task<int> CountOrderCompletedAsync();
     }
 }
