@@ -59,6 +59,15 @@ namespace FertilityCare.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Feedback>> FindFeedbackLatest()
+        {
+            return await _context.Feedbacks
+                .Where(f => f.Status == true)
+                .OrderByDescending(f => f.CreatedAt)
+                .Take(12)
+                .ToListAsync();
+        }
+
         public async Task<List<Feedback>> FindTreatmentServiceByIdAsync(Guid treatmentId)
         {
             return await _context.Feedbacks

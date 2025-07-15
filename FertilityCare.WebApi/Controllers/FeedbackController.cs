@@ -46,6 +46,32 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet("second/latest/manager-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackLatestSideManager>>>> GetFeedbackLatestSideManager()
+        {
+            try
+            {
+                var result = await _feedbackService.GetSecondFeedbackLatestManagerSide();
+                return Ok(new ApiResponse<IEnumerable<FeedbackLatestSideManager>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now,
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<List<FeedbackDTO>>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now,
+                });
+            }
+        }
+
         [HttpGet("{doctorId}/doctor-sides")]
         public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackSideDoctor>>>> GetFeedbacksSideDoctor([FromRoute] string doctorId)
         {

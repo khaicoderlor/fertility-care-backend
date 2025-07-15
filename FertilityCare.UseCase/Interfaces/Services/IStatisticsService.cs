@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 using FertilityCare.UseCase.DTOs.TreatmentServices;
@@ -28,5 +29,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<RecentStatistics> GetRecentStatisticsAsync();
         Task<ManagerSideStatistics> GetManagerSideStatisticsAsync();
         Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName();
+        Task<StatisticsFeedbackDTO> GetStatisticFeedbackAsync();
     }
 }

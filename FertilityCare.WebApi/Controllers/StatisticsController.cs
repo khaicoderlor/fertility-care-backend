@@ -1,4 +1,5 @@
 ﻿using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
 using FertilityCare.UseCase.DTOs.TreatmentServices;
@@ -17,6 +18,31 @@ namespace FertilityCare.WebApi.Controllers
         public StatisticsController(IStatisticsService statisticsService)
         {
             _statisticsService = statisticsService;
+        }
+        [HttpGet("feedbacks/statistics")]
+        public async Task<ActionResult<ApiResponse<StatisticsFeedbackDTO>>> GetFeedbackStatisticsAsync()
+        {
+            try
+            {
+                var result = await _statisticsService.GetStatisticFeedbackAsync();
+                return Ok(new ApiResponse<StatisticsFeedbackDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
         }
         [HttpGet("turnover-by-treatment")]
         public async Task<ActionResult<ApiResponse<List<TurnoverTreatmentDTO>>>> GetTurnoverByTreatmentAsync()

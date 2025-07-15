@@ -137,5 +137,38 @@ namespace FertilityCare.UseCase.Implements
             feedbackList.OrderByDescending(x => x.CreatedAt);
             return feedbackList.Select(x => x.MapToFeedbackDTO()).ToList();
         }
+
+        public async Task<IEnumerable<FeedbackLatestSideManager>> GetSecondFeedbackLatestManagerSide()
+        {
+            var feedbacks = await _feedbackRepository.FindFeedbackLatest();
+
+            var grouped = feedbacks
+                .GroupBy(f => f.DoctorId)
+                .ToList();
+
+            var result = new List<FeedbackLatestSideManager>();
+
+            foreach (var group in grouped)
+            {
+                var doctor = group.First().Doctor;
+
+                var mapped = new FeedbackLatestSideManager
+                {
+                    Doctor = doctor.MapToDoctorDTO(), 
+                    Feedbacks = group.Select(f => new SecondFeedbackLatest
+                    {
+                        Content = f.Comment,
+                        Rating = f.Rating,
+                        CreatedAt = f.CreatedAt.ToString("dd/MM/yyyy hh:mm:ss"),
+                        Patient = f.Patient.MapToPatientDTO()
+                    }).ToList()
+                };
+
+                result.Add(mapped);
+            }
+
+            return result;
+        }
+
     }
 }
