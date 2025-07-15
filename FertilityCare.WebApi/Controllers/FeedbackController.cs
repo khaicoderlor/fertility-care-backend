@@ -73,6 +73,32 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
+        [HttpGet("best-rate")]
+        public async Task<ActionResult<ApiResponse<BestRateDoctor?>>> GetBestRateDoctor()
+        {
+            try
+            {
+                var result = await _feedbackService.GetBestRateDoctor();
+                return Ok(new ApiResponse<BestRateDoctor>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now,
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<List<FeedbackDTO>>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now,
+                });
+            }
+        }
+
         [HttpGet("{doctorId}/doctor-sides")]
         public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackSideDoctor>>>> GetFeedbacksSideDoctor([FromRoute] string doctorId)
         {

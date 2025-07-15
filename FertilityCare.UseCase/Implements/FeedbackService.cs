@@ -185,5 +185,24 @@ namespace FertilityCare.UseCase.Implements
             return result;
         }
 
+        public async Task<BestRateDoctor?> GetBestRateDoctor()
+        {
+            var feedbacks = await _feedbackRepository.FindAllAsync();
+
+            var groupedFeedbacks = feedbacks
+                .GroupBy(f => f.DoctorId)
+                .Select(async g => new BestRateDoctor
+                {
+                    Doctor = (await _doctorRepository.FindByIdAsync(g.Key)).MapToDoctorDTO(),
+                    Rating = g.Where(x => x.Status).Average(f => f.Rating),
+                    TotalFeedbacks = g.Count()
+                });
+
+            var bestRateDoctors = await Task.WhenAll(groupedFeedbacks);
+
+            return bestRateDoctors
+                .OrderByDescending(x => x.Rating)
+                .FirstOrDefault();
+        }
     }
 }
