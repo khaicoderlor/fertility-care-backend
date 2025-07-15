@@ -341,7 +341,7 @@ namespace FertilityCare.Infrastructure.Services
                     
                     await _profileRepository.SaveChangeAsync();
                 }
-                else if (request.Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase))
+                else if (request.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
                 {
                     var roleAssignResult = await _userManager.AddToRoleAsync(user, "Manager");
                     if (!roleAssignResult.Succeeded)

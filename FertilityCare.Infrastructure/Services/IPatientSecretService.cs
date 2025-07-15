@@ -2,6 +2,7 @@
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Infrastructure.Repositories;
 using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Orders;
 using FertilityCare.UseCase.DTOs.OrderSteps;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -22,7 +23,7 @@ namespace FertilityCare.Infrastructure.Services
         Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId);
 
         Task<PatientInfoContactDTO> GetPatientInfoContactByPatientIdAsync(string patientId);
- 
+
         Task UpdateAvatarAsync(string patientId, string file);
 
         Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid);
@@ -43,15 +44,16 @@ namespace FertilityCare.Infrastructure.Services
 
         private readonly IOrderStepPaymentRepository _orderStepPaymentRepository;
 
-        public PatientSecretService(IPatientRepository patientRepository, 
-            IUserProfileRepository profileRepository, 
+        public PatientSecretService(IPatientRepository patientRepository,
+            IUserProfileRepository profileRepository,
             UserManager<ApplicationUser> userManager,
-            IOrderStepPaymentRepository orderStepPaymentRepository)
+            IOrderStepPaymentRepository orderStepPaymentRepository, IOrderRepository orderRepository)
         {
             _patientRepository = patientRepository;
             _profileRepository = profileRepository;
             _userManager = userManager;
             _orderStepPaymentRepository = orderStepPaymentRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<PatientSecretInfo> GetPatientByProfileIdAsync(string profileId)
@@ -70,7 +72,7 @@ namespace FertilityCare.Infrastructure.Services
         public async Task<PatientSecretInfo> GetPatientByUserIdAsync(string userId)
         {
             var profile = await _profileRepository.FindByUserIdAsync(userId);
-            if (profile is null) 
+            if (profile is null)
             {
                 throw new NotFoundException("Profile not found!");
             }
@@ -80,7 +82,7 @@ namespace FertilityCare.Infrastructure.Services
             {
                 throw new NotFoundException("Patient not found");
             }
-            
+
             var orders = await _orderRepository.FindAllByPatientIdAsync(patient.Id);
             return new PatientSecretInfo
             {
@@ -106,27 +108,30 @@ namespace FertilityCare.Infrastructure.Services
         public async Task<IEnumerable<PatientSideAdminPage>> GetPatientSideAdminPages()
         {
             var patients = await _patientRepository.FindAllAsync();
-            var patientSideAdminPages = new List<PatientSideAdminPage>();
+            var pages = new List<PatientSideAdminPage>();
+
             foreach (var patient in patients)
             {
-                var orders = await _orderRepository.FindAllByPatientIdAsync(patient.Id);
-                var loadedUser = await _userManager.FindByProfileIdAsync(patient.UserProfileId);
-                var patientSideAdminPage = new PatientSideAdminPage
+                var user = await _userManager.FindByProfileIdAsync(patient.UserProfileId);
+                var orders = await _orderRepository.FindAllByPatientIdAsync(patient.Id);  
+
+                pages.Add(new PatientSideAdminPage
                 {
-                    EmailContact = loadedUser.Email,
-                    PhoneContact = loadedUser.PhoneNumber,
+                    EmailContact = user?.Email,
+                    PhoneContact = user?.PhoneNumber,
                     Patient = patient.MapToPatientDTO(),
                     Orders = orders.Select(o => o.MapToOderDTO()).ToList()
-                };
-                patientSideAdminPages.Add(patientSideAdminPage);
+                });
             }
-            return patientSideAdminPages;
+
+            return pages;
         }
+
 
         public async Task<IEnumerable<OrderStepPaymentTuple>> GetPaymentHistoriesByPatientId(Guid guid)
         {
             var payments = await _orderStepPaymentRepository.FindAllByPatientIdAsync(guid);
-            
+
             return payments.Select(x => x.MapToOrderStepPaymentTuple()).ToList();
         }
 

@@ -27,9 +27,9 @@ namespace FertilityCare.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Order>> FindAllAsync()
+        public async Task<IEnumerable<Order>> FindAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Orders.ToListAsync();
         }
 
         public async Task<Order> FindByIdAsync(Guid id)
@@ -80,7 +80,9 @@ namespace FertilityCare.Infrastructure.Repositories
 
         public async Task<IEnumerable<Order>> FindAllByPatientIdAsync(Guid patientId)
         {
-            return await _context.Orders.Where(x => x.PatientId == patientId).ToListAsync();
+            return await _context.Orders
+                         .Where(o => o.PatientId == patientId)
+                         .ToListAsync();
         }
 
         public async Task<int> CountDistinctActivePatientsAsync()
