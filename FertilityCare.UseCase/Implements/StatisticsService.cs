@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using FertilityCare.Domain.Enums;
+﻿using FertilityCare.Domain.Enums;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Doctors;
+using FertilityCare.UseCase.DTOs.EggGained;
+using FertilityCare.UseCase.DTOs.Embryos;
+using FertilityCare.UseCase.DTOs.EmbryoTransfers;
 using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
@@ -13,6 +11,12 @@ using FertilityCare.UseCase.DTOs.TreatmentServices;
 using FertilityCare.UseCase.Interfaces.Repositories;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.UseCase.Mappers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FertilityCare.UseCase.Implements
 {
@@ -310,6 +314,34 @@ namespace FertilityCare.UseCase.Implements
                 NumberOf2Start = total2Start,
                 NumberOf1Start = total1Start,
                 TotalFeedbacks = allFeedback.Count()
+            };
+        }
+
+        public async Task<ReportProgressSideAdmin> GetReportProgressSideAdminAsync(string orderId)
+        {
+            var orderGuid = Guid.Parse(orderId);
+
+            var order = await _orderRepository.FindByIdAsync(orderGuid)
+                ?? throw new NotFoundException($"Order with ID {orderId} not found.");
+
+            var eggReports = order.EggGaineds?
+        .Select(e => e.MapToEggReportResponse())
+        .ToList() ?? new List<EggReportResponse>();
+
+            var embryoReports = order.EmbryoGaineds?
+                .Select(e => e.MapToEmbryoReportResponse())
+                .ToList() ?? new List<EmbryoReportResponse>();
+
+            var embryoTransferredReports = order.EmbryoTransfers?
+                .Select(e => e.MapToEmbryoTransferredReportResponse())
+                .ToList() ?? new List<EmbryoTransferredReportResponse>();
+ 
+
+            return new ReportProgressSideAdmin
+            {
+                eggs = eggReports,
+                embryos = embryoReports,
+                embryosTransferred = embryoTransferredReports,
             };
         }
     }

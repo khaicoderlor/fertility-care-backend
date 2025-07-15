@@ -30,5 +30,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<ManagerSideStatistics> GetManagerSideStatisticsAsync();
         Task<List<TurnoverTreatmentDTO>> GetTurnoverByTreatmentName();
         Task<StatisticsFeedbackDTO> GetStatisticFeedbackAsync();
+
+        Task<ReportProgressSideAdmin> GetReportProgressSideAdminAsync(string orderId);
     }
 }

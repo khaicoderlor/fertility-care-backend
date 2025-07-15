@@ -1,4 +1,5 @@
-﻿using FertilityCare.UseCase.DTOs.Doctors;
+﻿using FertilityCare.Shared.Exceptions;
+using FertilityCare.UseCase.DTOs.Doctors;
 using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.DTOs.Patients;
 using FertilityCare.UseCase.DTOs.Statistics;
@@ -69,6 +70,42 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+        [HttpGet("report-progress/{orderId}")]
+        public async Task<ActionResult<ApiResponse<ReportProgressSideAdmin>>> GetReportProgressByOrderIdAsync([FromRoute] string orderId)
+        {
+            try
+            {
+                var result = await _statisticsService.GetReportProgressSideAdminAsync(orderId);
+                return Ok(new ApiResponse<ReportProgressSideAdmin>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
         [HttpGet("recent-statistics")]
         public async Task<ActionResult<ApiResponse<RecentStatistics>>> GetRecentStatisticsAsync()
         {
