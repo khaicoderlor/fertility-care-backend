@@ -147,6 +147,7 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+            builder.Services.AddScoped<IOrderStepPaymentService, OrderStepPaymentService>();
 
             builder.Services
             .AddControllers()

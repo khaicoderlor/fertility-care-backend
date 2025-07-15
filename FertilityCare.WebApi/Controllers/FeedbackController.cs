@@ -1,4 +1,5 @@
-﻿using FertilityCare.Shared.Exceptions;
+﻿using FertilityCare.Infrastructure.Services;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Feedbacks;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
@@ -12,9 +13,12 @@ namespace FertilityCare.WebApi.Controllers
     {
         private readonly IFeedbackService _feedbackService;
 
-        public FeedbackController(IFeedbackService feedbackService)
+        private readonly IDoctorSecretService _doctorSecretService;
+
+        public FeedbackController(IFeedbackService feedbackService, IDoctorSecretService doctorSecretService)
         {
             _feedbackService = feedbackService;
+            _doctorSecretService = doctorSecretService;
         }
         
         [HttpGet("{doctorId}")]
@@ -38,6 +42,32 @@ namespace FertilityCare.WebApi.Controllers
                     Message = ex.Message,
                     Data = null,
                     ResponsedAt= DateTime.Now,
+                });
+            }
+        }
+
+        [HttpGet("{doctorId}/doctor-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackSideDoctor>>>> GetFeedbacksSideDoctor([FromRoute] string doctorId)
+        {
+            try
+            {
+                var result = await _doctorSecretService.GetFeedbacksOfDoctorSide(Guid.Parse(doctorId));
+                return Ok(new ApiResponse<IEnumerable<FeedbackSideDoctor>>
+                {
+                    StatusCode = 200,
+                    Message = "",
+                    Data = result,
+                    ResponsedAt = DateTime.Now,
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<List<FeedbackDTO>>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now,
                 });
             }
         }
