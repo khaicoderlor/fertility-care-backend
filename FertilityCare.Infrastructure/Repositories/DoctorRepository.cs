@@ -84,6 +84,11 @@ namespace FertilityCare.Infrastructure.Repositories
             return _context.Doctors.Include(d => d.UserProfile).AsQueryable();
         }
 
+        public IQueryable<Doctor> FindAll()
+        {
+            return _context.Doctors;
+        }
+
         public async Task<IEnumerable<Doctor>> GetPagedAsync(int pageNumber, int pageSize)
         {
             var query = _context.Doctors.AsQueryable();

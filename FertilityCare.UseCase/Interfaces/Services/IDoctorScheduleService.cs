@@ -33,5 +33,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task CreateRecurringScheduleAsync(CreateRecurringScheduleRequestDTO request);
 
         Task<IEnumerable<DoctorScheduleViewDTO>> GetWeeklySchedulesAsync(Guid doctorId, DateOnly weekDate);
+
+        Task<IEnumerable<DoctorScheduleSideManager>> DoctorScheduleSideManager();
     }
 }

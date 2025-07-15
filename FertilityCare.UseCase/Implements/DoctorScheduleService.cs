@@ -199,5 +199,20 @@ namespace FertilityCare.UseCase.Implements
             var updated = await _scheduleRepository.UpdateAsync(schedule);
             return updated.MapToScheduleDTO();
         }
+
+        public async Task<IEnumerable<DoctorScheduleSideManager>> DoctorScheduleSideManager()
+        {
+            var doctors = await _doctorRepository.FindAllAsync();
+
+            var result = doctors.Select(doctor => new DoctorScheduleSideManager
+            {
+                doctor = doctor.MapToDoctorDTO(),
+                schedules = doctor.DoctorSchedules?
+                                .Select(ds => ds.MapToDoctorScheduleDTO())
+                                .ToList() ?? new List<DoctorScheduleDTO>()
+            });
+
+            return result;
+        }
     }
 }

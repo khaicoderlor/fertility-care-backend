@@ -125,6 +125,11 @@ namespace FertilityCare.Infrastructure.Repositories
             return validSchedules;
         }
 
+        public IQueryable<Doctor> FindAll()
+        {
+            return _context.Doctors;
+        }
+
         public async Task<IEnumerable<DoctorSchedule>> GetSchedulesByWeekAsync(Guid doctorId, DateOnly startOfWeek, DateOnly endOfWeek)
         {
             return await _context.DoctorSchedules

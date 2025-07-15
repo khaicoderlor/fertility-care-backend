@@ -70,6 +70,32 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
+        [HttpGet("manager-side")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DoctorScheduleSideManager>>>> GetDoctorScheduleManagerSideAsync()
+        {
+            try
+            {
+                var result = await _doctorScheduleService.DoctorScheduleSideManager();
+                return Ok(new ApiResponse<IEnumerable<DoctorScheduleSideManager>>
+                {
+                    StatusCode = 200,
+                    Message = "Doctor schedules fetched successfully.",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<DoctorScheduleDTO>>> GetScheduleByIdAsync(long id)
