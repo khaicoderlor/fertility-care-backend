@@ -19,8 +19,8 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<IEnumerable<OrderDTO>> GetOrderByDoctorIdAsync(Guid doctorId);
 
         Task<IEnumerable<OrderInfo>> GetOrdersByPatientIdAsync(Guid patientId);
+        Task<bool?> MarkClosedOrder(Guid guid);
 
-
-        
+        Task<bool?> MarkUnClosedOrder(Guid guid);
     }
 }

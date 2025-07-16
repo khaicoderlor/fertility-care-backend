@@ -342,6 +342,7 @@ namespace FertilityCare.UseCase.Implements
                 eggs = eggReports,
                 embryos = embryoReports,
                 embryosTransferred = embryoTransferredReports,
+                Order = order.MapToOderDTO()
             };
         }
     }

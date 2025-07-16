@@ -50,8 +50,10 @@ namespace FertilityCare.Infrastructure.Repositories
 
         public async Task<IEnumerable<Prescription>> FindPrescriptionsByPatientIdAsync(Guid patientId)
         {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.PatientId.Equals(patientId));
+
             return await _context.Prescriptions
-                .Where(p => p.OrderId .Equals( _context.Orders.FirstOrDefault(o => o.PatientId.Equals( patientId))))
+                .Where(p => p.OrderId.Equals(order.Id))
                 .ToListAsync();
         }
 

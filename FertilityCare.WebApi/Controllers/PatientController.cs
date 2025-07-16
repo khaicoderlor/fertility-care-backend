@@ -111,13 +111,14 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
-        [HttpGet("admin-sides")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PatientSideAdminPage>>>> GetPatientSideAdminPages()
+
+        [HttpGet("{patientId}/contact")]
+        public async Task<ActionResult<ApiResponse<PatientInfoContactDTO>>> GetPatientInfoContactByIdAsync([FromRoute] string patientId)
         {
             try
             {
-                var result = await _patientSecretService.GetPatientSideAdminPages();
-                return Ok(new ApiResponse<IEnumerable<PatientSideAdminPage>>
+                var result = await _patientSecretService.GetPatientInfoContactByPatientIdAsync(patientId);
+                return Ok(new ApiResponse<PatientInfoContactDTO>
                 {
                     StatusCode = 200,
                     Message = "",
@@ -137,14 +138,13 @@ namespace FertilityCare.WebAPI.Controllers
             }
         }
 
-
-        [HttpGet("{patientId}/contact")]
-        public async Task<ActionResult<ApiResponse<PatientInfoContactDTO>>> GetPatientInfoContactByIdAsync([FromRoute] string patientId)
+        [HttpGet("admin-sides")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PatientSideAdminPage>>>> GetPatientSideAdminPages()
         {
             try
             {
-                var result = await _patientSecretService.GetPatientInfoContactByPatientIdAsync(patientId);
-                return Ok(new ApiResponse<PatientInfoContactDTO>
+                var result = await _patientSecretService.GetPatientSideAdminPages();
+                return Ok(new ApiResponse<IEnumerable<PatientSideAdminPage>>
                 {
                     StatusCode = 200,
                     Message = "",

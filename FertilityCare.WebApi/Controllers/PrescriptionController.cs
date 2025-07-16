@@ -15,8 +15,8 @@ namespace FertilityCare.WebAPI.Controllers
         {
             _prescriptionService = prescriptionService;
         }
-        [HttpGet("by-patient")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> GetPrescriptionByPatientId([FromQuery]string patientId)
+        [HttpGet("{patientId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> GetPrescriptionByPatientId([FromRoute]string patientId)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace FertilityCare.WebAPI.Controllers
             {
                 var result = await _prescriptionService.CreatePrescriptionAsync(request);
                 return Ok(new ApiResponse<PrescriptionDTO>
-                {
+                {   
                     StatusCode = 200,
                     Message = "",
                     Data = result,
@@ -65,8 +65,8 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
-        [HttpGet("by-order")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> FindPrescriptionByOrderId([FromQuery] string orderId)
+        [HttpGet("{orderId}/by-order")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> FindPrescriptionByOrderId([FromRoute] string orderId)
         {
             try
             {

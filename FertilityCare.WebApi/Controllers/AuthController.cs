@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Infrastructure.Services;
 using FertilityCare.UseCase.DTOs.Auths;
+using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,38 @@ namespace FertilityCare.WebApi.Controllers
 
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService)
+        private readonly IAccountService _accountService;
+
+        public AuthController(IAuthService authService, IAccountService accounttService)
         {
             _authService = authService;
+            _accountService = accounttService;
+        }
+
+        [HttpGet("accounts")]
+        public async Task<ActionResult<ApiResponse<AccountSideAdmin>>> GetAccountSideAdmins()
+        {
+            try
+            {
+                var accounts = await _accountService.GetAccountSideAdmins();
+                return Ok(new ApiResponse<IEnumerable<AccountSideAdmin>>
+                {
+                    StatusCode = 200,
+                    Message = "Accounts fetched successfully",
+                    Data = accounts,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
         }
 
         [HttpPost("login")]
