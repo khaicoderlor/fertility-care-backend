@@ -32,8 +32,8 @@ public class PrescriptionConfiguration : IEntityTypeConfiguration<Prescription>
                .HasConstraintName("FK_Prescription_TreatmentPlan");
 
         builder.HasMany(x => x.PrescriptionItems)
-               .WithOne()
-               .HasForeignKey("PrescriptionId") 
+               .WithOne(x => x.Prescription)
+               .HasForeignKey(pi => pi.PrescriptionId)
                .OnDelete(DeleteBehavior.Cascade)
                .HasConstraintName("FK_PrescriptionItem_Prescription");
     }

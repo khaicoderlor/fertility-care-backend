@@ -8,10 +8,10 @@ namespace FertilityCare.UseCase.DTOs.PrescriptionItem
 {
     public class CreatePrescriptionItem
     {
-        public string medicationName { get; set; } = string.Empty;  
+        public string MedicationName { get; set; } = string.Empty;  
 
-        public int quantity { get; set; } = 1;  
+        public int Quantity { get; set; } = 1;  
 
-        public string? specialInstructions { get; set; } = string.Empty;
+        public string? SpecialInstructions { get; set; } = string.Empty;
     }
 }
