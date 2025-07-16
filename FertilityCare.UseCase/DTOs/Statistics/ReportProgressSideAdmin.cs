@@ -18,5 +18,6 @@ namespace FertilityCare.UseCase.DTOs.Statistics
 
         public List<EmbryoTransferredReportResponse> embryosTransferred { get; set; }
 
+        public OrderDTO Order { get; set; }
     }
 }

@@ -70,7 +70,8 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
-        [HttpGet("report-progress/{orderId}")]
+
+        [HttpGet("{orderId}/report-progress/admin-sides")]
         public async Task<ActionResult<ApiResponse<ReportProgressSideAdmin>>> GetReportProgressByOrderIdAsync([FromRoute] string orderId)
         {
             try

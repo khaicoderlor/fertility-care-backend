@@ -120,7 +120,7 @@ namespace FertilityCare.WebApi
             builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
             builder.Services.AddScoped<IPrescriptionItemRepository, PrescriptionItemRepository>();
-
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPatientService, PatientService>();
             builder.Services.AddScoped<IPatientRepository, PatientRepository>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();

@@ -175,5 +175,21 @@ namespace FertilityCare.UseCase.Implements
 
             return patient;
         }
+
+        public async Task<bool?> MarkClosedOrder(Guid guid)
+        {
+            try
+            {
+                var order = await _orderRepository.FindByIdAsync(guid);
+
+                order.Status = OrderStatus.Closed;
+                await _orderRepository.SaveChangeAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
