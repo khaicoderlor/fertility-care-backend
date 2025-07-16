@@ -70,7 +70,7 @@ namespace FertilityCare.WebAPI.Controllers
                 });
             }
         }
-        [HttpGet("manager-side")]
+        [HttpGet("manager-sides")]
         public async Task<ActionResult<ApiResponse<IEnumerable<DoctorScheduleSideManager>>>> GetDoctorScheduleManagerSideAsync()
         {
             try

@@ -8,15 +8,15 @@ namespace FertilityCare.UseCase.DTOs.DoctorSchedules
 {
     public class CreateDoctorScheduleRequestDTO
     {
-        public Guid DoctorId { get; set; }
+        public string DoctorId { get; set; }
 
-        public DateTime StartTime { get; set; } 
+        public DateOnly Date { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public TimeOnly StartTime { get; set; } 
+
+        public TimeOnly EndTime { get; set; }
 
         public int? MaxAppointments { get; set; }
-
-        public bool IsAcceptingPatients { get; set; } = true;
 
         public string? Note { get; set; }
     }

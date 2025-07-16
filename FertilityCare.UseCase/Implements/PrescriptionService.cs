@@ -78,13 +78,8 @@ namespace FertilityCare.UseCase.Implements
             return loadedPrescriptions.Select(p => new PrescriptionDetailDTO
             {
                 Id = p.Id.ToString(),
-                OrderId = p.OrderId.ToString(),
-                PatientId = p.Order.PatientId.ToString(),
-                PatientFullName = $"{patientProfile.FirstName} {patientProfile.MiddleName} {patientProfile.LastName}",
-                DoctorId = p.Order.DoctorId.ToString(),
-                DoctorFullName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
-                TreatmentServiceName = p.Order.TreatmentService?.Name ?? "N/A",
-                PrescriptionDate = p.PrescriptionDate.ToString("yyyy-MM-dd"),
+                Order = p.Order.MapToOderDTO(),
+                PrescriptionDate = p.PrescriptionDate.ToString("dd/MM/yyyy"),
                 PrescriptionItems = p.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList() ?? new List<PrescriptionItemDTO>(),
             }).ToList();
         }
@@ -100,13 +95,8 @@ namespace FertilityCare.UseCase.Implements
             return prescription.Select(p => new PrescriptionDetailDTO
             {
                 Id = p.Id.ToString(),
-                OrderId = p.OrderId.ToString(),
-                PatientId = p.Order.PatientId.ToString(),
-                PatientFullName = $"{patientProfile.FirstName} {patientProfile.MiddleName} {patientProfile.LastName}",
-                DoctorId = p.Order.DoctorId.ToString(),
-                DoctorFullName = $"{doctorProfile.FirstName} {doctorProfile.MiddleName} {doctorProfile.LastName}",
-                TreatmentServiceName = p.Order.TreatmentService?.Name ?? "N/A",
-                PrescriptionDate = p.PrescriptionDate.ToString("yyyy-MM-dd"),
+                
+                PrescriptionDate = p.PrescriptionDate.ToString("dd/MM/yyyy"),
                 PrescriptionItems = p.PrescriptionItems?.Select(item => item.MapToPrescriptionItemDTO()).ToList() ?? new List<PrescriptionItemDTO>(),
             }).ToList();
         }

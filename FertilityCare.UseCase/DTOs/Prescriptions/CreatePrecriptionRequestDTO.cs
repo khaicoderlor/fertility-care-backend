@@ -10,7 +10,6 @@ namespace FertilityCare.UseCase.DTOs.Prescriptions
     public class CreatePrecriptionRequestDTO
     {
         public string OrderId { get; set; }
-        public string? Note { get; set; }
-        public List<PrescriptionItemDTO>? PrescriptionItems { get; set; }
+        public List<CreatePrescriptionItem>? PrescriptionItems { get; set; }
     }
 }

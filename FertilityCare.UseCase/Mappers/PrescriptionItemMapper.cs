@@ -15,9 +15,6 @@ namespace FertilityCare.UseCase.Mappers
             return new PrescriptionItemDTO()
             {
                 Id = prescriptionItem.Id,
-                PrescriptionId = prescriptionItem.PrescriptionId.ToString(),
-                StartDate = prescriptionItem.StartDate.ToString("dd/MM/yyyy"),
-                EndDate = prescriptionItem.EndDate?.ToString("dd/MM/yyyy"),
                 SpecialInstructions = prescriptionItem.SpecialInstructions,
                 Quantity = prescriptionItem.Quantity,
                 MedicationName = prescriptionItem.MedicationName
@@ -28,9 +25,6 @@ namespace FertilityCare.UseCase.Mappers
             return new PrescriptionItem()
             {
                 Id = prescriptionItemDTO.Id,
-                PrescriptionId = Guid.Parse(prescriptionItemDTO.PrescriptionId),
-                StartDate = DateOnly.ParseExact(prescriptionItemDTO.StartDate, "dd/MM/yyyy"),
-                EndDate = string.IsNullOrEmpty(prescriptionItemDTO.EndDate) ? null : DateOnly.ParseExact(prescriptionItemDTO.EndDate, "dd/MM/yyyy"),
                 SpecialInstructions = prescriptionItemDTO.SpecialInstructions ?? "",
                 Quantity = prescriptionItemDTO.Quantity ?? 0,
                 MedicationName = prescriptionItemDTO.MedicationName
