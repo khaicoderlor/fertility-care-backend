@@ -224,11 +224,48 @@ namespace FertilityCare.WebApi.Controllers
 
         [HttpPatch]
         [Route("{orderid}/closed")]
-        public async Task<ActionResult<ApiResponse<bool>>> ClosedOrder([FromRoute] string orderid)
+        public async Task<ActionResult<ApiResponse<bool>>> MarkClosedOrder([FromRoute] string orderid)
         {
             try
             {
                 var result = await _orderService.MarkClosedOrder(Guid.Parse(orderid));
+                return Ok(new ApiResponse<bool?>
+                {
+                    StatusCode = 200,
+                    Message = "Total egg count updated successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+        [HttpPatch]
+        [Route("{orderid}/unclosed")]
+        public async Task<ActionResult<ApiResponse<bool>>> MarkUnClosedOrder([FromRoute] string orderid)
+        {
+            try
+            {
+                var result = await _orderService.MarkUnClosedOrder(Guid.Parse(orderid));
                 return Ok(new ApiResponse<bool?>
                 {
                     StatusCode = 200,

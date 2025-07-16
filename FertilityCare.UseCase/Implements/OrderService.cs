@@ -191,5 +191,21 @@ namespace FertilityCare.UseCase.Implements
                 return false;
             }
         }
+
+        public async Task<bool?> MarkUnClosedOrder(Guid guid)
+        {
+            try
+            {
+                var order = await _orderRepository.FindByIdAsync(guid);
+
+                order.Status = OrderStatus.InProgress;
+                await _orderRepository.SaveChangeAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
