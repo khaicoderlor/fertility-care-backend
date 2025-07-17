@@ -57,9 +57,10 @@ namespace FertilityCare.Infrastructure.Services
             IJwtService jwtService, IOptions<JwtConfiguration> jwtConfig,
             IOptions<GoogleAuthConfiguration> googleConfig,
             IPatientRepository patientRepository,
-            IOrderRepository orderRepository, IUserProfileRepository profileRepository)
+            IOrderRepository orderRepository, IUserProfileRepository profileRepository, IDoctorRepository doctorRepository)
         {
             _userManager = userManager;
+            _doctorRepository = doctorRepository;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _jwtConfig = jwtConfig.Value;
@@ -326,7 +327,9 @@ namespace FertilityCare.Infrastructure.Services
                             Rating = 0,
                             Specialization = "",
                             UpdatedAt = DateTime.Now,
+                            DoctorSchedules = new List<DoctorSchedule>()
                         };
+                        Console.WriteLine(doctor);
 
                         await _doctorRepository.SaveAsync(doctor);
                     }

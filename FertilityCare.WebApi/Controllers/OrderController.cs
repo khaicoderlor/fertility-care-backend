@@ -2,6 +2,7 @@
 using FertilityCare.UseCase.DTOs.Orders;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
@@ -237,16 +238,6 @@ namespace FertilityCare.WebApi.Controllers
                     ResponsedAt = DateTime.Now
                 });
             }
-            catch (NotFoundException e)
-            {
-                return NotFound(new ApiResponse<object>
-                {
-                    StatusCode = 404,
-                    Message = e.Message,
-                    Data = null,
-                    ResponsedAt = DateTime.Now
-                });
-            }
             catch (Exception e)
             {
                 return BadRequest(new ApiResponse<object>
@@ -271,16 +262,6 @@ namespace FertilityCare.WebApi.Controllers
                     StatusCode = 200,
                     Message = "Total egg count updated successfully",
                     Data = result,
-                    ResponsedAt = DateTime.Now
-                });
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(new ApiResponse<object>
-                {
-                    StatusCode = 404,
-                    Message = e.Message,
-                    Data = null,
                     ResponsedAt = DateTime.Now
                 });
             }

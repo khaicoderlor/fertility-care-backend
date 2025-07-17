@@ -1,5 +1,6 @@
 ﻿using FertilityCare.Infrastructure.Services;
 using FertilityCare.UseCase.DTOs.Payments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;

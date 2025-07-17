@@ -1,5 +1,6 @@
 ﻿using FertilityCare.UseCase.DTOs.Prescriptions;
 using FertilityCare.UseCase.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace FertilityCare.WebAPI.Controllers
         {
             _prescriptionService = prescriptionService;
         }
+
         [HttpGet("{patientId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<PrescriptionDetailDTO>>>> GetPrescriptionByPatientId([FromRoute]string patientId)
         {
