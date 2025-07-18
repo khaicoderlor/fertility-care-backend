@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FertilityCare.WebApi.Controllers
 {
     [Route("api/v1/blog")]
-    [ApiController]
+    [ApiController] 
     public class BlogController : ControllerBase
     {
         private readonly IBlogService _blogService;
