@@ -15,6 +15,7 @@ namespace FertilityCare.Domain.Entities
         public string Title { get; set; }
         public string Content { get; set; }
         public BlogStatus Status { get; set; } = BlogStatus.Process;
+        public BlogCategory BlogCategory { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public string? ImageUrl { get; set; }
