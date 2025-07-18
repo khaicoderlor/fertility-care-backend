@@ -10,18 +10,18 @@ namespace FertilityCare.UseCase.Mappers
 {
     public static class BlogMapper
     {
-        public static Blog MaptoBlog(this BlogDTO blog)
-        {
-            return new Blog()
-            {
-                UserProfileId = Guid.Parse(blog.UserProfileId),
-                Content = blog.Content,
-                Status = blog.Status,
-                CreatedAt = blog.CreatedAt,
-                UpdatedAt = blog.UpdatedAt,
-                Title = blog.Title,
-            };
-        }
+        //public static Blog MaptoBlog(this BlogDTO blog)
+        //{
+        //    return new Blog()
+        //    {
+        //        UserProfileId = Guid.Parse(blog.UserProfileId),
+        //        Content = blog.Content,
+        //        Status = blog.Status,
+        //        CreatedAt = blog.CreatedAt,
+        //        UpdatedAt = blog.UpdatedAt,
+        //        Title = blog.Title,
+        //    };
+        //}
         public static BlogDTO MapToBlogDTO(this Blog blog)
         {
             return new BlogDTO()
@@ -30,9 +30,11 @@ namespace FertilityCare.UseCase.Mappers
                 UserProfileId = blog.UserProfileId.ToString(),
                 UserName = blog.UserProfile.FirstName +" "+ blog.UserProfile.MiddleName + " " + blog.UserProfile.LastName,
                 Content = blog.Content,
-                Status = blog.Status,
-                CreatedAt = blog.CreatedAt,
-                UpdatedAt = blog.UpdatedAt,
+                Status = blog.Status.ToString(),
+                Title = blog.Title,
+                BlogCategory = blog.BlogCategory.ToString(),
+                CreatedAt = blog.CreatedAt.ToString("dd/MM/yyyy hh:mm:ss"),
+                UpdatedAt = blog.UpdatedAt?.ToString("dd/MM/yyyy hh:mm:ss"),
                 ImageUrl = blog.ImageUrl,
                 AvatarUrl = blog.UserProfile?.AvatarUrl
             };

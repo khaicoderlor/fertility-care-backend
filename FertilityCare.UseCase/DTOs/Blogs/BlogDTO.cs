@@ -15,9 +15,11 @@ namespace FertilityCare.UseCase.DTOs.Blogs
         public string UserName { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public BlogStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public string Status { get; set; }
+
+        public string BlogCategory { get; set; }
+        public string CreatedAt { get; set; }
+        public string? UpdatedAt { get; set; }
         public string? ImageUrl { get; set; }
         public string? AvatarUrl { get; set; }
 

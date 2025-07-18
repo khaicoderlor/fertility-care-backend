@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FertilityCare.Domain.Entities;
 using FertilityCare.Domain.Enums;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Blogs;
@@ -32,22 +33,34 @@ namespace FertilityCare.UseCase.Implements
             var doctor = await _doctorRepository.FindByUserProfileIdAsync(Guid.Parse(request.UserProfileId));
             var status = (doctor is null)
                 ? BlogStatus.Process : BlogStatus.Approved;
-
-            var blogdto = new BlogDTO()
+            
+            var blog = new Blog
             {
-                Id = Guid.NewGuid().ToString(),
-                UserProfileId = request.UserProfileId,
-                UserName = userProfile.FirstName + " " + userProfile.MiddleName + " " + userProfile.LastName,
+                Id = Guid.NewGuid(),
+                UserProfileId = Guid.Parse(request.UserProfileId),
                 Content = request.Content,
                 Title = request.Title,
                 Status = status,
                 ImageUrl = "",
+                BlogCategory = GetBlogCategory(request.Topic),
                 CreatedAt = DateTime.Now,
                 UpdatedAt = null,
-                AvatarUrl = userProfile.AvatarUrl
             };
-            await _blogRepository.SaveAsync(blogdto.MaptoBlog());
-            return blogdto;
+
+            await _blogRepository.SaveAsync(blog);
+            return blog.MapToBlogDTO();
+        }
+
+        private BlogCategory GetBlogCategory(string topic)
+        {
+            return topic switch
+            {
+                "General" => BlogCategory.General,
+                "IVF" => BlogCategory.IVF,
+                "IUI" => BlogCategory.IUI,
+                "InfoFertility" => BlogCategory.InfoFertility,
+                "Other" => BlogCategory.Other,  
+            };
         }
 
         public async Task<BlogDTO> UpdateImage(string blogId, string secureUrl)
