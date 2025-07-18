@@ -19,7 +19,7 @@ namespace FertilityCare.UseCase.Mappers
                 Status = blog.Status,
                 CreatedAt = blog.CreatedAt,
                 UpdatedAt = blog.UpdatedAt,
-                ImageUrl = blog.ImageUrl
+                Title = blog.Title,
             };
         }
         public static BlogDTO MapToBlogDTO(this Blog blog)

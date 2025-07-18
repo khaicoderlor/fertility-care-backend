@@ -28,10 +28,7 @@ namespace FertilityCare.UseCase.Implements
         public async Task<BlogDTO> CreateNewBlog(CreateBlogRequestDTO request)
         {
             var userProfile = await _userProfileRepository.FindByIdAsync(Guid.Parse(request.UserProfileId));
-            if (userProfile is null)
-            {
-                throw new NotFoundException("User profile not found");
-            }
+           
             var doctor = await _doctorRepository.FindByUserProfileIdAsync(Guid.Parse(request.UserProfileId));
             var status = (doctor is null)
                 ? BlogStatus.Process : BlogStatus.Approved;
@@ -42,14 +39,24 @@ namespace FertilityCare.UseCase.Implements
                 UserProfileId = request.UserProfileId,
                 UserName = userProfile.FirstName + " " + userProfile.MiddleName + " " + userProfile.LastName,
                 Content = request.Content,
+                Title = request.Title,
                 Status = status,
+                ImageUrl = "",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = null,
-                ImageUrl = request.ImageUrl,
                 AvatarUrl = userProfile.AvatarUrl
             };
             await _blogRepository.SaveAsync(blogdto.MaptoBlog());
             return blogdto;
+        }
+
+        public async Task<BlogDTO> UpdateImage(string blogId, string secureUrl)
+        {
+            var blog = await _blogRepository.FindByIdAsync(Guid.Parse(blogId));
+
+            blog.ImageUrl = secureUrl;
+            await _blogRepository.SaveChangeAsync();
+            return blog.MapToBlogDTO();
         }
 
         public async Task<List<BlogDTO>> GetBlogByDoctorId(BlogQueryDTO query)

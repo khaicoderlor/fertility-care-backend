@@ -8,8 +8,8 @@ namespace FertilityCare.UseCase.DTOs.Blogs
 {
     public class CreateBlogRequestDTO
     {
-        public string Content { get; set; }
-        public string? ImageUrl { get; set; }
+        public string? Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
         public string UserProfileId { get; set; }
 
     }

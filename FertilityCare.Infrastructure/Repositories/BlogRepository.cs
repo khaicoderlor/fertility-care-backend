@@ -85,6 +85,11 @@ namespace FertilityCare.Infrastructure.Repositories
             return entity;
         }
 
+        public async Task SaveChangeAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Blog> UpdateAsync(Blog entity)
         {
             _context.Blogs.Update(entity);
