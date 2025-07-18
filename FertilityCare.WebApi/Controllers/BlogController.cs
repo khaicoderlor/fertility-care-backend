@@ -1,4 +1,5 @@
-﻿using FertilityCare.UseCase.DTOs.Blogs;
+﻿using FertilityCare.Infrastructure.Services;
+using FertilityCare.UseCase.DTOs.Blogs;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
 using Microsoft.AspNetCore.Http;
@@ -11,9 +12,13 @@ namespace FertilityCare.WebApi.Controllers
     public class BlogController : ControllerBase
     {
         private readonly IBlogService _blogService;
-        public BlogController(IBlogService blogService)
+     
+        private readonly ICloudStorageService _cloudStorageService;
+
+        public BlogController(IBlogService blogService, ICloudStorageService cloudStorageService)
         {
             _blogService = blogService;
+            _cloudStorageService = cloudStorageService;
         }
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<BlogDTO>>>> GetAllBlogs([FromQuery]int pageNumber, [FromQuery] int pageSize)
@@ -71,11 +76,16 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<BlogDTO>>> CreateNewBlog([FromBody] CreateBlogRequestDTO request)
+        public async Task<ActionResult<ApiResponse<BlogDTO>>> CreateNewBlog([FromBody] CreateBlogRequestDTO request, [FromBody] IFormFile file)
         {
             try
             {
                 var blog = await _blogService.CreateNewBlog(request);
+                if(file != null && file.Length > 0)
+                {
+                    var secureUrl = await _cloudStorageService.UploadPhotoAsync(file);
+                    blog = await _blogService.UpdateImage(blog.Id, secureUrl);
+                }
                 return Ok(new ApiResponse<BlogDTO>
                 {
                     StatusCode = 200,

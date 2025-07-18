@@ -15,5 +15,6 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<List<BlogDTO>> GetBlogByDoctorId(BlogQueryDTO query);
         Task<List<BlogDTO>> GetAllBlog(int pageNumber, int pageSize);
         Task<BlogDTO> UpdateStatus(string blogId, BlogStatusUpdateRequest status);
+        Task<BlogDTO> UpdateImage(string id, string secureUrl);
     }
 }
