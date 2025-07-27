@@ -124,8 +124,6 @@ namespace FertilityCare.WebApi.Controllers
             }
         }
 
-
-
         [HttpPost]
         public async Task<ActionResult<ApiResponse<BlogDTO>>> CreateNewBlog([FromBody] CreateBlogRequestDTO request)
         {
