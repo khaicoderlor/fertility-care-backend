@@ -72,14 +72,14 @@ namespace FertilityCare.UseCase.Implements
             return blog.MapToBlogDTO();
         }
 
-        public async Task<List<BlogDTO>> GetBlogByDoctorId(BlogQueryDTO query)
+        public async Task<List<BlogDTO>> GetBlogByDoctorId(string doctorId)
         {
-            var blogs = await _blogRepository.GetBlogByDoctorIdAsync(Guid.Parse(query.DoctorId), query.PageNumber, query.PageSize);
+            var blogs = await _blogRepository.GetBlogByDoctorIdAsync(Guid.Parse(doctorId));
             return blogs.Select(b => b.MapToBlogDTO()).ToList();
         }
-        public async Task<List<BlogDTO>> GetAllBlog(int pageNumber, int pageSize)
+        public async Task<List<BlogDTO>> GetAllBlog()
         {
-            var blogs = await _blogRepository.GetPagedAsync(pageNumber, pageSize);
+            var blogs = await _blogRepository.GetAllApprovedAsync();
             return blogs.Select(b => b.MapToBlogDTO()).ToList();
         }
         public async Task<BlogDTO> UpdateBlog(string blogId, CreateBlogRequestDTO request)
@@ -94,12 +94,29 @@ namespace FertilityCare.UseCase.Implements
             var blogUpdate = await _blogRepository.UpdateAsync(blog);
             return blogUpdate.MapToBlogDTO();
         }
-        public async Task<BlogDTO> UpdateStatus(string blogId, BlogStatusUpdateRequest status)
+        public async Task<BlogDTO> UpdateStatus(string blogId, string status)
         {
             var blog = await _blogRepository.FindByIdAsync(Guid.Parse(blogId));
-            blog.Status = status.Status;
+            blog.Status = GetBlogStatus(status);
             var blogUpdate = await _blogRepository.UpdateAsync(blog);
             return blogUpdate.MapToBlogDTO();
+        }
+
+        private BlogStatus GetBlogStatus(string status)
+        {
+            return status switch
+            {
+                "Approved" => BlogStatus.Approved,
+                "Rejected" => BlogStatus.Rejected,
+                "Process" => BlogStatus.Process,
+                _ => throw new ArgumentException("Invalid blog status")
+            };
+        }
+
+        public async Task<List<BlogDTO>> GetAllStatusBlog()
+        {
+            var res = await _blogRepository.FindAllAsync();
+            return res.Select(b => b.MapToBlogDTO()).ToList();
         }
     }
 }

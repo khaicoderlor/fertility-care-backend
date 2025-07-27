@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FertilityCare.Domain.Entities;
+using FertilityCare.Domain.Enums;
 using FertilityCare.Infrastructure.Identity;
 using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.Interfaces.Repositories;
@@ -45,7 +46,12 @@ namespace FertilityCare.Infrastructure.Repositories
             return loadedBlog;
         }
 
-        public async Task<List<Blog>> GetBlogByDoctorIdAsync(Guid doctorId, int pageNumber, int pageaSize)
+        public async Task<List<Blog>> GetAllApprovedAsync()
+        {
+            return await _context.Blogs.Where(x => x.Status == BlogStatus.Approved).ToListAsync();
+        }
+
+        public async Task<List<Blog>> GetBlogByDoctorIdAsync(Guid doctorId)
         {
             var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == doctorId);
             if (doctor == null)
@@ -55,8 +61,6 @@ namespace FertilityCare.Infrastructure.Repositories
 
             return await _context.Blogs
                 .Where(b => b.UserProfileId == doctor.UserProfileId)
-                .Skip((pageNumber - 1) * pageaSize)
-                .Take(pageaSize)
                 .ToListAsync();
         }
 

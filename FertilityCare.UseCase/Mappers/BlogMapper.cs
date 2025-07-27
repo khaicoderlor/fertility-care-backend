@@ -27,12 +27,12 @@ namespace FertilityCare.UseCase.Mappers
             return new BlogDTO()
             {
                 Id = blog.Id.ToString(),
-                UserProfileId = blog.UserProfileId.ToString(),
-                UserName = blog.UserProfile.FirstName +" "+ blog.UserProfile.MiddleName + " " + blog.UserProfile.LastName,
+                Author = blog.UserProfile.MapToProfileDTO(),
+                FullName = blog.UserProfile.FirstName +" "+ blog.UserProfile.MiddleName + " " + blog.UserProfile.LastName,
                 Content = blog.Content,
                 Status = blog.Status.ToString(),
                 Title = blog.Title,
-                BlogCategory = blog.BlogCategory.ToString(),
+                Category = blog.BlogCategory.ToString(),
                 CreatedAt = blog.CreatedAt.ToString("dd/MM/yyyy hh:mm:ss"),
                 UpdatedAt = blog.UpdatedAt?.ToString("dd/MM/yyyy hh:mm:ss"),
                 ImageUrl = blog.ImageUrl,

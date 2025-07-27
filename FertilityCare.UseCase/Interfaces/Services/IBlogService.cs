@@ -12,9 +12,11 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task<BlogDTO> CreateNewBlog(CreateBlogRequestDTO request);
         Task<BlogDTO> UpdateBlog(string blogId, CreateBlogRequestDTO request);
-        Task<List<BlogDTO>> GetBlogByDoctorId(BlogQueryDTO query);
-        Task<List<BlogDTO>> GetAllBlog(int pageNumber, int pageSize);
-        Task<BlogDTO> UpdateStatus(string blogId, BlogStatusUpdateRequest status);
+        Task<List<BlogDTO>> GetBlogByDoctorId(string doctorId);
+        Task<List<BlogDTO>> GetAllBlog();
+
+        Task<List<BlogDTO>> GetAllStatusBlog();
+        Task<BlogDTO> UpdateStatus(string blogId, string status);
         Task<BlogDTO> UpdateImage(string id, string secureUrl);
     }
 }
