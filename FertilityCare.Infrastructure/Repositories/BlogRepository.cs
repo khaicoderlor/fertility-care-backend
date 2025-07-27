@@ -94,6 +94,26 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Blog>> GetBlogsByPatientIdAsync(Guid patientId)
+        {
+            var patient = await _context.Patients
+                .Include(p => p.UserProfile)
+                .FirstOrDefaultAsync(p => p.Id == patientId);
+
+            if (patient == null || patient.UserProfile == null)
+            {
+                throw new NotFoundException($"Patient or UserProfile with ID {patientId} not found.");
+            }
+
+            var userProfileId = patient.UserProfile.Id;
+
+            return await _context.Blogs
+                .Where(b => b.UserProfileId == userProfileId)
+                .ToListAsync();
+        }
+
+
+
         public async Task<Blog> UpdateAsync(Blog entity)
         {
             _context.Blogs.Update(entity);

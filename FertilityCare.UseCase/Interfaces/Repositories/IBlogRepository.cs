@@ -14,6 +14,8 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         public Task<List<Blog>> GetPagedAsync(int pageNumber, int pageSize);
         public Task<List<Blog>> GetAllApprovedAsync();
 
+        Task<IEnumerable<Blog>> GetBlogsByPatientIdAsync(Guid patientId);
+
         Task SaveChangeAsync();
     }
 }

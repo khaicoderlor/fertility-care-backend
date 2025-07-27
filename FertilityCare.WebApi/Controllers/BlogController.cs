@@ -1,4 +1,5 @@
 ﻿using FertilityCare.Infrastructure.Services;
+using FertilityCare.Shared.Exceptions;
 using FertilityCare.UseCase.DTOs.Blogs;
 using FertilityCare.UseCase.Interfaces.Services;
 using FertilityCare.WebAPI;
@@ -97,6 +98,54 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
+        [HttpGet("patient/{patientId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<BlogDTO>>>> GetBlogsByPatientId([FromRoute] string patientId)
+        {
+            try
+            {
+                if (!Guid.TryParse(patientId, out var parsedId))
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid patientId format",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                var result = await _blogService.GetBlogsByPatientIdAsync(parsedId);
+                return Ok(new ApiResponse<IEnumerable<BlogDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched blogs by patientId successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ApiResponse<string>
+                {
+                    StatusCode = 404,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
 
         [HttpGet("doctor/{doctorId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<BlogDTO>>>> GetBlogByDoctorId([FromRoute]string doctorId)
