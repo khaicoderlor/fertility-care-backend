@@ -137,5 +137,14 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+
+        public async Task<IEnumerable<Feedback>> FindFeedbacksByPatientIdAsync(Guid patientId)
+        {
+            return await _context.Feedbacks
+                .Where(f => f.PatientId == patientId)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToListAsync();
+        }
+
     }
 }

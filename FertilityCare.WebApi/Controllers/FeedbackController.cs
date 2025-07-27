@@ -285,5 +285,45 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
+        [HttpGet("patient/{patientId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<FeedbackDTO>>>> GetFeedbacksByPatientId([FromRoute] string patientId)
+        {
+            try
+            {
+                if (!Guid.TryParse(patientId, out var parsedPatientId))
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid patient ID format",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+
+                var result = await _feedbackService.GetFeedbacksByPatientIdAsync(parsedPatientId);
+
+                return Ok(new ApiResponse<IEnumerable<FeedbackDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Fetched feedbacks successfully",
+                    Data = result,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
+
     }
 }

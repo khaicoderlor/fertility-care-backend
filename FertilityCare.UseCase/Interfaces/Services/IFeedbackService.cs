@@ -18,5 +18,8 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<IEnumerable<FeedbackLatestSideManager>> GetSecondFeedbackLatestManagerSide();
         Task<IEnumerable<AllFeedbackDTO>> GetAllFeedbackAsync();
         Task<BestRateDoctor?> GetBestRateDoctor();
+
+        Task<IEnumerable<FeedbackDTO>> GetFeedbacksByPatientIdAsync(Guid patientId);
+
     }
 }

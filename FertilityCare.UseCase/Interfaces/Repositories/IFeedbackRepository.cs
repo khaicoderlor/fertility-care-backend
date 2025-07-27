@@ -18,5 +18,9 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
         Task<List<Feedback>> GetFeedbackByAllIdAsync(FeedbackQueryDTO query, int pageNumber, int pageSize);
 
         Task<List<Feedback>> GetFeedbackByDoctorIdAsync(Guid doctorId);
+
+        Task<IEnumerable<Feedback>> FindFeedbacksByPatientIdAsync(Guid patientId);
+
+
     }
 }

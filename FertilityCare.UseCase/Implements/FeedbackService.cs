@@ -185,6 +185,24 @@ namespace FertilityCare.UseCase.Implements
             return result;
         }
 
+        public async Task<IEnumerable<FeedbackDTO>> GetFeedbacksByPatientIdAsync(Guid patientId)
+        {
+            var feedbackList = await _feedbackRepository.FindFeedbacksByPatientIdAsync(patientId);
+            feedbackList = feedbackList.OrderByDescending(x => x.CreatedAt).ToList();
+
+            foreach (var feedback in feedbackList)
+            {
+                feedback.Patient = await _patientRepository.FindByIdAsync(feedback.PatientId);
+                if (feedback.DoctorId != Guid.Empty)
+                    feedback.Doctor = await _doctorRepository.FindByIdAsync(feedback.DoctorId);
+                if (feedback.TreatmentServiceId.HasValue)
+                    feedback.TreatmentService = await _treatmentServiceRepository.FindByIdAsync(feedback.TreatmentServiceId.Value);
+            }
+
+            return feedbackList.Select(f => f.MapToFeedbackDTO()).ToList();
+        }
+
+
         public async Task<BestRateDoctor?> GetBestRateDoctor()
         {
             var feedbacks = await _feedbackRepository.FindAllAsync();
