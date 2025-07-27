@@ -15,6 +15,8 @@ namespace FertilityCare.UseCase.Interfaces.Services
         Task<List<BlogDTO>> GetBlogByDoctorId(string doctorId);
         Task<List<BlogDTO>> GetAllBlog();
 
+        Task<IEnumerable<BlogDTO>> GetBlogsByPatientIdAsync(Guid patientId);
+
         Task<List<BlogDTO>> GetAllStatusBlog();
         Task<BlogDTO> UpdateStatus(string blogId, string status);
         Task<BlogDTO> UpdateImage(string id, string secureUrl);
