@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FertilityCare.WebApi.Controllers
 {
-    [Route("api/v1/blog")]
+    [Route("api/v1/blogs")]
     [ApiController] 
     public class BlogController : ControllerBase
     {
@@ -229,6 +229,44 @@ namespace FertilityCare.WebApi.Controllers
                 });
             }
         }
+
+        [HttpPatch("{blogId}/image")]
+        public async Task<ActionResult<ApiResponse<BlogDTO>>> UpdateImage([FromRoute] string blogId, [FromForm] IFormFile image)
+        {
+            try
+            {
+                if (image == null || image.Length == 0)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "File is required.",
+                        Data = null,
+                        ResponsedAt = DateTime.Now
+                    });
+                }
+                var secureUrl = await _cloudStorageService.UploadPhotoAsync(image);
+                var blog = await _blogService.UpdateImage(blogId, secureUrl);
+                return Ok(new ApiResponse<BlogDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Image updated successfully.",
+                    Data = blog,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = e.Message,
+                    Data = null,
+                    ResponsedAt = DateTime.Now
+                });
+            }
+        }
+
         [HttpPut("{blogId}")]
         public async Task<ActionResult<ApiResponse<BlogDTO>>> UpdateStatus([FromRoute] string blogId, [FromQuery] string status)
         {
