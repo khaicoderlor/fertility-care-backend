@@ -68,5 +68,17 @@ namespace FertilityCare.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+
+        public async Task<TreatmentStep?> FindStepByIdAsync(long id)
+        {
+            return await _context.TreatmentSteps.FindAsync(id);
+        }
+
+        public async Task SaveStepAsync(TreatmentStep step)
+        {
+            _context.TreatmentSteps.Update(step);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

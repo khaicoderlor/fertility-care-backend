@@ -10,6 +10,9 @@ namespace FertilityCare.UseCase.Interfaces.Repositories
 {
     public interface ITreatmentServiceRepository : IBaseRepository<TreatmentService, Guid>
     {
+        Task<TreatmentStep?> FindStepByIdAsync(long id);
+        Task SaveStepAsync(TreatmentStep step);
+
 
     }
 }

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using FertilityCare.Domain.Entities;
+using FertilityCare.UseCase.DTOs.TreatmentServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FertilityCare.UseCase.DTOs.TreatmentServices;
 
 namespace FertilityCare.UseCase.Interfaces.Services
 {
@@ -11,5 +12,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task<IEnumerable<TreatmentServiceDTO>> GetAllAsync();
         Task<TreatmentServiceDTO> UpdateAsync(TreatmentServiceDTO treatmentServiceDTO);
+        Task<TreatmentStep> UpdateStepAsync(string id, TreatmentStepUpdateDTO dto);
+
     }
 }
