@@ -71,6 +71,11 @@ namespace FertilityCare.UseCase.Implements
             }
 
             var now = DateTime.Now;
+
+            // [ADDED] Tính tổng tiền của các TreatmentStep
+            var totalAmount = treatmentService.TreatmentSteps?
+                .Sum(step => step.Amount ?? 0) ?? 0;
+
             Order placeOrder = new()
             {
                 PatientId = patient.Id,
@@ -78,9 +83,12 @@ namespace FertilityCare.UseCase.Implements
                 TreatmentServiceId = treatmentService.Id,
                 Status = OrderStatus.InProgress,
                 TotalEgg = 0,
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                StartDate = DateOnly.FromDateTime(now),
                 IsFrozen = false,
-                TotalAmount = 0,
+
+                // [UPDATED] Gán tổng tiền vào Order
+                TotalAmount = totalAmount,
+
                 EndDate = null,
                 UpdatedAt = now,
             };
@@ -118,6 +126,7 @@ namespace FertilityCare.UseCase.Implements
 
             return placeOrder.MapToOderDTO();
         }
+
 
         public async Task<IEnumerable<OrderDTO>> GetOrderByDoctorIdAsync(Guid doctorId)
         {
