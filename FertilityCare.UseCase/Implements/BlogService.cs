@@ -29,11 +29,11 @@ namespace FertilityCare.UseCase.Implements
         public async Task<BlogDTO> CreateNewBlog(CreateBlogRequestDTO request)
         {
             var userProfile = await _userProfileRepository.FindByIdAsync(Guid.Parse(request.UserProfileId));
-           
+
             var doctor = await _doctorRepository.FindByUserProfileIdAsync(Guid.Parse(request.UserProfileId));
             var status = (doctor is null)
                 ? BlogStatus.Process : BlogStatus.Approved;
-            
+
             var blog = new Blog
             {
                 Id = Guid.NewGuid(),
@@ -59,7 +59,7 @@ namespace FertilityCare.UseCase.Implements
                 "IVF" => BlogCategory.IVF,
                 "IUI" => BlogCategory.IUI,
                 "InfoFertility" => BlogCategory.InfoFertility,
-                "Other" => BlogCategory.Other,  
+                "Other" => BlogCategory.Other,
             };
         }
 
@@ -89,11 +89,34 @@ namespace FertilityCare.UseCase.Implements
             {
                 throw new NotFoundException("Blog not found");
             }
+            blog.Title = request.Title;
+            blog.BlogCategory = determineBlogCategory(request.Topic);
             blog.Content = request.Content;
             blog.UpdatedAt = DateTime.Now;
-            var blogUpdate = await _blogRepository.UpdateAsync(blog);
-            return blogUpdate.MapToBlogDTO();
+            await _blogRepository.SaveChangeAsync();
+            return blog.MapToBlogDTO();
         }
+
+        private BlogCategory determineBlogCategory(string category)
+        {
+            switch (category)
+            {
+                case "General":
+                    return BlogCategory.General;
+                case "IVF":
+                    return BlogCategory.IVF;
+                case "IUI":
+                    return BlogCategory.IUI;
+                case "InfoFertility":
+                    return BlogCategory.InfoFertility;
+                case "Other":
+                    return BlogCategory.Other;
+                default:
+                    throw new ArgumentException("Invalid blog category");
+
+            }
+        }
+
         public async Task<BlogDTO> UpdateStatus(string blogId, string status)
         {
             var blog = await _blogRepository.FindByIdAsync(Guid.Parse(blogId));

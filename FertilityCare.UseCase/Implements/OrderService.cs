@@ -70,10 +70,6 @@ namespace FertilityCare.UseCase.Implements
                     $"The maximum number of appointments for this schedule has been reached. Please choose another time slot or contact support for assistance.");
             }
 
-            patient = SaveInputInfoOrder(request, patient);
-
-            await _patientRepository.SaveChangeAsync();
-
             var now = DateTime.Now;
 
             // [ADDED] Tính tổng tiền của các TreatmentStep
@@ -167,23 +163,22 @@ namespace FertilityCare.UseCase.Implements
             return totalEgg;
         }
 
-        private Patient SaveInputInfoOrder(CreateOrderRequestDTO request, Patient patient)
-        {
-            patient.UserProfile.FirstName = request.FirstName;
-            patient.UserProfile.LastName = request.LastName;
-            patient.UserProfile.MiddleName = request.MiddleName;
-            patient.UserProfile.Address = request.Address;
-            patient.UserProfile.Gender = request.Gender.Equals(Gender.Female.ToString())
-                ? Gender.Female
-                : Gender.Male;
-            patient.PartnerPhone = request.PartnerPhone;
-            patient.PartnerEmail = request.PartnerEmail;
-            patient.PartnerFullName = request.PartnerFullName;
-            patient.MedicalHistory = request.MedicalHistory;
-            patient.UserProfile.UpdatedAt = DateTime.Now;
+        //private Patient SaveInputInfoOrder(CreateOrderRequestDTO request, Patient patient)
+        //{
+        //    patient.UserProfile.FirstName = request.FirstName;
+        //    patient.UserProfile.LastName = request.LastName;
+        //    patient.UserProfile.MiddleName = request.MiddleName;
+        //    patient.UserProfile.Address = request.Address;
+        //    patient.UserProfile.Gender = request.Gender.Equals(Gender.Female.ToString())
+        //        ? Gender.Female
+        //        : Gender.Male;
+        //    patient.PartnerPhone = request.PartnerPhone;
+        //    patient.PartnerEmail = request.PartnerEmail;
+        //    patient.PartnerFullName = request.PartnerFullName;
+        //    patient.MedicalHistory = request.MedicalHistory;
 
-            return patient;
-        }
+        //    return patient;
+        //}
 
         public async Task<bool?> MarkClosedOrder(Guid guid)
         {
