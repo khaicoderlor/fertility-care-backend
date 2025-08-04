@@ -12,7 +12,7 @@ namespace FertilityCare.UseCase.Interfaces.Services
     {
         Task<IEnumerable<TreatmentServiceDTO>> GetAllAsync();
         Task<TreatmentServiceDTO> UpdateAsync(TreatmentServiceDTO treatmentServiceDTO);
-        Task<TreatmentStep> UpdateStepAsync(string id, TreatmentStepUpdateDTO dto);
+        Task UpdateStepAsync(string id, TreatmentStepUpdateDTO dto);
 
     }
 }

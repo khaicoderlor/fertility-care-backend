@@ -69,16 +69,16 @@ namespace FertilityCare.WebAPI.Controllers
         }
 
         [HttpPut("steps/{id}")]
-        public async Task<ActionResult<ApiResponse<object>>> UpdateStep(string id, [FromBody] TreatmentStepUpdateDTO dto)
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateStep(string id, [FromBody] TreatmentStepUpdateDTO dto)
         {
             try
             {
-                var updatedStep = await _publicTreatmentService.UpdateStepAsync(id, dto);
+                await _publicTreatmentService.UpdateStepAsync(id, dto);
                 return Ok(new ApiResponse<object>
                 {
                     StatusCode = 200,
                     Message = "Treatment step updated successfully.",
-                    Data = updatedStep,
+                    Data = true,
                     ResponsedAt = DateTime.Now
                 });
             }
@@ -88,7 +88,7 @@ namespace FertilityCare.WebAPI.Controllers
                 {
                     StatusCode = 400,
                     Message = ex.Message,
-                    Data = null,
+                    Data = false,
                     ResponsedAt = DateTime.Now
                 });
             }

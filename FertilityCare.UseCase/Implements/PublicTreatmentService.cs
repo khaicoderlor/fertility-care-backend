@@ -32,7 +32,7 @@ namespace FertilityCare.UseCase.Implements
             return result.MapToTreatmentServiceDTO();
         }
 
-        public async Task<TreatmentStep> UpdateStepAsync(string id, TreatmentStepUpdateDTO dto)
+        public async Task UpdateStepAsync(string id, TreatmentStepUpdateDTO dto)
         {
             var stepId = long.Parse(id);
             var treatmentStep = await _treatmentServiceRepository.FindStepByIdAsync(stepId)
@@ -46,7 +46,6 @@ namespace FertilityCare.UseCase.Implements
             treatmentStep.UpdatedAt = DateTime.Now;
 
             await _treatmentServiceRepository.SaveStepAsync(treatmentStep);
-            return treatmentStep;
         }
 
 
